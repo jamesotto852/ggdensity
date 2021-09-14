@@ -1,16 +1,26 @@
 Package: gghdr
-Title: What the Package Does (One Line, Title Case)
+Title: Interpretable 2-d Density Estimation with ggplot2
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    c(person(given = "James",
+           family = "Otto",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+           email = "james_otto@baylor.edu"),
+      person(given = "David",
+           family = "Kahle",
+           role = c("aut"),
+           email = "david@kahle.io",
+           comment = c(ORCID = "0000-0002-9999-1558")))
+Description: The 'ggplot2' package provides simple functions for visualizing contours
+  of 2-d kernal density estimates. 'gghdr' implements several additional density estimators 
+  as well as more interpretable visualizations based on highest density regions instead of
+  the traditional height of the estimated density surface. 
+License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Imports: 
+    ggplot2,
+    MASS,
+    scales
