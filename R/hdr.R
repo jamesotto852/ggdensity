@@ -3,7 +3,7 @@
 #' Put description here
 #'
 #' @section Aesthetics:
-#' geom_HDR understands the following aesthetics (required aesthetics are in bold):
+#' geom_hdr understands the following aesthetics (required aesthetics are in bold):
 #'
 #' - **x**
 #' - **y**
@@ -44,19 +44,19 @@
 #'
 #' # Plotting the estimated density
 #' ggplot(df, aes(x, y)) +
-#'   geom_HDR()
+#'   geom_hdr()
 #'
 #' ggplot(df, aes(x, y)) +
-#'   geom_HDR(method = "mvnorm")
+#'   geom_hdr(method = "mvnorm")
 #'
 #' ggplot(df, aes(x, y)) +
-#'   geom_HDR(method = "histogram", n = 10)
+#'   geom_hdr(method = "histogram", n = 10)
 NULL
 
 #' @rdname geom_hdr
 #' @export
-stat_HDR <- function(mapping = NULL, data = NULL,
-                                      geom = "HDR", position = "identity",
+stat_hdr <- function(mapping = NULL, data = NULL,
+                                      geom = "hdr", position = "identity",
                                       ...,
                                       method = "kde",
                                       probs = c(.99, .95, .8, .5),
@@ -67,6 +67,7 @@ stat_HDR <- function(mapping = NULL, data = NULL,
                                       ylim = NULL,
                                       nudgex = "none",
                                       nudgey = "none",
+                                      adjust = c(1, 1),
                                       h = NULL,
                                       na.rm = FALSE,
                                       show.legend = NA,
@@ -74,7 +75,7 @@ stat_HDR <- function(mapping = NULL, data = NULL,
   layer(
     data = data,
     mapping = mapping,
-    stat = StatHDR,
+    stat = StatHdr,
     geom = geom,
     position = position,
     show.legend = show.legend,
@@ -89,6 +90,7 @@ stat_HDR <- function(mapping = NULL, data = NULL,
       ylim = ylim,
       nudgex = nudgex,
       nudgey = nudgey,
+      adjust = adjust,
       h = h,
       na.rm = na.rm,
       ...
@@ -104,7 +106,7 @@ stat_HDR <- function(mapping = NULL, data = NULL,
 #' @usage NULL
 #' @importFrom scales percent
 #' @export
-StatHDR <- ggproto("StatHDR", Stat,
+StatHdr <- ggproto("StatHdr", Stat,
 
   required_aes = c("x", "y"),
   default_aes = aes(order = after_stat(level), alpha = after_stat(level)),
@@ -114,7 +116,7 @@ StatHDR <- ggproto("StatHDR", Stat,
                            xlim = NULL, ylim = NULL,
                            nudgex = "none", nudgey = "none",
                            n = 100, nx = n, ny = n,
-                           h = NULL) {
+                           adjust = c(1, 1), h = NULL) {
 
   rangex <- xlim %||% scales$x$dimension()
   rangey <- ylim %||% scales$y$dimension()
@@ -142,8 +144,8 @@ StatHDR <- ggproto("StatHDR", Stat,
 
 #' @rdname geom_hdr
 #' @export
-geom_HDR <- function(mapping = NULL, data = NULL,
-                       stat = "HDR", position = "identity",
+geom_hdr <- function(mapping = NULL, data = NULL,
+                       stat = "hdr", position = "identity",
                        ...,
                        na.rm = FALSE,
                        show.legend = NA,
@@ -152,7 +154,7 @@ geom_HDR <- function(mapping = NULL, data = NULL,
     data = data,
     mapping = mapping,
     stat = stat,
-    geom = GeomHDR,
+    geom = GeomHdr,
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
@@ -169,4 +171,4 @@ geom_HDR <- function(mapping = NULL, data = NULL,
 #' @format NULL
 #' @usage NULL
 #' @export
-GeomHDR <- ggproto("GeomHDR", GeomPolygon)
+GeomHdr <- ggproto("GeomHdr", GeomPolygon)

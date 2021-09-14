@@ -3,16 +3,15 @@
 \docType{data}
 \name{geom_hdr}
 \alias{geom_hdr}
-\alias{stat_HDR}
-\alias{StatHDR}
-\alias{geom_HDR}
-\alias{GeomHDR}
+\alias{stat_hdr}
+\alias{StatHdr}
+\alias{GeomHdr}
 \title{Highest density regions of a 2D density estimate}
 \usage{
-stat_HDR(
+stat_hdr(
   mapping = NULL,
   data = NULL,
-  geom = "HDR",
+  geom = "hdr",
   position = "identity",
   ...,
   method = "kde",
@@ -24,16 +23,17 @@ stat_HDR(
   ylim = NULL,
   nudgex = "none",
   nudgey = "none",
+  adjust = c(1, 1),
   h = NULL,
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE
 )
 
-geom_HDR(
+geom_hdr(
   mapping = NULL,
   data = NULL,
-  stat = "HDR",
+  stat = "hdr",
   position = "identity",
   ...,
   na.rm = FALSE,
@@ -106,7 +106,7 @@ Put description here
 }
 \section{Aesthetics}{
 
-geom_HDR understands the following aesthetics (required aesthetics are in bold):
+geom_hdr understands the following aesthetics (required aesthetics are in bold):
 \itemize{
 \item \strong{x}
 \item \strong{y}
@@ -124,7 +124,7 @@ geom_HDR understands the following aesthetics (required aesthetics are in bold):
 
 
 \describe{
-\item{value}{The smallest highest density region a point falls into.}
+\item{value}{The highest density region estimate}
 }
 }
 
@@ -137,12 +137,12 @@ df <- data.frame(
 
 # Plotting the estimated density
 ggplot(df, aes(x, y)) +
-  geom_HDR()
+  geom_hdr()
 
 ggplot(df, aes(x, y)) +
-  geom_HDR(method = "mvnorm")
+  geom_hdr(method = "mvnorm")
 
 ggplot(df, aes(x, y)) +
-  geom_HDR(method = "histogram", n = 10)
+  geom_hdr(method = "histogram", n = 10)
 }
 \keyword{datasets}
