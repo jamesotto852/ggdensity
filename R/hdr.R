@@ -27,7 +27,8 @@
 #' @param probs Temp
 #' @param n,nx,ny Temp
 #' @param xlim,ylim Temp
-#' @param nudgex,nudgey Temp
+#' @param nudgex Temp
+#' @param nudgey Temp
 #' @param h Temp
 #'
 #' @name geom_hdr
@@ -117,6 +118,7 @@ StatHdr <- ggproto("StatHdr", Stat,
                            nudgex = "none", nudgey = "none",
                            n = 100, nx = n, ny = n,
                            adjust = c(1, 1), h = NULL) {
+
 
   rangex <- xlim %||% scales$x$dimension()
   rangey <- ylim %||% scales$y$dimension()

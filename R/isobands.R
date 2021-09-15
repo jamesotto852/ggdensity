@@ -103,7 +103,7 @@ histogram_isobands <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey
   df$n <- as.vector(table(df_cuts$xbin, df_cuts$ybin))
 
   df$xbin_midpt <- xbin_mdpts[as.integer(df$xbin)]
-  df$ybin_midpt <- xbin_mdpts[as.integer(df$ybin)]
+  df$ybin_midpt <- ybin_mdpts[as.integer(df$ybin)]
 
   df$xmin <- df$xbin_midpt - de_x/2
   df$xmax <- df$xbin_midpt + de_x/2
@@ -147,15 +147,17 @@ histogram_isobands <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey
 }
 
 
+### Helper functions for the helper functions:
 
 normalize <- function(v) v / sum(v)
 
-# Discrete approximations to volume integrals
+# Discrete approximation to volume integral
 prob_above_c <- function(df, c) {
   if (length(c) > 1) return(sapply(c, prob_above_c))
   sum(df$fhat_discretized[df$fhat >= c])
 }
 
+# Numerical approximation for finding HDR
 find_cutoff <- function(df, conf) {
   if (length(conf) > 1) return(vapply(conf, \(x) find_cutoff(df, x), numeric(1)))
   uniroot(\(c) prob_above_c(df, c) - conf, lower = 0, upper = 1e4)$root
