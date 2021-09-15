@@ -1,4 +1,4 @@
-kde_isobands <- function(probs, data, nx, ny, rangex, rangey, h, adjust) {
+kde_iso <- function(probs, data, nx, ny, rangex, rangey, h, adjust, type) {
   # The way n, h, and adjust are set up is consistent with stat_density_2d
   # Allows for easy tweaking of the MASS default
   if (is.null(h)) {
@@ -27,10 +27,14 @@ kde_isobands <- function(probs, data, nx, ny, rangex, rangey, h, adjust) {
     z = df$fhat
   )
 
-  ggplot2:::xyz_to_isobands(df, breaks)
+  if (type == "bands") {
+    ggplot2:::xyz_to_isobands(df, breaks)
+  } else {
+    ggplot2:::xyz_to_isolines(df, breaks)
+  }
 }
 
-mvnorm_isobands <- function(probs, data, nx, ny, rangex, rangey) {
+mvnorm_iso <- function(probs, data, nx, ny, rangex, rangey, type) {
   data_matrix <- matrix(c(data$x, data$y), ncol = 2)
   S <- cov(data_matrix)
   M <- apply(data_matrix, 2, mean)
@@ -54,11 +58,15 @@ mvnorm_isobands <- function(probs, data, nx, ny, rangex, rangey) {
     breaks <- c(probs, 0)
   }
 
-  ggplot2:::xyz_to_isobands(df, breaks)
+  if (type == "bands") {
+    ggplot2:::xyz_to_isobands(df, breaks)
+  } else {
+    ggplot2:::xyz_to_isolines(df, breaks)
+  }
 }
 
 
-histogram_isobands <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey) {
+histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, type) {
   xvals <- df$x
   yvals <- df$y
 
@@ -143,7 +151,11 @@ histogram_isobands <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey
     z = df$fhat
   )
 
-  ggplot2:::xyz_to_isobands(df, breaks)
+  if (type == "bands") {
+    ggplot2:::xyz_to_isobands(df, breaks)
+  } else {
+    ggplot2:::xyz_to_isolines(df, breaks)
+  }
 }
 
 

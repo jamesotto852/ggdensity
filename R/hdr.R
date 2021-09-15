@@ -12,10 +12,23 @@
 #' - fill
 #' - group ?
 #' - linetype
+#' - size ?
+#' - subgroup ?
+#'
+#' geom_hdr_lines understands the following aesthetics (required aesthetics are in bold):
+#'
+#' - **x**
+#' - **y**
+#' - alpha
+#' - color
+#' - group ?
+#' - linetype
 #' - size
 #' - subgroup ?
 #'
 #' @section Computed variables:
+#'
+#' Describe difference between geom_hdr and geom_hdr_lines, see `?geom_density2d`
 #'
 #' \describe{
 #'   \item{value}{The highest density region estimate}
@@ -126,9 +139,9 @@ StatHdr <- ggproto("StatHdr", Stat,
   probs <- sort(probs, decreasing = TRUE)
 
 
-  if (method == "kde")  isobands <- kde_isobands(probs, data, nx, ny, rangex, rangey, h, adjust)
-  if (method == "histogram") isobands <- histogram_isobands(probs, data, nx, ny, rangex, rangey, nudgex, nudgey)
-  if (method == "mvnorm") isobands <- mvnorm_isobands(probs, data, nx, ny, rangex, rangey)
+  if (method == "kde")  isobands <- kde_iso(probs, data, nx, ny, rangex, rangey, h, adjust, type = "bands")
+  if (method == "histogram") isobands <- histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, type = "bands")
+  if (method == "mvnorm") isobands <- mvnorm_iso(probs, data, nx, ny, rangex, rangey, type = "bands")
 
   if (!method %in% c("kde", "mvnorm", "histogram")) stop("Invalid method specified")
 
