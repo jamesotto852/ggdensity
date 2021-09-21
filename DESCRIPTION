@@ -1,4 +1,4 @@
-Package: gghdr
+Package: ggdensity
 Title: Interpretable 2-d Density Estimation with ggplot2
 Version: 0.0.0.9000
 Authors@R: 
@@ -12,7 +12,7 @@ Authors@R:
            email = "david@kahle.io",
            comment = c(ORCID = "0000-0002-9999-1558")))
 Description: The 'ggplot2' package provides simple functions for visualizing contours
-  of 2-d kernal density estimates. 'gghdr' implements several additional density estimators 
+  of 2-d kernal density estimates. 'ggdensity' implements several additional density estimators 
   as well as more interpretable visualizations based on highest density regions instead of
   the traditional height of the estimated density surface. 
 License: GPL (>= 2)
