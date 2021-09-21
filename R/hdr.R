@@ -132,9 +132,9 @@ StatHdr <- ggproto("StatHdr", Stat,
                            n = 100, nx = n, ny = n,
                            adjust = c(1, 1), h = NULL) {
 
-  # Should expand be an argument in geom fn?
-  rangex <- xlim %||% scales$x$dimension(expand = expansion(.1, 0))
-  rangey <- ylim %||% scales$y$dimension(expand = expansion(.1, 0))
+
+  rangex <- xlim %||% scales$x$dimension()
+  rangey <- ylim %||% scales$y$dimension()
 
   probs <- sort(probs, decreasing = TRUE)
 
