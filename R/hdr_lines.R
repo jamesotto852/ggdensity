@@ -60,12 +60,31 @@ StatHdrLines <- ggproto("StatHdrLines", Stat,
                            method = "kde", probs = c(.99, .95, .8, .5),
                            xlim = NULL, ylim = NULL,
                            nudgex = "none", nudgey = "none",
-                           n = 100, nx = n, ny = n,
+                           n = NULL, nx = n, ny = n,
                            adjust = c(1, 1), h = NULL) {
 
 
   rangex <- xlim %||% scales$x$dimension()
   rangey <- ylim %||% scales$y$dimension()
+
+  # Should this be factored out?
+  if (is.null(n)) {
+    # define histogram mesh according to Scott p. 87
+    if (method == "histogram") {
+      rho <- cor(data$x, data$y)
+      hx <- 3.504 * sd(data$x) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
+      hy <- 3.504 * sd(data$y) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
+      nx <- round((rangex[2] - rangex[1]) / hx)
+      ny <- round((rangey[2] - rangey[1]) / hy)
+
+      # Should this be a message? A warning? Similar to geom_histogram?
+      message(paste0("Argument `n` not specified. Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
+                     "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
+    } else {
+      nx <- 100
+      ny <- 100
+    }
+  }
 
   probs <- sort(probs, decreasing = TRUE)
 
@@ -121,5 +140,7 @@ GeomHdrLines <- ggproto("GeomHdrLines", GeomPath,
   default_aes = aes(
     size = 1,
     colour = "#000000",
-    linetype = 1
+    linetype = 1,
+    # alpha = after_stat(level)
+    alpha = NA
   ))
