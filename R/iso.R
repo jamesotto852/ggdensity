@@ -19,6 +19,8 @@ kde_iso <- function(probs, data, nx, ny, rangex, rangey, h, adjust, type) {
   df$fhat <- as.vector(kdeout$z)
   df$fhat_discretized <- normalize(df$fhat)
 
+  df$fhat <- df$fhat / max(df$fhat)
+
   breaks <- c(find_cutoff(df, probs), Inf)
 
   df <- data.frame(
@@ -143,6 +145,8 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, typ
     fhat_discretized = df$fhat_discretized
   )
 
+  df$fhat <- df$fhat / max(df$fhat)
+
   breaks <- c(find_cutoff(df, probs), Inf)
 
   df <- data.frame(
@@ -172,5 +176,5 @@ prob_above_c <- function(df, c) {
 # Numerical approximation for finding HDR
 find_cutoff <- function(df, conf) {
   if (length(conf) > 1) return(vapply(conf, \(x) find_cutoff(df, x), numeric(1)))
-  uniroot(\(c) prob_above_c(df, c) - conf, lower = 0, upper = 1e4)$root
+  uniroot(\(c) prob_above_c(df, c) - conf, lower = 0, upper = 1)$root
 }
