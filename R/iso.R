@@ -1,3 +1,4 @@
+
 kde_iso <- function(probs, data, nx, ny, rangex, rangey, h, adjust, type) {
   # The way n, h, and adjust are set up is consistent with stat_density_2d
   # Allows for easy tweaking of the MASS default
@@ -18,8 +19,7 @@ kde_iso <- function(probs, data, nx, ny, rangex, rangey, h, adjust, type) {
 
   df$fhat <- as.vector(kdeout$z)
   df$fhat_discretized <- normalize(df$fhat)
-
-  df$fhat <- df$fhat / max(df$fhat)
+  df$fhat <- rescale(df$fhat)
 
   breaks <- c(find_cutoff(df, probs), Inf)
 
@@ -30,9 +30,9 @@ kde_iso <- function(probs, data, nx, ny, rangex, rangey, h, adjust, type) {
   )
 
   if (type == "bands") {
-    ggplot2:::xyz_to_isobands(df, breaks)
+    xyz_to_isobands(df, breaks)
   } else {
-    ggplot2:::xyz_to_isolines(df, breaks)
+    xyz_to_isolines(df, breaks)
   }
 }
 
@@ -61,10 +61,11 @@ mvnorm_iso <- function(probs, data, nx, ny, rangex, rangey, type) {
   }
 
   if (type == "bands") {
-    ggplot2:::xyz_to_isobands(df, breaks)
+    xyz_to_isobands(df, breaks)
   } else {
-    ggplot2:::xyz_to_isolines(df, breaks)
+    xyz_to_isolines(df, breaks)
   }
+
 }
 
 
@@ -123,7 +124,7 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, typ
   df$ymax <- df$ybin_midpt + de_y/2
   df$de_y <- de_y
 
-  df$fhat <- df$n / (sum(df$n)*box_area)
+  df$fhat <- df$n / (sum(df$n) * box_area)
   df$fhat_discretized <- normalize(df$fhat)
 
 
@@ -135,48 +136,41 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, typ
   if(nudgey == "none") df$y <- df$ybin_midpt
   if(nudgey == "up") df$y <- df$ymax
 
-  # Really not sure about this code
-  # It works, but it is very verbose --
-  #   having trouble writing high quality non-dplyr code
-  df <- data.frame(
-    x = df$x,
-    y = df$y,
-    fhat = df$fhat,
-    fhat_discretized = df$fhat_discretized
-  )
-
-  df$fhat <- df$fhat / max(df$fhat)
+  df <- df[c("x","y","fhat","fhat_discretized")]
+  df$fhat <- rescale(df$fhat)
 
   breaks <- c(find_cutoff(df, probs), Inf)
 
-  df <- data.frame(
-    x = df$x,
-    y = df$y,
-    z = df$fhat
-  )
+  df <- df[c("x","y","fhat")]
+  names(df) <- c("x","y","z")
 
   if (type == "bands") {
-    xyz_to_isobands <- get("xyz_to_isobands", asNamespace("ggplot2"))
     xyz_to_isobands(df, breaks)
   } else {
-    xyz_to_isolines <- get("xyz_to_isolines", asNamespace("ggplot2"))
     xyz_to_isolines(df, breaks)
   }
 }
 
 
-### Helper functions for the helper functions:
+# helper functions
 
 normalize <- function(v) v / sum(v)
+standardize <- function(v, min = min(v), max = max(v)) {
+  (v - min) / (max - min)
+}
+rescale <- function(v) standardize(v, min = 0)
 
-# Discrete approximation to volume integral
+xyz_to_isobands <- get("xyz_to_isobands", asNamespace("ggplot2"))
+xyz_to_isolines <- get("xyz_to_isolines", asNamespace("ggplot2"))
+
+# discrete approximation to volume integral
 prob_above_c <- function(df, c) {
   if (length(c) > 1) return(sapply(c, prob_above_c))
   sum(df$fhat_discretized[df$fhat >= c])
 }
 
-# Numerical approximation for finding HDR
+# dumerical approximation for finding HDR
 find_cutoff <- function(df, conf) {
-  if (length(conf) > 1) return(vapply(conf, \(x) find_cutoff(df, x), numeric(1)))
+  if (length(conf) > 1) return(vapply(conf, function(x) find_cutoff(df, x), numeric(1)))
   uniroot(function(c) prob_above_c(df, c) - conf, lower = 0, upper = 1)$root
 }
