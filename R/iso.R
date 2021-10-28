@@ -156,9 +156,11 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, typ
   )
 
   if (type == "bands") {
-    ggplot2:::xyz_to_isobands(df, breaks)
+    xyz_to_isobands <- get("xyz_to_isobands", asNamespace("ggplot2"))
+    xyz_to_isobands(df, breaks)
   } else {
-    ggplot2:::xyz_to_isolines(df, breaks)
+    xyz_to_isolines <- get("xyz_to_isolines", asNamespace("ggplot2"))
+    xyz_to_isolines(df, breaks)
   }
 }
 
@@ -176,5 +178,5 @@ prob_above_c <- function(df, c) {
 # Numerical approximation for finding HDR
 find_cutoff <- function(df, conf) {
   if (length(conf) > 1) return(vapply(conf, \(x) find_cutoff(df, x), numeric(1)))
-  uniroot(\(c) prob_above_c(df, c) - conf, lower = 0, upper = 1)$root
+  uniroot(function(c) prob_above_c(df, c) - conf, lower = 0, upper = 1)$root
 }
