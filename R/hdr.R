@@ -165,7 +165,7 @@ StatHdr <- ggproto("StatHdr", Stat,
 
 
 
-  names(isobands) <- scales::percent(probs)
+  names(isobands) <- scales::percent_format(accuracy = 1)(probs)
   path_df <- ggplot2:::iso_to_polygon(isobands, data$group[1])
   path_df$level <- ordered(path_df$level, levels = names(isobands))
 
