@@ -158,7 +158,7 @@ normalize <- function(v) v / sum(v)
 standardize <- function(v, min = min(v), max = max(v)) {
   (v - min) / (max - min)
 }
-rescale <- function(v) standardize(v, min = 0)
+rescale <- function(v) v / max(v)
 
 xyz_to_isobands <- get("xyz_to_isobands", asNamespace("ggplot2"))
 xyz_to_isolines <- get("xyz_to_isolines", asNamespace("ggplot2"))
@@ -169,7 +169,7 @@ prob_above_c <- function(df, c) {
   sum(df$fhat_discretized[df$fhat >= c])
 }
 
-# dumerical approximation for finding HDR
+# numerical approximation for finding HDR
 find_cutoff <- function(df, conf) {
   if (length(conf) > 1) return(vapply(conf, function(x) find_cutoff(df, x), numeric(1)))
   uniroot(function(c) prob_above_c(df, c) - conf, lower = 0, upper = 1)$root
