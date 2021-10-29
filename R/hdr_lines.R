@@ -49,7 +49,7 @@ stat_hdr_lines <- function(mapping = NULL, data = NULL,
 #' @rdname geom_hdr
 #' @format NULL
 #' @usage NULL
-#' @importFrom scales percent
+#' @importFrom scales percent_format
 #' @export
 StatHdrLines <- ggproto("StatHdrLines", Stat,
 
@@ -97,7 +97,7 @@ StatHdrLines <- ggproto("StatHdrLines", Stat,
 
 
 
-  names(isolines) <- scales::percent(probs)
+  names(isolines) <- scales::percent_format(accuracy = 1)(probs)
   path_df <- ggplot2:::iso_to_path(isolines, data$group[1])
   path_df$level <- ordered(path_df$level, levels = names(isolines))
 
