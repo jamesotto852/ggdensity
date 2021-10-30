@@ -2,6 +2,12 @@
 
 
 
+`%||%` <- function(x, y) {
+  if (is.null(x)) y else x
+}
+
+
+
 # unexported functions from ggplot2
 
 xyz_to_isobands <- get("xyz_to_isobands", asNamespace("ggplot2"))
