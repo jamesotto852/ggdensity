@@ -64,11 +64,14 @@
 #' df_b <- data.frame(x = rnorm(1000,  2), y = rnorm(1000), c = "b")
 #' df <- rbind(df_a, df_b)
 #' ggplot(df, aes(x, y, fill = c)) + geom_hdr()
+#' ggplot(df, aes(x, y, fill = c)) + geom_hdr(method = "mvnorm")
 #'
 #'
 #' # highest density region boundary lines
 #' ggplot(df, aes(x, y)) + geom_hdr_lines()
+#' ggplot(df, aes(x, y)) + geom_hdr_lines(method = "mvnorm")
 #' ggplot(df, aes(x, y, color = c)) + geom_hdr_lines() + theme_minimal()
+#' ggplot(df, aes(x, y, color = c)) + geom_hdr_lines(method = "mvnorm") + theme_minimal()
 #'
 #'
 #' # data with boundaries

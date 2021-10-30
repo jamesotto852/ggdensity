@@ -5,7 +5,7 @@
 #'
 #' @import ggplot2
 #' @importFrom MASS bandwidth.nrd kde2d
-#' @importFrom stats uniroot cov pchisq
+#' @importFrom stats uniroot cov pchisq setNames
 #' @docType package
 #' @name ggdensity
 #' @aliases ggdensity package-ggdensity

@@ -15,7 +15,7 @@ kde_iso <- function(probs, data, nx, ny, rangex, rangey, h, adjust, type) {
                )
              )
 
-  df <- expand.grid(x = kdeout$x, y = kdeout$y)
+  df <- with(kdeout, expand.grid("x" = x, "y" = y))
 
   df$fhat <- as.vector(kdeout$z)
   df$fhat_discretized <- normalize(df$fhat)
@@ -23,11 +23,7 @@ kde_iso <- function(probs, data, nx, ny, rangex, rangey, h, adjust, type) {
 
   breaks <- c(find_cutoff(df, probs), Inf)
 
-  df <- data.frame(
-    x = df$x,
-    y = df$y,
-    z = df$fhat
-  )
+  df <- with(df, data.frame("x" = x, "y" = y, "z" = fhat))
 
   if (type == "bands") {
     xyz_to_isobands(df, breaks)
@@ -36,23 +32,27 @@ kde_iso <- function(probs, data, nx, ny, rangex, rangey, h, adjust, type) {
   }
 }
 
+
+
 mvnorm_iso <- function(probs, data, nx, ny, rangex, rangey, type) {
-  data_matrix <- matrix(c(data$x, data$y), ncol = 2)
+
+  data_matrix <- with(data, cbind(x, y))
+  col_means <- colMeans(data_matrix)
   S <- cov(data_matrix)
-  M <- apply(data_matrix, 2, mean)
   SInv <- solve(S)
 
   find_quantile <- function(x, mu, SigmaInv) {
     Mdist <- as.numeric(t(x - mu) %*% SigmaInv %*% (x - mu))
 
-    pchisq(Mdist, 2)
+    pchisq(Mdist, df = 2)
   }
 
-  df <- expand.grid(x = seq(rangex[1], rangex[2], length.out = nx),
-                    y = seq(rangey[1], rangey[2], length.out = ny))
+  df <- expand.grid(
+    "x" = seq(rangex[1], rangex[2], length.out = nx),
+    "y" = seq(rangey[1], rangey[2], length.out = ny)
+  )
 
-
-  df$z <- apply(df, 1, \(.) find_quantile(., M, SInv))
+  df$z <- apply(df, 1, find_quantile, mu = col_means, SigmaInv = SInv)
 
   if (min(probs) == 0) {
     breaks <- probs
@@ -104,14 +104,10 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, typ
   ytop <- sy[-1]
 
 
-  df_cuts <- data.frame(
-    xbin = cut(xvals, sx),
-    ybin = cut(yvals, sy)
-  )
+  df_cuts <- data.frame("xbin" = cut(xvals, sx), "ybin" = cut(yvals, sy))
 
-
-  df <- expand.grid(xbin = levels(df_cuts$xbin), ybin = levels(df_cuts$ybin))
-  df$n <- as.vector(table(df_cuts$xbin, df_cuts$ybin))
+  df <- with(df_cuts, expand.grid("xbin" = levels(xbin), "ybin" = levels(ybin)))
+  df$n <- with(df_cuts, as.vector(table(xbin, ybin)))
 
   df$xbin_midpt <- xbin_mdpts[as.integer(df$xbin)]
   df$ybin_midpt <- ybin_mdpts[as.integer(df$ybin)]
@@ -124,7 +120,7 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, typ
   df$ymax <- df$ybin_midpt + de_y/2
   df$de_y <- de_y
 
-  df$fhat <- df$n / (sum(df$n) * box_area)
+  df$fhat <- with(df, n / (sum(n) * box_area))
   df$fhat_discretized <- normalize(df$fhat)
 
 
@@ -141,8 +137,7 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, typ
 
   breaks <- c(find_cutoff(df, probs), Inf)
 
-  df <- df[c("x","y","fhat")]
-  names(df) <- c("x","y","z")
+  df <- setNames(df[c("x","y","fhat")], c("x","y","z"))
 
   if (type == "bands") {
     xyz_to_isobands(df, breaks)
