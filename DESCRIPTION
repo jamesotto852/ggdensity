@@ -24,4 +24,5 @@ Depends:
     ggplot2
 Imports:
     MASS,
+    stats,
     scales

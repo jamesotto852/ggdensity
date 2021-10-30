@@ -98,7 +98,7 @@ StatHdrLines <- ggproto("StatHdrLines", Stat,
 
 
   names(isolines) <- scales::percent_format(accuracy = 1)(probs)
-  path_df <- ggplot2:::iso_to_path(isolines, data$group[1])
+  path_df <- iso_to_path(isolines, data$group[1])
   path_df$level <- ordered(path_df$level, levels = names(isolines))
 
   path_df

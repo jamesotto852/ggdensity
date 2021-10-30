@@ -36,6 +36,7 @@
 #'
 #' @inheritParams ggplot2::geom_path
 #' @inheritParams ggplot2::stat_identity
+#' @inheritParams ggplot2::stat_density2d
 #' @param method Density estimator to use, accepts character vector: `"kde"`, `"histogram"`, or `"mvnorm"`.
 #' @param probs Temp
 #' @param n,nx,ny Temp
@@ -50,22 +51,39 @@
 #' @import ggplot2
 #'
 #' @examples
-#' # Simulating data
-#' df <- data.frame(
-#'   x = rnorm(1000),
-#'   y = rnorm(1000)
-#' )
 #'
-#' # Plotting the estimated density
-#' ggplot(df, aes(x, y)) +
-#'   geom_hdr()
+#' # basic simulated data with bivariate normal data
+#' df <- data.frame(x = rnorm(1000), y = rnorm(1000))
+#' ggplot(df, aes(x, y)) + geom_hdr()
+#' ggplot(df, aes(x, y)) + geom_hdr(method = "mvnorm")
+#' ggplot(df, aes(x, y)) + geom_hdr(method = "histogram", n = 10)
 #'
-#' ggplot(df, aes(x, y)) +
-#'   geom_hdr(method = "mvnorm")
 #'
-#' ggplot(df, aes(x, y)) +
-#'   geom_hdr(method = "histogram", n = 10)
+#' # two groups
+#' df_a <- data.frame(x = rnorm(1000, -2), y = rnorm(1000), c = "a")
+#' df_b <- data.frame(x = rnorm(1000,  2), y = rnorm(1000), c = "b")
+#' df <- rbind(df_a, df_b)
+#' ggplot(df, aes(x, y, fill = c)) + geom_hdr()
+#'
+#'
+#' # highest density region boundary lines
+#' ggplot(df, aes(x, y)) + geom_hdr_lines()
+#' ggplot(df, aes(x, y, color = c)) + geom_hdr_lines() + theme_minimal()
+#'
+#'
+#' # data with boundaries
+#' ggplot(df, aes(x^2)) + geom_histogram()
+#' ggplot(df, aes(x^2)) + geom_histogram(boundary = 0)
+#' ggplot(df, aes(x^2, y^2)) + geom_hdr(method = "histogram")
+#' ggplot(df, aes(x^2, y^2)) +
+#'   geom_hdr(method = "histogram", boundary_x = 0, boundary_y = 0)
+#'
 NULL
+
+
+
+
+
 
 #' @rdname geom_hdr
 #' @export
@@ -166,7 +184,7 @@ StatHdr <- ggproto("StatHdr", Stat,
 
 
   names(isobands) <- scales::percent_format(accuracy = 1)(probs)
-  path_df <- ggplot2:::iso_to_polygon(isobands, data$group[1])
+  path_df <- iso_to_polygon(isobands, data$group[1])
   path_df$level <- ordered(path_df$level, levels = names(isobands))
 
   path_df

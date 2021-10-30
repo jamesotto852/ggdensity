@@ -121,6 +121,11 @@ to the paired geom/stat.}
 
 \item{nudgey}{Temp}
 
+\item{adjust}{A multiplicative bandwidth adjustment to be used if 'h' is
+'NULL'. This makes it possible to adjust the bandwidth while still
+using the a bandwidth estimator. For example, \code{adjust = 1/2} means
+use half of the default bandwidth.}
+
 \item{h}{Temp}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
@@ -182,20 +187,32 @@ Describe difference between geom_hdr and geom_hdr_lines, see \code{?geom_density
 }
 
 \examples{
-# Simulating data
-df <- data.frame(
-  x = rnorm(1000),
-  y = rnorm(1000)
-)
 
-# Plotting the estimated density
-ggplot(df, aes(x, y)) +
-  geom_hdr()
+# basic simulated data with bivariate normal data
+df <- data.frame(x = rnorm(1000), y = rnorm(1000))
+ggplot(df, aes(x, y)) + geom_hdr()
+ggplot(df, aes(x, y)) + geom_hdr(method = "mvnorm")
+ggplot(df, aes(x, y)) + geom_hdr(method = "histogram", n = 10)
 
-ggplot(df, aes(x, y)) +
-  geom_hdr(method = "mvnorm")
 
-ggplot(df, aes(x, y)) +
-  geom_hdr(method = "histogram", n = 10)
+# two groups
+df_a <- data.frame(x = rnorm(1000, -2), y = rnorm(1000), c = "a")
+df_b <- data.frame(x = rnorm(1000,  2), y = rnorm(1000), c = "b")
+df <- rbind(df_a, df_b)
+ggplot(df, aes(x, y, fill = c)) + geom_hdr()
+
+
+# highest density region boundary lines
+ggplot(df, aes(x, y)) + geom_hdr_lines()
+ggplot(df, aes(x, y, color = c)) + geom_hdr_lines() + theme_minimal()
+
+
+# data with boundaries
+ggplot(df, aes(x^2)) + geom_histogram()
+ggplot(df, aes(x^2)) + geom_histogram(boundary = 0)
+ggplot(df, aes(x^2, y^2)) + geom_hdr(method = "histogram")
+ggplot(df, aes(x^2, y^2)) +
+  geom_hdr(method = "histogram", boundary_x = 0, boundary_y = 0)
+
 }
 \keyword{datasets}
