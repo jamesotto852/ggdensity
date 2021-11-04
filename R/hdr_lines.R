@@ -12,6 +12,7 @@ stat_hdr_lines <- function(mapping = NULL, data = NULL,
                                       ylim = NULL,
                                       nudgex = "none",
                                       nudgey = "none",
+                                      smooth = FALSE,
                                       adjust = c(1, 1),
                                       h = NULL,
                                       na.rm = FALSE,
@@ -35,6 +36,7 @@ stat_hdr_lines <- function(mapping = NULL, data = NULL,
       ylim = ylim,
       nudgex = nudgex,
       nudgey = nudgey,
+      smooth = smooth,
       adjust = adjust,
       h = h,
       na.rm = na.rm,
@@ -59,7 +61,7 @@ StatHdrLines <- ggproto("StatHdrLines", Stat,
   compute_group = function(data, scales, na.rm = FALSE,
                            method = "kde", probs = c(.99, .95, .8, .5),
                            xlim = NULL, ylim = NULL,
-                           nudgex = "none", nudgey = "none",
+                           nudgex = "none", nudgey = "none", smooth = FALSE,
                            n = NULL, nx = n, ny = n,
                            adjust = c(1, 1), h = NULL) {
 
@@ -90,7 +92,7 @@ StatHdrLines <- ggproto("StatHdrLines", Stat,
 
 
   if (method == "kde")  isolines <- kde_iso(probs, data, nx, ny, rangex, rangey, h, adjust, type = "lines")
-  if (method == "histogram") isolines <- histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, type = "lines")
+  if (method == "histogram") isolines <- histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type = "lines")
   if (method == "mvnorm") isolines <- mvnorm_iso(probs, data, nx, ny, rangex, rangey, type = "lines")
 
   if (!method %in% c("kde", "mvnorm", "histogram")) stop("Invalid method specified")

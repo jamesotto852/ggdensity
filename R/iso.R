@@ -69,7 +69,7 @@ mvnorm_iso <- function(probs, data, nx, ny, rangex, rangey, type) {
 }
 
 
-histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, type) {
+histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type) {
   xvals <- df$x
   yvals <- df$y
 
@@ -124,20 +124,59 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, typ
   df$fhat_discretized <- normalize(df$fhat)
 
 
-  if(nudgex == "left") df$x <- df$xmin
-  if(nudgex == "none") df$x <- df$xbin_midpt
-  if(nudgex == "right") df$x <- df$xmax
+  if (smooth) {
+    if(nudgex == "left") df$x <- df$xmin
+    if(nudgex == "none") df$x <- df$xbin_midpt
+    if(nudgex == "right") df$x <- df$xmax
 
-  if(nudgey == "down") df$y <- df$ymin
-  if(nudgey == "none") df$y <- df$ybin_midpt
-  if(nudgey == "up") df$y <- df$ymax
+    if(nudgey == "down") df$y <- df$ymin
+    if(nudgey == "none") df$y <- df$ybin_midpt
+    if(nudgey == "up") df$y <- df$ymax
+  } else {
+    # No nudging if we're not smoothing
+    df$x <- df$xbin_midpt
+    df$y <- df$ybin_midpt
+  }
 
   df <- df[c("x","y","fhat","fhat_discretized")]
   df$fhat <- rescale(df$fhat)
 
   breaks <- c(find_cutoff(df, probs), Inf)
 
+  if (!smooth) {
+    # Evaluate histogram on a grid
+    # k*k points per histogram footprint
+    k <- 50
+
+    nnx <- nx * k
+    nny <- ny * k
+
+    ssx <- seq(rangex[1], rangex[2], length.out = nnx)
+    ssy <- seq(rangey[1], rangey[2], length.out = nny)
+
+    ddf <- expand.grid(x = ssx, y = ssy)
+
+    # Need fhat repeated in very particular way for grid:
+    #   e.g.
+    #      k = 2
+    #      df$fhat = 1, 2,
+    #                3, 4
+    #     ddf$fhat = 1, 1, 2, 2,
+    #                1, 1, 2, 2,
+    #                3, 3, 4, 4,
+    #                3, 3, 4, 4
+
+    fhat <- split(df$fhat, factor(rep(1:ny, each = nx))) # split into rows
+    fhat <- lapply(fhat, \(x) rep(x, each = k)) # repeat within rows (horizontal)
+    fhat <- lapply(fhat, \(x) rep(x, times = k)) # repeat rows (vertical)
+    fhat <- unlist(fhat) # concatenate
+    ddf$fhat <- fhat
+
+    df <- ddf
+  }
+
   df <- setNames(df[c("x","y","fhat")], c("x","y","z"))
+
 
   if (type == "bands") {
     xyz_to_isobands(df, breaks)

@@ -102,6 +102,7 @@ stat_hdr <- function(mapping = NULL, data = NULL,
                                       ylim = NULL,
                                       nudgex = "none",
                                       nudgey = "none",
+                                      smooth = FALSE,
                                       adjust = c(1, 1),
                                       h = NULL,
                                       na.rm = FALSE,
@@ -125,6 +126,7 @@ stat_hdr <- function(mapping = NULL, data = NULL,
       ylim = ylim,
       nudgex = nudgex,
       nudgey = nudgey,
+      smooth = smooth,
       adjust = adjust,
       h = h,
       na.rm = na.rm,
@@ -149,7 +151,7 @@ StatHdr <- ggproto("StatHdr", Stat,
   compute_group = function(data, scales, na.rm = FALSE,
                            method = "kde", probs = c(.99, .95, .8, .5),
                            xlim = NULL, ylim = NULL,
-                           nudgex = "none", nudgey = "none",
+                           nudgex = "none", nudgey = "none", smooth = FALSE,
                            n = NULL, nx = n, ny = n,
                            adjust = c(1, 1), h = NULL) {
 
@@ -179,7 +181,7 @@ StatHdr <- ggproto("StatHdr", Stat,
 
 
   if (method == "kde")  isobands <- kde_iso(probs, data, nx, ny, rangex, rangey, h, adjust, type = "bands")
-  if (method == "histogram") isobands <- histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, type = "bands")
+  if (method == "histogram") isobands <- histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type = "bands")
   if (method == "mvnorm") isobands <- mvnorm_iso(probs, data, nx, ny, rangex, rangey, type = "bands")
 
   if (!method %in% c("kde", "mvnorm", "histogram")) stop("Invalid method specified")
