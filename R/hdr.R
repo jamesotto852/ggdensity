@@ -172,8 +172,20 @@ StatHdr <- ggproto("StatHdr", Stat,
       message(paste0("Argument `n` not specified. Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
                      "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
     } else {
-      nx <- 100
-      ny <- 100
+      if (method == "freqpoly") {
+        # To-Do: fill in with rules for frequency polygons
+        rho <- cor(data$x, data$y)
+        hx <- 3.504 * sd(data$x) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
+        hy <- 3.504 * sd(data$y) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
+        nx <- round((rangex[2] - rangex[1]) / hx)
+        ny <- round((rangey[2] - rangey[1]) / hy)
+
+        message(paste0("Argument `n` not specified. Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
+                       "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
+      } else{
+        nx <- 100
+        ny <- 100
+      }
     }
   }
 
@@ -182,9 +194,10 @@ StatHdr <- ggproto("StatHdr", Stat,
 
   if (method == "kde")  isobands <- kde_iso(probs, data, nx, ny, rangex, rangey, h, adjust, type = "bands")
   if (method == "histogram") isobands <- histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type = "bands")
+  if (method == "freqpoly") isobands <- freqpoly_iso(probs, data, nx, ny, rangex, rangey, type = "bands")
   if (method == "mvnorm") isobands <- mvnorm_iso(probs, data, nx, ny, rangex, rangey, type = "bands")
 
-  if (!method %in% c("kde", "mvnorm", "histogram")) stop("Invalid method specified")
+  if (!method %in% c("kde", "mvnorm", "histogram", "freqpoly")) stop("Invalid method specified")
 
 
 

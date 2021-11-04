@@ -186,3 +186,143 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
 }
 
 
+freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
+  xvals <- df$x
+  yvals <- df$y
+
+  xbtwn <- (rangex[1] <= xvals & xvals <= rangex[2])
+  if (!all(xbtwn)) {
+    # warning("xlim does not contain range of x values.", call. = FALSE)
+    xvals <- xvals[xbtwn]
+    yvals <- yvals[xbtwn]
+  }
+
+  ybtwn <- (rangey[1] <= yvals & yvals <= rangey[2])
+  if (!all(ybtwn)) {
+    # warning("ylim does not contain range of y values.", call. = FALSE)
+    xvals <- xvals[ybtwn]
+    yvals <- yvals[ybtwn]
+  }
+
+
+  de_x <- (rangex[2] - rangex[1]) / nx
+  de_y <- (rangey[2] - rangey[1]) / ny
+  rangex[1] <- rangex[1] - de_x
+  rangex[2] <- rangex[2] + de_x
+  rangey[1] <- rangey[1] - de_y
+  rangey[2] <- rangey[2] + de_y
+  nx <- nx + 2
+  ny <- ny + 2
+  sx <- seq(rangex[1], rangex[2], length.out = nx + 1)
+  sy <- seq(rangey[1], rangey[2], length.out = ny + 1)
+
+
+  box_area <- de_x * de_y
+
+  xbin_mdpts <- sx[-(nx+1)] + de_x/2
+  ybin_mdpts <- sy[-(ny+1)] + de_y/2
+
+  xleft <- sx[-(nx+1)]
+  xright <- sx[-1]
+
+  ybottom <- sy[-(ny+1)]
+  ytop <- sy[-1]
+
+
+  df_cuts <- data.frame("xbin" = cut(xvals, sx), "ybin" = cut(yvals, sy))
+
+  df <- with(df_cuts, expand.grid("xbin" = levels(xbin), "ybin" = levels(ybin)))
+  df$n <- with(df_cuts, as.vector(table(xbin, ybin)))
+
+  df$xbin_midpt <- xbin_mdpts[as.integer(df$xbin)]
+  df$ybin_midpt <- ybin_mdpts[as.integer(df$ybin)]
+
+  df$xmin <- df$xbin_midpt - de_x/2
+  df$xmax <- df$xbin_midpt + de_x/2
+  df$de_x <- de_x
+
+  df$ymin <- df$ybin_midpt - de_y/2
+  df$ymax <- df$ybin_midpt + de_y/2
+  df$de_y <- de_y
+
+  df$fhat <- with(df, n / (sum(n) * box_area))
+  df$fhat_discretized <- normalize(df$fhat)
+
+  grid <- expand.grid(
+    x = sx[2:nx],
+    y = sy[2:ny]
+  )
+
+  x_midpts <- unique(df$xbin_midpt)
+  y_midpts <- unique(df$ybin_midpt)
+
+  find_A <- function(coords) {
+    x <- coords[[1]]
+    y <- coords[[2]]
+
+    row <- data.frame(
+      x1 = max(x_midpts[x_midpts - x < 0]),
+      x2 = min(x_midpts[x_midpts - x >= 0]),
+      y1 = max(y_midpts[y_midpts - y < 0]),
+      y2 = min(y_midpts[y_midpts - y >= 0])
+    )
+
+    row$fQ11 <- df[df$xbin_midpt == row$x1 & df$ybin_midpt == row$y1, "fhat"]
+    row$fQ21 <- df[df$xbin_midpt == row$x2 & df$ybin_midpt == row$y1, "fhat"]
+    row$fQ12 <- df[df$xbin_midpt == row$x1 & df$ybin_midpt == row$y2, "fhat"]
+    row$fQ22 <- df[df$xbin_midpt == row$x2 & df$ybin_midpt == row$y2, "fhat"]
+
+    xy_mat <- with(row, matrix(c(
+      x2 * y2, -x2 * y1, -x1 * y2, x1 * y1,
+      -y2, y1, y2, -y1,
+      -x2, x2, x1, -x1,
+      1, -1, -1, 1
+    ), nrow = 4, byrow = TRUE))
+
+    A <- with(row,
+      1 / ((x2 - x1) * (y2 - y1)) * xy_mat %*% c(fQ11, fQ12, fQ21, fQ22)
+    )
+
+    row$a00 <- A[1]
+    row$a10 <- A[2]
+    row$a01 <- A[3]
+    row$a11 <- A[4]
+
+    row
+  }
+
+
+  A_list <- apply(grid, 1, find_A, simplify = FALSE)
+  df_A <- do.call(rbind, A_list)
+
+  coeffs_to_surface <- function(row) {
+    k <- 25
+    sx <- seq(row[["x1"]], row[["x2"]], length.out = k)[-k]
+    sy <- seq(row[["y1"]], row[["y2"]], length.out = k)[-k]
+
+    fit <- function(x, y) row[["a00"]] + row[["a10"]] * x + row[["a01"]] * y + row[["a11"]] * x * y
+
+    df <- expand.grid(x = sx, y = sy)
+    df$fhat <- fit(df$x, df$y)
+
+    df
+  }
+
+  surface_list <- apply(df_A, 1, coeffs_to_surface, simplify = FALSE)
+  df <- do.call(rbind, surface_list)
+
+  df$fhat_discretized <- normalize(df$fhat)
+  df$fhat <- rescale(df$fhat)
+
+  breaks <- c(find_cutoff(df, probs), Inf)
+
+  df <- setNames(df[c("x","y","fhat")], c("x","y","z"))
+
+  if (type == "bands") {
+    xyz_to_isobands(df, breaks)
+  } else {
+    xyz_to_isolines(df, breaks)
+  }
+}
+
+
