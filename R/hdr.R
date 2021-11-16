@@ -163,7 +163,7 @@ StatHdr <- ggproto("StatHdr", Stat,
   rangey <- ylim %||% scales$y$dimension()
 
   # Should this be factored out?
-  if (is.null(n)) {
+  if (is.null(n) & (is.null(nx) | is.null(ny))) {
     # define histogram mesh according to Scott p. 87
     if (method == "histogram") {
       rho <- cor(data$x, data$y)
