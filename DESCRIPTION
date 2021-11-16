@@ -5,7 +5,8 @@ Authors@R:
     c(person(given = "James",
            family = "Otto",
            role = c("aut", "cre"),
-           email = "james_otto@baylor.edu"),
+           email = "james_otto@baylor.edu",
+           comment = c(ORCID = "0000-0002-0665-2515")),
       person(given = "David",
            family = "Kahle",
            role = c("aut"),
@@ -15,7 +16,7 @@ Description: The 'ggplot2' package provides simple functions for visualizing con
   of 2-d kernal density estimates. 'ggdensity' implements several additional density estimators 
   as well as more interpretable visualizations based on highest density regions instead of
   the traditional height of the estimated density surface. 
-License: GPL (>= 2)
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
