@@ -64,7 +64,7 @@ StatHdrLines <- ggproto("StatHdrLines", Stat,
                            method = "kde", probs = c(.99, .95, .8, .5),
                            xlim = NULL, ylim = NULL,
                            nudgex = "none", nudgey = "none", smooth = FALSE,
-                           n = NULL, nx = n, ny = n,
+                           n = NULL, nx = n, ny = n, res = 100,
                            adjust = c(1, 1), h = NULL) {
 
 
