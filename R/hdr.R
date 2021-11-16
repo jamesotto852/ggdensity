@@ -1,50 +1,51 @@
 #' Highest density regions of a 2D density estimate
 #'
-#' Put description here
+#' Perform 2D density estimation, compute and plot the resulting highest density regions.
+#' `geom_hdr()` draws filled regions, and `geom_hdr_lines()` draws lines outlining the regions.
+#' Note, the plotted objects have the level mapped to the `alpha` aesthetic by default.
 #'
-#' @section Aesthetics:
-#' geom_hdr understands the following aesthetics (required aesthetics are in bold):
+#' @section Aesthetics: geom_hdr understands the following aesthetics (required aesthetics
+#'   are in bold):
 #'
-#' - **x**
-#' - **y**
-#' - alpha
-#' - color
-#' - fill
-#' - group ?
-#' - linetype
-#' - size ?
-#' - subgroup ?
+#'   - **x**
+#'   - **y**
+#'   - alpha
+#'   - color
+#'   - fill
+#'   - group
+#'   - linetype
+#'   - size
+#'   - subgroup
 #'
-#' geom_hdr_lines understands the following aesthetics (required aesthetics are in bold):
+#'   geom_hdr_lines understands the following aesthetics (required aesthetics are in
+#'   bold):
 #'
-#' - **x**
-#' - **y**
-#' - alpha
-#' - color
-#' - group ?
-#' - linetype
-#' - size
-#' - subgroup ?
+#'   - **x**
+#'   - **y**
+#'   - alpha
+#'   - color
+#'   - group
+#'   - linetype
+#'   - size
+#'   - subgroup
 #'
 #' @section Computed variables:
 #'
-#' Describe difference between geom_hdr and geom_hdr_lines, see `?geom_density2d`
-#'
-#' \describe{
-#'   \item{value}{The highest density region estimate}
-#' }
+#'   \describe{ \item{level}{The level of the highest density region, specified by `probs`, corresponding to each point.} }
 #'
 #' @inheritParams ggplot2::geom_path
 #' @inheritParams ggplot2::stat_identity
 #' @inheritParams ggplot2::stat_density2d
-#' @param method Density estimator to use, accepts character vector: `"kde"`, `"histogram"`, or `"mvnorm"`.
-#' @param probs Temp
-#' @param n,nx,ny Temp
-#' @param xlim,ylim Temp
-#' @param nudgex Temp
-#' @param nudgey Temp
-#' @param h Temp
-#'
+#' @param method Density estimator to use, accepts character vector: `"kde"`,
+#'   `"histogram"`, `"freqpoly"`, or `"mvnorm"`.
+#' @param probs Probabilities to compute highest density regions for.
+#' @param n,nx,ny Number of bins for histogram and frequency polygon estimators. Defaults to normal reference rule.
+#' @param xlim,ylim Range to compute and draw regions. If `NULL`, expanded empirical range.
+#' @param smooth If `TRUE`, HDRs computed by the `"histogram"` method are smoothed.
+#' @param nudgex Horizontal rule for choosing witness points for smoothed histogram method, accepts character vector: `"left"`, `"none"`, `"right"`.
+#' @param nudgey Vertical rule for choosing witness points for smoothed histogram method, accepts character vector: `"down"`, `"none"`, `"up"`.
+#' @param h Bandwidth for kernel density estimator. If `NULL`, estimated using [MASS::bandwidth.nrd()]
+#' @param adjust A multiplicative bandwidth adjustment to be used if `h` is `NULL`.
 #' @name geom_hdr
 #' @rdname geom_hdr
 #'

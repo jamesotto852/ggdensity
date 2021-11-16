@@ -27,6 +27,7 @@ stat_hdr(
   ylim = NULL,
   nudgex = "none",
   nudgey = "none",
+  smooth = FALSE,
   adjust = c(1, 1),
   h = NULL,
   na.rm = FALSE,
@@ -60,6 +61,7 @@ stat_hdr_lines(
   ylim = NULL,
   nudgex = "none",
   nudgey = "none",
+  smooth = FALSE,
   adjust = c(1, 1),
   h = NULL,
   na.rm = FALSE,
@@ -109,24 +111,24 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
-\item{method}{Density estimator to use, accepts character vector: \code{"kde"}, \code{"histogram"}, or \code{"mvnorm"}.}
+\item{method}{Density estimator to use, accepts character vector: \code{"kde"},
+\code{"histogram"}, \code{"freqpoly"}, or \code{"mvnorm"}.}
 
-\item{probs}{Temp}
+\item{probs}{Probabilities to compute highest density regions for.}
 
-\item{n, nx, ny}{Temp}
+\item{n, nx, ny}{Number of bins for histogram and frequency polygon estimators. Defaults to normal reference rule.}
 
-\item{xlim, ylim}{Temp}
+\item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, expanded empirical range.}
 
-\item{nudgex}{Temp}
+\item{nudgex}{Horizontal rule for choosing witness points for smoothed histogram method, accepts character vector: \code{"left"}, \code{"none"}, \code{"right"}.}
 
-\item{nudgey}{Temp}
+\item{nudgey}{Vertical rule for choosing witness points for smoothed histogram method, accepts character vector: \code{"down"}, \code{"none"}, \code{"up"}.}
 
-\item{adjust}{A multiplicative bandwidth adjustment to be used if 'h' is
-'NULL'. This makes it possible to adjust the bandwidth while still
-using the a bandwidth estimator. For example, \code{adjust = 1/2} means
-use half of the default bandwidth.}
+\item{smooth}{If \code{TRUE}, HDRs computed by the \code{"histogram"} method are smoothed.}
 
-\item{h}{Temp}
+\item{adjust}{A multiplicative bandwidth adjustment to be used if \code{h} is \code{NULL}.}
+
+\item{h}{Bandwidth for kernel density estimator. If \code{NULL}, estimated using \code{\link[MASS:bandwidth.nrd]{MASS::bandwidth.nrd()}}}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -146,44 +148,43 @@ the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 layer, as a string.}
 }
 \description{
-Put description here
+Perform 2D density estimation, compute and plot the resulting highest density regions.
+\code{geom_hdr()} draws filled regions, and \code{geom_hdr_lines()} draws lines outlining the regions.
+Note, the plotted objects have the level mapped to the \code{alpha} aesthetic by default.
 }
 \section{Aesthetics}{
-
-geom_hdr understands the following aesthetics (required aesthetics are in bold):
+ geom_hdr understands the following aesthetics (required aesthetics
+are in bold):
 \itemize{
 \item \strong{x}
 \item \strong{y}
 \item alpha
 \item color
 \item fill
-\item group ?
+\item group
 \item linetype
-\item size ?
-\item subgroup ?
+\item size
+\item subgroup
 }
 
-geom_hdr_lines understands the following aesthetics (required aesthetics are in bold):
+geom_hdr_lines understands the following aesthetics (required aesthetics are in
+bold):
 \itemize{
 \item \strong{x}
 \item \strong{y}
 \item alpha
 \item color
-\item group ?
+\item group
 \item linetype
 \item size
-\item subgroup ?
+\item subgroup
 }
 }
 
 \section{Computed variables}{
 
 
-Describe difference between geom_hdr and geom_hdr_lines, see \code{?geom_density2d}
-
-\describe{
-\item{value}{The highest density region estimate}
-}
+\describe{ \item{level}{The level of the highest density region, specified by \code{probs}, corresponding to each point.} }
 }
 
 \examples{
