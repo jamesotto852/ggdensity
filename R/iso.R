@@ -10,8 +10,8 @@ kde_iso <- function(probs, data, res, rangex, rangey, h, adjust, type) {
   kdeout <- MASS::kde2d(
                x = data$x, y = data$y, n = res, h = h,
                lims = c(
-                 scales::expand_range(rangex, .10),
-                 scales::expand_range(rangey, .10)
+                 scales::expand_range(rangex, .25),
+                 scales::expand_range(rangey, .25)
                )
              )
 
@@ -46,6 +46,9 @@ mvnorm_iso <- function(probs, data, res, rangex, rangey, type) {
 
     pchisq(Mdist, df = 2)
   }
+
+  rangex <- scales::expand_range(rangex, .25)
+  rangey <- scales::expand_range(rangey, .25)
 
   df <- expand.grid(
     "x" = seq(rangex[1], rangex[2], length.out = res),

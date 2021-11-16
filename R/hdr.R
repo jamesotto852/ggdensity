@@ -41,7 +41,7 @@
 #' @param probs Probabilities to compute highest density regions for.
 #' @param n,nx,ny Number of bins for histogram and frequency polygon estimators. Defaults to normal reference rule.
 #' @param res Resolution of grid used in discrete approximations for kernel density and parametric estimators.
-#' @param xlim,ylim Range to compute and draw regions. If `NULL`, expanded empirical range.
+#' @param xlim,ylim Range to compute and draw regions. If `NULL`, defaults to range of data.
 #' @param smooth If `TRUE`, HDRs computed by the `"histogram"` method are smoothed.
 #' @param nudgex Horizontal rule for choosing witness points for smoothed histogram method, accepts character vector: `"left"`, `"none"`, `"right"`.
 #' @param nudgey Vertical rule for choosing witness points for smoothed histogram method, accepts character vector: `"down"`, `"none"`, `"up"`.

@@ -122,7 +122,7 @@ to the paired geom/stat.}
 
 \item{res}{Resolution of grid used in discrete approximations for kernel density and parametric estimators.}
 
-\item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, expanded empirical range.}
+\item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, defaults to range of data.}
 
 \item{nudgex}{Horizontal rule for choosing witness points for smoothed histogram method, accepts character vector: \code{"left"}, \code{"none"}, \code{"right"}.}
 
