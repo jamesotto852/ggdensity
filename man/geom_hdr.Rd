@@ -20,9 +20,10 @@ stat_hdr(
   ...,
   method = "kde",
   probs = c(0.99, 0.95, 0.8, 0.5),
-  n = 100,
+  n = NULL,
   nx = n,
   ny = n,
+  res = 100,
   xlim = NULL,
   ylim = NULL,
   nudgex = "none",
@@ -54,9 +55,10 @@ stat_hdr_lines(
   ...,
   method = "kde",
   probs = c(0.99, 0.95, 0.8, 0.5),
-  n = 100,
+  n = NULL,
   nx = n,
   ny = n,
+  res = 100,
   xlim = NULL,
   ylim = NULL,
   nudgex = "none",
@@ -117,6 +119,8 @@ to the paired geom/stat.}
 \item{probs}{Probabilities to compute highest density regions for.}
 
 \item{n, nx, ny}{Number of bins for histogram and frequency polygon estimators. Defaults to normal reference rule.}
+
+\item{res}{Resolution of grid used in discrete approximations for kernel density and parametric estimators.}
 
 \item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, expanded empirical range.}
 

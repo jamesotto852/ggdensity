@@ -5,9 +5,10 @@ stat_hdr_lines <- function(mapping = NULL, data = NULL,
                                       ...,
                                       method = "kde",
                                       probs = c(.99, .95, .8, .5),
-                                      n = 100,
+                                      n = NULL,
                                       nx = n,
                                       ny = n,
+                                      res = 100,
                                       xlim = NULL,
                                       ylim = NULL,
                                       nudgex = "none",
@@ -32,6 +33,7 @@ stat_hdr_lines <- function(mapping = NULL, data = NULL,
       n = n,
       nx = nx,
       ny = ny,
+      res = res,
       xlim = xlim,
       ylim = ylim,
       nudgex = nudgex,
@@ -103,10 +105,10 @@ StatHdrLines <- ggproto("StatHdrLines", Stat,
   probs <- sort(probs, decreasing = TRUE)
 
 
-  if (method == "kde")  isolines <- kde_iso(probs, data, nx, ny, rangex, rangey, h, adjust, type = "lines")
+  if (method == "kde")  isolines <- kde_iso(probs, data, res, rangex, rangey, h, adjust, type = "lines")
   if (method == "histogram") isolines <- histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type = "lines")
   if (method == "freqpoly") isolines <- freqpoly_iso(probs, data, nx, ny, rangex, rangey, type = "lines")
-  if (method == "mvnorm") isolines <- mvnorm_iso(probs, data, nx, ny, rangex, rangey, type = "lines")
+  if (method == "mvnorm") isolines <- mvnorm_iso(probs, data, res, rangex, rangey, type = "lines")
 
   if (!method %in% c("kde", "mvnorm", "histogram", "freqpoly")) stop("Invalid method specified")
 
@@ -156,6 +158,5 @@ GeomHdrLines <- ggproto("GeomHdrLines", GeomPath,
     size = 1,
     colour = "#000000",
     linetype = 1,
-    # alpha = after_stat(level)
     alpha = NA
   ))

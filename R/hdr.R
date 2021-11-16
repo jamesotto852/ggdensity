@@ -40,6 +40,7 @@
 #'   `"histogram"`, `"freqpoly"`, or `"mvnorm"`.
 #' @param probs Probabilities to compute highest density regions for.
 #' @param n,nx,ny Number of bins for histogram and frequency polygon estimators. Defaults to normal reference rule.
+#' @param res Resolution of grid used in discrete approximations for kernel density and parametric estimators.
 #' @param xlim,ylim Range to compute and draw regions. If `NULL`, expanded empirical range.
 #' @param smooth If `TRUE`, HDRs computed by the `"histogram"` method are smoothed.
 #' @param nudgex Horizontal rule for choosing witness points for smoothed histogram method, accepts character vector: `"left"`, `"none"`, `"right"`.
@@ -96,9 +97,10 @@ stat_hdr <- function(mapping = NULL, data = NULL,
                                       ...,
                                       method = "kde",
                                       probs = c(.99, .95, .8, .5),
-                                      n = 100,
+                                      n = NULL,
                                       nx = n,
                                       ny = n,
+                                      res = 100,
                                       xlim = NULL,
                                       ylim = NULL,
                                       nudgex = "none",
@@ -123,6 +125,7 @@ stat_hdr <- function(mapping = NULL, data = NULL,
       n = n,
       nx = nx,
       ny = ny,
+      res = res,
       xlim = xlim,
       ylim = ylim,
       nudgex = nudgex,
@@ -153,7 +156,7 @@ StatHdr <- ggproto("StatHdr", Stat,
                            method = "kde", probs = c(.99, .95, .8, .5),
                            xlim = NULL, ylim = NULL,
                            nudgex = "none", nudgey = "none", smooth = FALSE,
-                           n = NULL, nx = n, ny = n,
+                           n = NULL, nx = n, ny = n, res = 100,
                            adjust = c(1, 1), h = NULL) {
 
   rangex <- xlim %||% scales$x$dimension()
@@ -172,8 +175,9 @@ StatHdr <- ggproto("StatHdr", Stat,
       # Should this be a message? A warning? Similar to geom_histogram?
       message(paste0("Argument `n` not specified. Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
                      "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
-    } else {
-      if (method == "freqpoly") {
+    }
+
+    if (method == "freqpoly") {
         # To-Do: fill in with rules for frequency polygons
         rho <- cor(data$x, data$y)
         hx <- 3.504 * sd(data$x) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
@@ -183,20 +187,16 @@ StatHdr <- ggproto("StatHdr", Stat,
 
         message(paste0("Argument `n` not specified. Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
                        "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
-      } else{
-        nx <- 100
-        ny <- 100
-      }
     }
   }
 
   probs <- sort(probs, decreasing = TRUE)
 
 
-  if (method == "kde")  isobands <- kde_iso(probs, data, nx, ny, rangex, rangey, h, adjust, type = "bands")
+  if (method == "kde")  isobands <- kde_iso(probs, data, res, rangex, rangey, h, adjust, type = "bands")
   if (method == "histogram") isobands <- histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type = "bands")
   if (method == "freqpoly") isobands <- freqpoly_iso(probs, data, nx, ny, rangex, rangey, type = "bands")
-  if (method == "mvnorm") isobands <- mvnorm_iso(probs, data, nx, ny, rangex, rangey, type = "bands")
+  if (method == "mvnorm") isobands <- mvnorm_iso(probs, data, res, rangex, rangey, type = "bands")
 
   if (!method %in% c("kde", "mvnorm", "histogram", "freqpoly")) stop("Invalid method specified")
 

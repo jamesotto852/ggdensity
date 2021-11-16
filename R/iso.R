@@ -1,5 +1,5 @@
 
-kde_iso <- function(probs, data, nx, ny, rangex, rangey, h, adjust, type) {
+kde_iso <- function(probs, data, res, rangex, rangey, h, adjust, type) {
   # The way n, h, and adjust are set up is consistent with stat_density_2d
   # Allows for easy tweaking of the MASS default
   if (is.null(h)) {
@@ -8,7 +8,7 @@ kde_iso <- function(probs, data, nx, ny, rangex, rangey, h, adjust, type) {
   }
 
   kdeout <- MASS::kde2d(
-               x = data$x, y = data$y, n = c(nx, ny), h = h,
+               x = data$x, y = data$y, n = res, h = h,
                lims = c(
                  scales::expand_range(rangex, .10),
                  scales::expand_range(rangey, .10)
@@ -34,7 +34,7 @@ kde_iso <- function(probs, data, nx, ny, rangex, rangey, h, adjust, type) {
 
 
 
-mvnorm_iso <- function(probs, data, nx, ny, rangex, rangey, type) {
+mvnorm_iso <- function(probs, data, res, rangex, rangey, type) {
 
   data_matrix <- with(data, cbind(x, y))
   col_means <- colMeans(data_matrix)
@@ -48,8 +48,8 @@ mvnorm_iso <- function(probs, data, nx, ny, rangex, rangey, type) {
   }
 
   df <- expand.grid(
-    "x" = seq(rangex[1], rangex[2], length.out = nx),
-    "y" = seq(rangey[1], rangey[2], length.out = ny)
+    "x" = seq(rangex[1], rangex[2], length.out = res),
+    "y" = seq(rangey[1], rangey[2], length.out = res)
   )
 
   df$z <- apply(df, 1, find_quantile, mu = col_means, SigmaInv = SInv)
