@@ -81,8 +81,8 @@ StatHdrLines <- ggproto("StatHdrLines", Stat,
       nx <- round((rangex[2] - rangex[1]) / hx)
       ny <- round((rangey[2] - rangey[1]) / hy)
 
-      message(paste0("Argument `n` not specified. \n
-                     Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
+      message(paste0("Argument `n` not specified. \n",
+                     "Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
                      "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
     } else {
       if (method == "freqpoly") {
@@ -93,8 +93,9 @@ StatHdrLines <- ggproto("StatHdrLines", Stat,
         nx <- round((rangex[2] - rangex[1]) / hx)
         ny <- round((rangey[2] - rangey[1]) / hy)
 
-        message(paste0("Argument `n` not specified. Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
-                       "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
+      message(paste0("Argument `n` not specified. \n",
+                     "Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
+                     "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
       } else{
         nx <- 100
         ny <- 100

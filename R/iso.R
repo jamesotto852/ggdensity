@@ -170,8 +170,8 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
     #                3, 3, 4, 4
 
     fhat <- split(df$fhat, factor(rep(1:ny, each = nx))) # split into rows
-    fhat <- lapply(fhat, \(x) rep(x, each = k)) # repeat within rows (horizontal)
-    fhat <- lapply(fhat, \(x) rep(x, times = k)) # repeat rows (vertical)
+    fhat <- lapply(fhat, function(x) rep(x, each = k)) # repeat within rows (horizontal)
+    fhat <- lapply(fhat, function(x) rep(x, times = k)) # repeat rows (vertical)
     fhat <- unlist(fhat) # concatenate
     ddf$fhat <- fhat
 
