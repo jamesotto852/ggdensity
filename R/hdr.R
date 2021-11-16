@@ -39,14 +39,22 @@
 #' @param method Density estimator to use, accepts character vector: `"kde"`,
 #'   `"histogram"`, `"freqpoly"`, or `"mvnorm"`.
 #' @param probs Probabilities to compute highest density regions for.
-#' @param n,nx,ny Number of bins for histogram and frequency polygon estimators. Defaults to normal reference rule.
-#' @param res Resolution of grid used in discrete approximations for kernel density and parametric estimators.
-#' @param xlim,ylim Range to compute and draw regions. If `NULL`, defaults to range of data.
-#' @param smooth If `TRUE`, HDRs computed by the `"histogram"` method are smoothed.
-#' @param nudgex Horizontal rule for choosing witness points for smoothed histogram method, accepts character vector: `"left"`, `"none"`, `"right"`.
-#' @param nudgey Vertical rule for choosing witness points for smoothed histogram method, accepts character vector: `"down"`, `"none"`, `"up"`.
-#' @param h Bandwidth for kernel density estimator. If `NULL`, estimated using [MASS::bandwidth.nrd()]
-#' @param adjust A multiplicative bandwidth adjustment to be used if `h` is `NULL`.
+#' @param n,nx,ny Number of bins for histogram and frequency polygon estimators.
+#'   Defaults to normal reference rule.
+#' @param res Resolution of grid used in discrete approximations for kernel
+#'   density and parametric estimators.
+#' @param xlim,ylim Range to compute and draw regions. If `NULL`, defaults to
+#'   range of data.
+#' @param smooth If `TRUE`, HDRs computed by the `"histogram"` method are
+#'   smoothed.
+#' @param nudgex Horizontal rule for choosing witness points for smoothed
+#'   histogram method, accepts character vector: `"left"`, `"none"`, `"right"`.
+#' @param nudgey Vertical rule for choosing witness points for smoothed
+#'   histogram method, accepts character vector: `"down"`, `"none"`, `"up"`.
+#' @param h Bandwidth for kernel density estimator. If `NULL`, estimated using
+#'   [MASS::bandwidth.nrd()]
+#' @param adjust A multiplicative bandwidth adjustment to be used if `h` is
+#'   `NULL`.
 #' @name geom_hdr
 #' @rdname geom_hdr
 #'
@@ -61,12 +69,37 @@
 #' ggplot(df, aes(x, y)) + geom_hdr(method = "histogram", n = 10)
 #'
 #'
-#' # two groups
-#' df_a <- data.frame(x = rnorm(1000, -2), y = rnorm(1000), c = "a")
-#' df_b <- data.frame(x = rnorm(1000,  2), y = rnorm(1000), c = "b")
-#' df <- rbind(df_a, df_b)
-#' ggplot(df, aes(x, y, fill = c)) + geom_hdr()
-#' ggplot(df, aes(x, y, fill = c)) + geom_hdr(method = "mvnorm")
+#' # adding point layers on top to visually assess region estimates
+#' point_layer <- geom_point(size = .2, color = "red")
+#' ggplot(df, aes(x, y)) + geom_hdr() + point_layer
+#' ggplot(df, aes(x, y)) + geom_hdr(method = "mvnorm") + point_layer
+#' ggplot(df, aes(x, y)) + geom_hdr(method = "histogram", n = 10) + point_layer
+#'
+#'
+#' # more interesting for this particular case
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr(method = "mvnorm") +
+#'   point_layer +
+#'   coord_equal()
+#'
+#'
+#' # 2+ groups - mapping other aesthetics in the geom
+#' rdata <- function(n, n_groups = 3, radius = 3) {
+#'   list_of_dfs <- lapply(0:(n_groups-1), function(k) {
+#'     mu <- c(cos(2*k*pi/n_groups), sin(2*k*pi/n_groups))
+#'     m <- MASS::mvrnorm(n, radius*mu, diag(2))
+#'     df <- as.data.frame(m)
+#'     df$c <- as.character(k)
+#'     names(df) <- c("x", "y", "c")
+#'     df
+#'   })
+#'   do.call("rbind", list_of_dfs)
+#' }
+#'
+#' df <- rdata(1000, n_groups = 5)
+#' ggplot(df, aes(x, y, fill = c)) + geom_hdr() + coord_equal()
+#' ggplot(df, aes(x, y, fill = c)) + geom_hdr(method = "mvnorm") + coord_equal()
+#' ggplot(df, aes(x, y, fill = c)) + geom_hdr(method = "histogram") + coord_equal()
 #'
 #'
 #' # highest density region boundary lines

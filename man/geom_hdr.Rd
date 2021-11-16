@@ -118,21 +118,29 @@ to the paired geom/stat.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
-\item{n, nx, ny}{Number of bins for histogram and frequency polygon estimators. Defaults to normal reference rule.}
+\item{n, nx, ny}{Number of bins for histogram and frequency polygon estimators.
+Defaults to normal reference rule.}
 
-\item{res}{Resolution of grid used in discrete approximations for kernel density and parametric estimators.}
+\item{res}{Resolution of grid used in discrete approximations for kernel
+density and parametric estimators.}
 
-\item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, defaults to range of data.}
+\item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
+range of data.}
 
-\item{nudgex}{Horizontal rule for choosing witness points for smoothed histogram method, accepts character vector: \code{"left"}, \code{"none"}, \code{"right"}.}
+\item{nudgex}{Horizontal rule for choosing witness points for smoothed
+histogram method, accepts character vector: \code{"left"}, \code{"none"}, \code{"right"}.}
 
-\item{nudgey}{Vertical rule for choosing witness points for smoothed histogram method, accepts character vector: \code{"down"}, \code{"none"}, \code{"up"}.}
+\item{nudgey}{Vertical rule for choosing witness points for smoothed
+histogram method, accepts character vector: \code{"down"}, \code{"none"}, \code{"up"}.}
 
-\item{smooth}{If \code{TRUE}, HDRs computed by the \code{"histogram"} method are smoothed.}
+\item{smooth}{If \code{TRUE}, HDRs computed by the \code{"histogram"} method are
+smoothed.}
 
-\item{adjust}{A multiplicative bandwidth adjustment to be used if \code{h} is \code{NULL}.}
+\item{adjust}{A multiplicative bandwidth adjustment to be used if \code{h} is
+\code{NULL}.}
 
-\item{h}{Bandwidth for kernel density estimator. If \code{NULL}, estimated using \code{\link[MASS:bandwidth.nrd]{MASS::bandwidth.nrd()}}}
+\item{h}{Bandwidth for kernel density estimator. If \code{NULL}, estimated using
+\code{\link[MASS:bandwidth.nrd]{MASS::bandwidth.nrd()}}}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -200,12 +208,37 @@ ggplot(df, aes(x, y)) + geom_hdr(method = "mvnorm")
 ggplot(df, aes(x, y)) + geom_hdr(method = "histogram", n = 10)
 
 
-# two groups
-df_a <- data.frame(x = rnorm(1000, -2), y = rnorm(1000), c = "a")
-df_b <- data.frame(x = rnorm(1000,  2), y = rnorm(1000), c = "b")
-df <- rbind(df_a, df_b)
-ggplot(df, aes(x, y, fill = c)) + geom_hdr()
-ggplot(df, aes(x, y, fill = c)) + geom_hdr(method = "mvnorm")
+# adding point layers on top to visually assess region estimates
+point_layer <- geom_point(size = .2, color = "red")
+ggplot(df, aes(x, y)) + geom_hdr() + point_layer
+ggplot(df, aes(x, y)) + geom_hdr(method = "mvnorm") + point_layer
+ggplot(df, aes(x, y)) + geom_hdr(method = "histogram", n = 10) + point_layer
+
+
+# more interesting for this particular case
+ggplot(df, aes(x, y)) +
+  geom_hdr(method = "mvnorm") +
+  point_layer +
+  coord_equal()
+
+
+# 2+ groups - mapping other aesthetics in the geom
+rdata <- function(n, n_groups = 3, radius = 3) {
+  list_of_dfs <- lapply(0:(n_groups-1), function(k) {
+    mu <- c(cos(2*k*pi/n_groups), sin(2*k*pi/n_groups))
+    m <- MASS::mvrnorm(n, radius*mu, diag(2))
+    df <- as.data.frame(m)
+    df$c <- as.character(k)
+    names(df) <- c("x", "y", "c")
+    df
+  })
+  do.call("rbind", list_of_dfs)
+}
+
+df <- rdata(1000, n_groups = 5)
+ggplot(df, aes(x, y, fill = c)) + geom_hdr() + coord_equal()
+ggplot(df, aes(x, y, fill = c)) + geom_hdr(method = "mvnorm") + coord_equal()
+ggplot(df, aes(x, y, fill = c)) + geom_hdr(method = "histogram") + coord_equal()
 
 
 # highest density region boundary lines
