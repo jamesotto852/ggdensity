@@ -1,11 +1,12 @@
 #' Highest density regions of a 2D density estimate
 #'
-#' Perform 2D density estimation, compute and plot the resulting highest density regions.
-#' `geom_hdr()` draws filled regions, and `geom_hdr_lines()` draws lines outlining the regions.
-#' Note, the plotted objects have the level mapped to the `alpha` aesthetic by default.
+#' Perform 2D density estimation, compute and plot the resulting highest density
+#' regions. `geom_hdr()` draws filled regions, and `geom_hdr_lines()` draws
+#' lines outlining the regions. Note, the plotted objects have the level mapped
+#' to the `alpha` aesthetic by default.
 #'
-#' @section Aesthetics: geom_hdr understands the following aesthetics (required aesthetics
-#'   are in bold):
+#' @section Aesthetics: geom_hdr understands the following aesthetics (required
+#'   aesthetics are in bold):
 #'
 #'   - **x**
 #'   - **y**
@@ -17,8 +18,8 @@
 #'   - size
 #'   - subgroup
 #'
-#'   geom_hdr_lines understands the following aesthetics (required aesthetics are in
-#'   bold):
+#'   geom_hdr_lines understands the following aesthetics (required aesthetics
+#'   are in bold):
 #'
 #'   - **x**
 #'   - **y**
@@ -31,7 +32,8 @@
 #'
 #' @section Computed variables:
 #'
-#'   \describe{ \item{level}{The level of the highest density region, specified by `probs`, corresponding to each point.} }
+#'   \describe{ \item{level}{The level of the highest density region, specified
+#'   by `probs`, corresponding to each point.} }
 #'
 #' @inheritParams ggplot2::geom_path
 #' @inheritParams ggplot2::stat_identity
@@ -62,25 +64,22 @@
 #'
 #' @examples
 #'
-#' # basic simulated data with bivariate normal data
+#' # basic simulated data with bivariate normal data and various methods
 #' df <- data.frame(x = rnorm(1000), y = rnorm(1000))
-#' ggplot(df, aes(x, y)) + geom_hdr()
-#' ggplot(df, aes(x, y)) + geom_hdr(method = "mvnorm")
-#' ggplot(df, aes(x, y)) + geom_hdr(method = "histogram", n = 10)
+#' p <- ggplot(df, aes(x, y)) + coord_equal()
+#' p + geom_hdr()
+#' p + geom_hdr(method = "mvnorm")
+#' p + geom_hdr(method = "histogram")
+#' p + geom_hdr(method = "histogram", smooth = TRUE)
+#' p + geom_hdr(method = "freqpoly")
 #'
 #'
 #' # adding point layers on top to visually assess region estimates
-#' point_layer <- geom_point(size = .2, color = "red")
-#' ggplot(df, aes(x, y)) + geom_hdr() + point_layer
-#' ggplot(df, aes(x, y)) + geom_hdr(method = "mvnorm") + point_layer
-#' ggplot(df, aes(x, y)) + geom_hdr(method = "histogram", n = 10) + point_layer
-#'
-#'
-#' # more interesting for this particular case
-#' ggplot(df, aes(x, y)) +
-#'   geom_hdr(method = "mvnorm") +
-#'   point_layer +
-#'   coord_equal()
+#' pts <- geom_point(size = .2, color = "red")
+#' p + geom_hdr() + pts
+#' p + geom_hdr(method = "mvnorm") + pts
+#' p + geom_hdr(method = "histogram", n = 10) + pts
+#' p + geom_hdr(method = "mvnorm") + pts
 #'
 #'
 #' # 2+ groups - mapping other aesthetics in the geom
@@ -88,33 +87,34 @@
 #'   list_of_dfs <- lapply(0:(n_groups-1), function(k) {
 #'     mu <- c(cos(2*k*pi/n_groups), sin(2*k*pi/n_groups))
 #'     m <- MASS::mvrnorm(n, radius*mu, diag(2))
-#'     df <- as.data.frame(m)
-#'     df$c <- as.character(k)
-#'     names(df) <- c("x", "y", "c")
-#'     df
+#'     structure(data.frame(m, as.character(k)), names = c("x", "y", "c"))
 #'   })
 #'   do.call("rbind", list_of_dfs)
 #' }
 #'
-#' df <- rdata(1000, n_groups = 5)
-#' ggplot(df, aes(x, y, fill = c)) + geom_hdr() + coord_equal()
-#' ggplot(df, aes(x, y, fill = c)) + geom_hdr(method = "mvnorm") + coord_equal()
-#' ggplot(df, aes(x, y, fill = c)) + geom_hdr(method = "histogram") + coord_equal()
+#' dfc <- rdata(1000, n_groups = 5)
+#' pf <- ggplot(dfc, aes(x, y, fill = c)) + coord_equal()
+#' pf + geom_hdr()
+#' pf + geom_hdr(method = "mvnorm")
+#' pf + geom_hdr(method = "mvnorm", probs = .90, alpha = .5)
+#' pf + geom_hdr(method = "histogram")
+#' pf + geom_hdr(method = "freqpoly")
 #'
 #'
 #' # highest density region boundary lines
-#' ggplot(df, aes(x, y)) + geom_hdr_lines()
-#' ggplot(df, aes(x, y)) + geom_hdr_lines(method = "mvnorm")
-#' ggplot(df, aes(x, y, color = c)) + geom_hdr_lines() + theme_minimal()
-#' ggplot(df, aes(x, y, color = c)) + geom_hdr_lines(method = "mvnorm") + theme_minimal()
+#' p + geom_hdr_lines()
+#' p + geom_hdr_lines(method = "mvnorm")
+#' pc <- ggplot(dfc, aes(x, y, color = c)) + coord_equal()
+#' pc + geom_hdr_lines() + theme_minimal()
+#' pc + geom_hdr_lines(method = "mvnorm") + theme_minimal()
 #'
 #'
 #' # data with boundaries
 #' ggplot(df, aes(x^2)) + geom_histogram()
 #' ggplot(df, aes(x^2)) + geom_histogram(boundary = 0)
 #' ggplot(df, aes(x^2, y^2)) + geom_hdr(method = "histogram")
-#' ggplot(df, aes(x^2, y^2)) +
-#'   geom_hdr(method = "histogram", boundary_x = 0, boundary_y = 0)
+#'
+#'
 #'
 NULL
 
@@ -205,9 +205,9 @@ StatHdr <- ggproto("StatHdr", Stat,
       nx <- round((rangex[2] - rangex[1]) / hx)
       ny <- round((rangey[2] - rangey[1]) / hy)
 
-      message(paste0("Argument `n` not specified. \n",
-                     "Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
-                     "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
+      # message(paste0("Argument `n` not specified. \n",
+      #                "Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
+      #                "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
     }
 
     if (method == "freqpoly") {
@@ -218,9 +218,9 @@ StatHdr <- ggproto("StatHdr", Stat,
         nx <- round((rangex[2] - rangex[1]) / hx)
         ny <- round((rangey[2] - rangey[1]) / hy)
 
-        message(paste0("Argument `n` not specified. \n",
-                       "Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
-                       "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
+        # message(paste0("Argument `n` not specified. \n",
+        #                "Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
+        #                "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
     }
   }
 

@@ -169,6 +169,11 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
     #                3, 3, 4, 4,
     #                3, 3, 4, 4
 
+
+    # m <- matrix(df$fhat, nrow = ny, byrow = TRUE)
+    # ddf$fhat <- as.vector(kronecker(m, matrix(1, k, k)))
+
+
     fhat <- split(df$fhat, factor(rep(1:ny, each = nx))) # split into rows
     fhat <- lapply(fhat, function(x) rep(x, each = k)) # repeat within rows (horizontal)
     fhat <- lapply(fhat, function(x) rep(x, times = k)) # repeat rows (vertical)
