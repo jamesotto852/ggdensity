@@ -44,15 +44,25 @@ prob_integrals <- function(df) {
 # numerical approximation for finding HDR
 find_cutoff <- function(df, conf) {
   if (length(conf) > 1) return(vapply(conf, function(x) find_cutoff(df, x), numeric(1)))
-  # uniroot(function(c) prob_above_c(df, c) - conf, lower = 0, upper = 1)$root
+  uniroot(function(c) prob_above_c(df, c) - conf, lower = 0, upper = 1)$root
 
-  # Find integrals for all important values of c
-  integrals <- prob_integrals(df)
-
-  # Filter to values of c which yield HDRs w/ integrals > conf
-  diffs <- integrals$prob - conf
-  integrals <- integrals[diffs >= 0,]
-
-  # Find value of c with HDR integral closest to conf
-  integrals$c[which.min(integrals$prob)]
+  # # Find integrals for all important values of c
+  # integrals <- prob_integrals(df)
+  #
+  # # Smallest non-zero value of c, in case...
+  # cutoff_backup <- min(integrals$c[integrals$c != 0])
+  #
+  # # Filter to values of c which yield HDRs w/ integrals > conf
+  # diffs <- integrals$prob - conf
+  # integrals <- integrals[diffs >= 0,]
+  #
+  # # Find value of c with HDR integral closest to conf
+  # cutoff <- integrals$c[which.min(integrals$prob)]
+  #
+  # # Don't want to draw a contour at height 0
+  # # Slightly violates def of HDR, but produces much better graphics
+  # if (cutoff == 0) return(cutoff_backup)
+  #
+  # cutoff
 }
+
