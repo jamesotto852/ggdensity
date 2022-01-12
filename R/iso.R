@@ -141,6 +141,7 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
     df$y <- df$ybin_midpt
   }
 
+  n <- sum(df$n)
   df <- df[c("x","y","fhat","fhat_discretized")]
   df$fhat <- rescale(df$fhat)
 
@@ -148,8 +149,20 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
 
   if (!smooth) {
     # Evaluate histogram on a grid
+    # For xyz_to_iso* funs, need tightly packed values for good isobands/lines
     # k*k points per histogram footprint
-    k <- 50
+    # Higher values of k -> better visuals, more computationally expensive
+
+    # Sensible default for n near 1e4:
+    # k <- 50
+
+    # The "optimal" value of k seems to be on the order of O(n^(-1/3))
+    # found constant which yields k = 50 for n = 1000
+    if (n > 1000) {
+      k <- floor(500/(n^(1/3)))
+    } else{
+      k <- 50
+    }
 
     nnx <- nx * k
     nny <- ny * k
@@ -303,8 +316,7 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
   A_list <- apply(grid, 1, find_A, simplify = FALSE)
   df_A <- do.call(rbind, A_list)
 
-  coeffs_to_surface <- function(row) {
-    k <- 25
+  coeffs_to_surface <- function(row, k) {
     sx <- seq(row[["x1"]], row[["x2"]], length.out = k)[-k]
     sy <- seq(row[["y1"]], row[["y2"]], length.out = k)[-k]
 
@@ -316,7 +328,17 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
     df
   }
 
-  surface_list <- apply(df_A, 1, coeffs_to_surface, simplify = FALSE)
+
+  # Here, the necessary value of k seems to be O(n(1/2))
+  # Found coefficient by setting k(n=1000) = 25
+  n <- sum(df$n)
+  if (n > 1000) {
+    k <- floor(790/(n^(1/2)))
+  } else{
+    k <- 25
+  }
+
+  surface_list <- apply(df_A, 1, coeffs_to_surface, k, simplify = FALSE)
   df <- do.call(rbind, surface_list)
 
   df$fhat_discretized <- normalize(df$fhat)
