@@ -31,9 +31,28 @@ prob_above_c <- function(df, c) {
 }
 
 
+# Function computing sums for each height of the estimated density,
+# completely specifying volume integrals given c of the Riemann surface
+prob_integrals <- function(df) {
+  c_vals <- unique(df$fhat)
+  sums <- vapply(c_vals, function(x) sum(df$fhat_discretized[df$fhat > x]), numeric(1))
+  df <- data.frame(c = c_vals, prob = sums)
+
+  df
+}
 
 # numerical approximation for finding HDR
 find_cutoff <- function(df, conf) {
   if (length(conf) > 1) return(vapply(conf, function(x) find_cutoff(df, x), numeric(1)))
-  uniroot(function(c) prob_above_c(df, c) - conf, lower = 0, upper = 1)$root
+  # uniroot(function(c) prob_above_c(df, c) - conf, lower = 0, upper = 1)$root
+
+  # Find integrals for all important values of c
+  integrals <- prob_integrals(df)
+
+  # Filter to values of c which yield HDRs w/ integrals > conf
+  diffs <- integrals$prob - conf
+  integrals <- integrals[diffs >= 0,]
+
+  # Find value of c with HDR integral closest to conf
+  integrals$c[which.min(integrals$prob)]
 }
