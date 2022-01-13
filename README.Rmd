@@ -1,0 +1,224 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+```{r, include = FALSE}
+library("ggplot2"); theme_set(theme_bw())
+library("patchwork")
+library("ggdensity")
+
+set.seed(1)
+```
+
+# ggdensity
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+`ggdensity` extends [`ggplot2`](https://github.com/tidyverse/ggplot2) providing more interpretable visualizations of density estimates based on highest density regions (HDRs).
+`ggdensity` offers drop-in replacements for [`ggplot2`](https://github.com/tidyverse/ggplot2) functions:
+
+- `geom_hdr()` $\longleftrightarrow$ `geom_contour_2d_filled()`
+- `geom_hdr_lines()` $\longleftrightarrow$ `geom_contour_2d()`
+
+## Installation
+
+You can install the development version of ggdensity from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("jamesotto852/ggdensity")
+```
+
+## Simple Examples
+
+#### Comparing to `geom_contour_2d`
+
+Below, we plot density estimates of some simulated data using `geom_density_2d_filled()` (left) and `geom_hdr()` (right).
+Both plots show contours from the same density surface, but the contours plotted by `geom_hdr()` are chosen to be informative,
+showing the smallest regions containing $50\%$, $80\%$, $95\%$, and $99\%$ of the estimated density (the HDRs).
+This results in a very interpretable graphic, and conveys more information than arbitrary density contours.
+
+<!-- Minor sleight-of-hand, don't want readers to worry about theme and patchwork syntax -->
+```{r ex1_echo, eval = FALSE}
+df <- data.frame(x = rnorm(1000), y = rnorm(1000))
+
+ggplot(df, aes(x, y)) + 
+  geom_density_2d_filled()
+
+ggplot(df, aes(x, y)) + 
+  geom_hdr()
+```
+```{r ex1_code, echo = FALSE, warning = FALSE, fig.width = 11}
+df <- data.frame(x = rnorm(1000), y = rnorm(1000))
+
+p <- ggplot(df, aes(x, y)) + coord_equal(xlim = c(-3.5, 3.5), ylim = c(-3.5, 3.5), expand = FALSE)
+
+p1 <- p +
+  geom_density_2d_filled() + 
+  scale_x_continuous(lim = c(-3.5, 3.5)) +
+  scale_y_continuous(lim = c(-3.5, 3.5)) +
+  theme(legend.position = "left", legend.key.size = unit(.5, "cm"))
+  # theme(legend.position = "left")
+
+p2 <- p +
+  geom_hdr()
+
+p1 | p2
+```
+
+#### Grouping
+
+Because `geom_hdr()` maps to the `alpha` aesthetic, the `fill` and `color` aesthetics are available for mapping to variables.
+This allows for easy comparison of HDRs between groups in a data set, below we illustrate this with the `penguins` data from [`palmerpenguins`](https://github.com/allisonhorst/palmerpenguins).
+
+```{r ex_penguins, warning = FALSE}
+library("palmerpenguins")
+
+ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
+  geom_hdr() +
+  geom_point(shape = 21)
+```
+
+<br>
+<br>
+
+To alleviate overplotting, we can use `geom_hdr_lines()` or facet:
+
+```{r ex_penguins_lines, warning = FALSE}
+ggplot(penguins, aes(flipper_length_mm, bill_length_mm, color = species)) +
+  geom_hdr_lines() +
+  geom_point(size = .5)
+```
+
+<br>
+<br>
+
+```{r ex_penguins_facet, fig.width = 11, warning = FALSE}
+ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
+  geom_hdr() +
+  geom_point(shape = 21) +
+  facet_wrap(vars(species))
+```
+
+## More Examples
+
+
+#### Mapping to different aesthetics
+
+`geom_hdr()` and `geom_hdr_lines()` map the computed variable `level` to the `alpha` aesthetic by default.
+This is easy to change via `after_stat()`,
+just be sure to override the `alpha` aesthetic by setting `alpha = 1`.
+
+<!-- Again, sleight-of-hand for legend formatting and patchwork -->
+```{r ex_after_stat_echo, eval = FALSE}
+ggplot(faithful) +
+  geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1)
+
+ggplot(faithful) +
+  geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1)
+```
+```{r ex_after_stat_code, echo = FALSE, fig.width = 11}
+p <- ggplot(faithful)
+
+p1 <- p +
+  geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1) +
+  theme(legend.position = "left")
+
+p2 <- p +
+  geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1)
+
+p1 | p2
+```
+
+#### Different density estimators
+
+Just like `geom_density_2d_filled()`, `geom_hdr()` allows for visualizing kernel density estimates.
+It also allows for visualizing HDRs resulting from parametric, histogram, and frequency polygon estimates via the `method` argument.
+Each of these estimators offers advantages in certain contexts.
+For example, histogram estimators result in HDRs which obey constrained supports.
+
+```{r ex_methods, echo = FALSE, fig.width = 11, fig.height = 17}
+library("purrr")
+
+df_norm <- data.frame(
+  x = rnorm(5000),
+  y = rnorm(5000)
+)
+
+df_norm_mix <- data.frame(
+  x = rnorm(5000) + c(-1.5, 1.5),
+  y = rnorm(5000) + c(1.5, -1.5)
+)
+
+df_exp <- data.frame(
+  x = rexp(5000, 1),
+  y = rexp(5000, 1)
+)
+
+p_df <- function(df) {
+  ggplot(df, aes(x, y)) + 
+    theme(legend.position = "none",
+          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          axis.title = element_blank())
+}
+
+p_row <- function(layer, title, ylabs = FALSE) {
+  p_title <- grid::textGrob(title)
+  p_norm <- p_df(df_norm) + layer + coord_fixed(xlim = c(-3.5, 3.5), ylim = c(-3.5, 3.5))
+  p_norm_mix <- p_df(df_norm_mix) + layer + coord_fixed(xlim = c(-4.5, 4.5), ylim = c(-4.5, 4.5))
+  p_norm_exp <- p_df(df_exp) + layer + coord_fixed(xlim = c(0, 6), ylim = c(0, 6))
+  
+  list(p_title, p_norm, p_norm_mix, p_norm_exp)
+}
+
+
+geoms <- list(
+  geom_point(size = .3, alpha = .6),
+  # geom_density_2d_filled(),
+  geom_hdr(method = "kde"),
+  geom_hdr(method = "mvnorm"),
+  geom_hdr(method = "histogram"),
+  geom_hdr(method = "freqpoly")
+)
+
+titles <- c(
+  "",
+  "kde",
+  "mvnorm",
+  "histogram",
+  "freqpoly"
+)
+
+map2(geoms, titles, p_row) |>
+  unlist(recursive = FALSE) |>
+  wrap_plots(ncol = 4, widths = c(.2, 1, 1, 1), heights = 1)
+
+```
+
+
+
+<!-- #### Bayesian applications -->
+
+<!-- In the context of a Bayesian analysis, `geom_hdr()` creates plots of highest posterior regions. -->
+<!-- All we need to do is give `geom_hdr()` a data frame with draws from a posterior, and  -->
+
+
+
+
+
+
+
+
