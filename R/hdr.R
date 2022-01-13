@@ -226,15 +226,13 @@ StatHdr <- ggproto("StatHdr", Stat,
 
   probs <- sort(probs, decreasing = TRUE)
 
-
-  if (method == "kde")  isobands <- kde_iso(probs, data, res, rangex, rangey, h, adjust, type = "bands")
-  if (method == "histogram") isobands <- histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type = "bands")
-  if (method == "freqpoly") isobands <- freqpoly_iso(probs, data, nx, ny, rangex, rangey, type = "bands")
-  if (method == "mvnorm") isobands <- mvnorm_iso(probs, data, res, rangex, rangey, type = "bands")
-
-  if (!method %in% c("kde", "mvnorm", "histogram", "freqpoly")) stop("Invalid method specified")
-
-
+  isobands <- switch(method,
+    "kde" = kde_iso(probs, data, res, rangex, rangey, h, adjust, type = "bands"),
+    "histogram" = histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type = "bands"),
+    "freqpoly" = freqpoly_iso(probs, data, nx, ny, rangex, rangey, type = "bands"),
+    "mvnorm" = mvnorm_iso(probs, data, res, rangex, rangey, type = "bands"),
+  )
+  if (!(method %in% c("kde", "mvnorm", "histogram", "freqpoly"))) stop("Invalid method specified")
 
   names(isobands) <- scales::percent_format(accuracy = 1)(probs)
   path_df <- iso_to_polygon(isobands, data$group[1])
