@@ -34,8 +34,8 @@ Below, we plot density estimates of some simulated data using
 show contours from the same density surface, but the contours plotted by
 `geom_hdr()` are chosen to be informative, showing the smallest regions
 containing 50%, 80%, 95%, and 99% of the estimated density (the HDRs).
-This results in a very interpretable graphic, and conveys more
-information than arbitrary density contours.
+This results in a very interpretable graphic, conveying more information
+than arbitrary density contours.
 
 <!-- Minor sleight-of-hand, don't want readers to worry about theme and patchwork syntax -->
 
