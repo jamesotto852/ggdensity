@@ -30,9 +30,9 @@ prob_above_c <- function(df, c) {
 
 # numerical approximation for finding hdr
 # if method = "histogram", don't want to use uniroot, runs into issue if n is small
-find_cutoff <- function(df, conf, uniroot = TRUE) {
+find_cutoff <- function(df, conf, collapse = FALSE, uniroot = TRUE) {
 
-  if (length(conf) > 1) return(vapply(conf, function(x) find_cutoff(df, x, uniroot), numeric(1)))
+  if (length(conf) > 1) return(vapply(conf, function(x) find_cutoff(df, x, collapse, uniroot), numeric(1)))
 
   # the following is set to FALSE to override when other code calls
   # the function with uniroot = TRUE, remove once we're confident the
@@ -46,11 +46,22 @@ find_cutoff <- function(df, conf, uniroot = TRUE) {
     # sort df rows by fhat
     df <- df[order(df$fhat, decreasing = TRUE),]
 
+    if (collapse) {
+
+      # collapse rows of df s.t. each contains a unique value of fhat_discretized
+      df_collapsed <- data.frame(fhat = unique(df$fhat))
+      df_collapsed$fhat_discretized <- vapply(df_collapsed$fhat, function(x) sum(df$fhat_discretized[df$fhat == x]), numeric(1))
+
+      df <- df_collapsed
+
+    }
+
     # compute cumsum of probs
     df$cumprob <- cumsum(df$fhat_discretized)
 
     # determine cutoff
-    max(df[df$cumprob >= conf,]$fhat)
+    max(df$fhat[df$cumprob >= conf])
+    # Potential issue: the maximum can be 0 if method = "histogram"
 
   }
 
