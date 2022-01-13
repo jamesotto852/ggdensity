@@ -91,8 +91,7 @@ ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
   geom_point(shape = 21)
 ```
 
-<br>
-<br>
+<div style = "height:40px;"></div>
 
 To alleviate overplotting, we can use `geom_hdr_lines()` or facet:
 
@@ -102,8 +101,7 @@ ggplot(penguins, aes(flipper_length_mm, bill_length_mm, color = species)) +
   geom_point(size = .5)
 ```
 
-<br>
-<br>
+<div style = "height:40px;"></div>
 
 ```{r ex_penguins_facet, fig.width = 11, warning = FALSE}
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
