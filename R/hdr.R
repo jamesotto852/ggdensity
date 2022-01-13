@@ -70,7 +70,6 @@
 #' p + geom_hdr()
 #' p + geom_hdr(method = "mvnorm")
 #' p + geom_hdr(method = "histogram")
-#' p + geom_hdr(method = "histogram", smooth = TRUE)
 #' p + geom_hdr(method = "freqpoly")
 #'
 #'
@@ -78,7 +77,7 @@
 #' pts <- geom_point(size = .2, color = "red")
 #' p + geom_hdr() + pts
 #' p + geom_hdr(method = "mvnorm") + pts
-#' p + geom_hdr(method = "histogram", n = 10) + pts
+#' p + geom_hdr(method = "histogram") + pts
 #' p + geom_hdr(method = "mvnorm") + pts
 #'
 #'
@@ -104,14 +103,15 @@
 #' # highest density region boundary lines
 #' p + geom_hdr_lines()
 #' p + geom_hdr_lines(method = "mvnorm")
-#' pc <- ggplot(dfc, aes(x, y, color = c)) + coord_equal()
-#' pc + geom_hdr_lines() + theme_minimal()
-#' pc + geom_hdr_lines(method = "mvnorm") + theme_minimal()
+#' pc <- ggplot(dfc, aes(x, y, color = c)) + coord_equal() + theme_minimal() +
+#'   theme(panel.grid.minor = element_blank())
+#' pc + geom_hdr_lines()
+#' pc + geom_hdr_lines(method = "mvnorm")
 #'
 #'
 #' # data with boundaries
-#' ggplot(df, aes(x^2)) + geom_histogram()
-#' ggplot(df, aes(x^2)) + geom_histogram(boundary = 0)
+#' ggplot(df, aes(x^2)) + geom_histogram(bins = 30)
+#' ggplot(df, aes(x^2)) + geom_histogram(bins = 30, boundary = 0)
 #' ggplot(df, aes(x^2, y^2)) + geom_hdr(method = "histogram")
 #'
 #'
@@ -226,15 +226,13 @@ StatHdr <- ggproto("StatHdr", Stat,
 
   probs <- sort(probs, decreasing = TRUE)
 
-
-  if (method == "kde")  isobands <- kde_iso(probs, data, res, rangex, rangey, h, adjust, type = "bands")
-  if (method == "histogram") isobands <- histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type = "bands")
-  if (method == "freqpoly") isobands <- freqpoly_iso(probs, data, nx, ny, rangex, rangey, type = "bands")
-  if (method == "mvnorm") isobands <- mvnorm_iso(probs, data, res, rangex, rangey, type = "bands")
-
-  if (!method %in% c("kde", "mvnorm", "histogram", "freqpoly")) stop("Invalid method specified")
-
-
+  isobands <- switch(method,
+    "kde" = kde_iso(probs, data, res, rangex, rangey, h, adjust, type = "bands"),
+    "histogram" = histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type = "bands"),
+    "freqpoly" = freqpoly_iso(probs, data, nx, ny, rangex, rangey, type = "bands"),
+    "mvnorm" = mvnorm_iso(probs, data, res, rangex, rangey, type = "bands"),
+  )
+  if (!(method %in% c("kde", "mvnorm", "histogram", "freqpoly"))) stop("Invalid method specified")
 
   names(isobands) <- scales::percent_format(accuracy = 1)(probs)
   path_df <- iso_to_polygon(isobands, data$group[1])
