@@ -145,7 +145,7 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
   df <- df[c("x","y","fhat","fhat_discretized")]
   df$fhat <- rescale(df$fhat)
 
-  breaks <- c(find_cutoff(df, probs, collapse = TRUE, uniroot = FALSE), Inf)
+  breaks <- c(find_cutoff(df, probs, uniroot = FALSE), Inf)
 
   if (!smooth) {
     # Evaluate histogram on a grid
