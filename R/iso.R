@@ -332,11 +332,7 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
   # Here, the necessary value of k seems to be O(n(1/2))
   # Found coefficient by setting k(n=1000) = 25
   n <- sum(df$n)
-  if (n > 1000) {
-    k <- floor(790/(n^(1/2)))
-  } else{
-    k <- 25
-  }
+  k <- if (n > 1000) floor(790/(n^(1/2))) else 25
 
   surface_list <- apply(df_A, 1, coeffs_to_surface, k, simplify = FALSE)
   df <- do.call(rbind, surface_list)
