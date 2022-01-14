@@ -43,6 +43,44 @@
 #'
 #' @examples
 #'
+#' f <- function(x, y) dexp(x) * dexp(y)
+#' ggplot() +
+#'   geom_hdr_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
+#'
+#'
+#' # the hdr of a custom parametric model
+#'
+#' # generate example data
+#' n <- 1000
+#' th_true <- c(5, 8)
+#' data <- data.frame(
+#'   x = rchisq(n, df = th_true[1]),
+#'   y = rchisq(n, df = th_true[2])
+#' )
+#'
+#' # estimate unknown parameters via maximum likelihood
+#' likelihood <- function(th) {
+#'   th <- abs(th) # hack to enforce parameter space boundary
+#'   log_f <- function(v) {
+#'     x <- v[1]; y <- v[2]
+#'     dchisq(x, df = th[1], log = TRUE) + dchisq(y, df = th[2], log = TRUE)
+#'   }
+#'   sum(apply(data, 1, log_f))
+#' }
+#' (th_hat <- optim(c(1, 1), likelihood, control = list(fnscale = -1))$par)
+#'
+#' # plot f for the give model
+#' f <- function(x, y, th) dchisq(x, df = th[1]) + dchisq(y, df = th[2])
+#'
+#' ggplot(data, aes(x, y)) +
+#'   geom_hdr_fun(fun = f, args = list(th = th_hat)) +
+#'   geom_point(size = .25, color = "red")
+#'
+#' ggplot(data, aes(x, y)) +
+#'   geom_hdr_fun(fun = f, args = list(th = th_hat)) +
+#'   geom_point(size = .25, color = "red") +
+#'   xlim(0, 100)
+#'
 #'
 #'
 NULL
