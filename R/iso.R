@@ -346,3 +346,50 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
 }
 
 
+fun_iso <- function(fun, args, normalized, probs, res, rangex, rangey, type) {
+
+  df <- expand.grid(
+    "x" = seq(rangex[1], rangex[2], length.out = res),
+    "y" = seq(rangey[1], rangey[2], length.out = res)
+  )
+
+
+  # fhat and fhat_discretized are misnomers --
+  # should really be fun, fun_discretized
+  # (find_cutoff expects df to have certain col names)
+  df$fhat <- do.call(fun, c(quote(df$x), quote(df$y), args))
+  df$fhat_discretized <- normalize(df$fhat)
+
+  if (normalized) {
+    # Checking that rangex and rangey are a good approx to support:
+    # grid_area <- (df$x[2] - df$x[1]) * (df$y[2] -  df$y[1])
+    grid_area <- (rangex[2] - rangex[1]) * (rangey[2] - rangey[1]) / (res^2)
+    approx_prob <- sum(df$fhat * grid_area)
+
+    # .95 is chosen as an arbitrary cutoff for a warning
+    if (approx_prob < .95) {
+      # warning(paste0(
+      #   "Plotting range is not be large enough to guarantee accurate HDRs. \n",
+      #   # "fun integrates to ", round(approx_prob, digits = 2), ".",
+      #   "Specify larger values of xlim, ylim for accurate HDRs.\n\n",
+      #   "If fun is not normalized to integrate to 1, specify normalized = FALSE",
+      #   "to disable this message."
+      # ))
+
+    }
+  }
+
+  df$fhat <- rescale(df$fhat)
+
+  breaks <- c(find_cutoff(df, probs), Inf)
+
+  df <- with(df, data.frame("x" = x, "y" = y, "z" = fhat))
+
+  if (type == "bands") {
+    xyz_to_isobands(df, breaks)
+  } else {
+    xyz_to_isolines(df, breaks)
+  }
+}
+
+
