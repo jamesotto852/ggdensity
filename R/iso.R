@@ -156,13 +156,9 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
     # Sensible default for n near 1e4:
     # k <- 50
 
-    # The "optimal" value of k seems to be on the order of O(n^(-1/3))
-    # found constant which yields k = 50 for n = 1000
-    if (n > 1000) {
-      k <- floor(500/(n^(1/3)))
-    } else{
-      k <- 50
-    }
+    # The necessary value of k seems to be O((nx*ny)^(-1/3))
+    # found constant which yields k = 50 for nx*ny = 10^2
+    k <- if (nx*ny > 10^2) max(floor(225/((nx * ny)^(1/3))), 5) else 50
 
     nnx <- nx * k
     nny <- ny * k
@@ -329,10 +325,8 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
   }
 
 
-  # Here, the necessary value of k seems to be O(n(1/2))
-  # Found coefficient by setting k(n=1000) = 25
-  n <- sum(df$n)
-  k <- if (n > 1000) floor(790/(n^(1/2))) else 25
+  # The necessary value of k seems to be O((nx*ny)^(-1/4))
+  k <- if (nx * ny > 10^2) max(floor(30/((nx * ny)^(1/4))), 3) else 10
 
   surface_list <- apply(df_A, 1, coeffs_to_surface, k, simplify = FALSE)
   df <- do.call(rbind, surface_list)
