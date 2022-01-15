@@ -155,7 +155,7 @@ StatHdrFun <- ggproto("StatHdrFun", Stat,
 
   probs <- sort(probs, decreasing = TRUE)
 
-  isobands <- fun_iso(fun, args, normalized, probs, res, rangex, rangey, type = "bands")
+  isobands <- fun_iso(fun, args, normalized, probs, res, rangex, rangey, scales, type = "bands")
 
   names(isobands) <- scales::percent_format(accuracy = 1)(probs)
   path_df <- iso_to_polygon(isobands, data$group[1])

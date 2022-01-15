@@ -346,18 +346,20 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
 }
 
 
-fun_iso <- function(fun, args, normalized, probs, res, rangex, rangey, type) {
+fun_iso <- function(fun, args, normalized, probs, res, rangex, rangey, scales, type) {
 
   df <- expand.grid(
     "x" = seq(rangex[1], rangex[2], length.out = res),
     "y" = seq(rangey[1], rangey[2], length.out = res)
   )
 
+  x_trans <- scales$x$trans$inverse(df$x)
+  y_trans <- scales$x$trans$inverse(df$y)
 
   # fhat and fhat_discretized are misnomers --
   # should really be fun, fun_discretized
   # (find_cutoff expects df to have certain col names)
-  df$fhat <- do.call(fun, c(quote(df$x), quote(df$y), args))
+  df$fhat <- do.call(fun, c(quote(x_trans), quote(y_trans), args))
   df$fhat_discretized <- normalize(df$fhat)
 
   if (normalized) {
