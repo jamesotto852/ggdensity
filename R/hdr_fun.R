@@ -70,7 +70,7 @@
 #' (th_hat <- optim(c(1, 1), likelihood, control = list(fnscale = -1))$par)
 #'
 #' # plot f for the give model
-#' f <- function(x, y, th) dchisq(x, df = th[1]) + dchisq(y, df = th[2])
+#' f <- function(x, y, th) dchisq(x, df = th[1]) * dchisq(y, df = th[2])
 #'
 #' ggplot(data, aes(x, y)) +
 #'   geom_hdr_fun(fun = f, args = list(th = th_hat)) +
