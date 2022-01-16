@@ -27,15 +27,15 @@ devtools::install_github("jamesotto852/ggdensity")
 
 ## Simple Examples
 
-#### Comparing to `geom_contour_2d`
+#### Comparing to `geom_contour_2d()`
 
 Below, we plot density estimates of some simulated data using
 `geom_density_2d_filled()` (left) and `geom_hdr()` (right). Both plots
 show contours from the same density surface, but the contours plotted by
-`geom_hdr()` are chosen to be informative, showing the smallest regions
-containing 50%, 80%, 95%, and 99% of the estimated density (the HDRs).
-This results in a very interpretable graphic, conveying more information
-than arbitrary density contours.
+`geom_hdr()` are chosen to be inferentially relevant, showing the
+smallest regions containing 50%, 80%, 95%, and 99% of the estimated
+density (the HDRs). This results in a very interpretable graphic,
+conveying more information than arbitrary density contours.
 
 <!-- Minor sleight-of-hand, don't want readers to worry about theme and patchwork syntax -->
 
