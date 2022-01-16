@@ -1,30 +1,15 @@
 #' Highest density regions of a bivariate pdf
 #'
 #'
-#' @section Aesthetics: geom_hdr_fun understands the following aesthetics (required
+#' @section Aesthetics: geom_hdr_fun understands the following aesthetics
+#'   (required aesthetics are in bold):
+#'
+#'   - x - y - alpha - color - fill - group - linetype - size - subgroup
+#'
+#'   geom_hdr_fun_lines understands the following aesthetics (required
 #'   aesthetics are in bold):
 #'
-#'   - x
-#'   - y
-#'   - alpha
-#'   - color
-#'   - fill
-#'   - group
-#'   - linetype
-#'   - size
-#'   - subgroup
-#'
-#'   geom_hdr_fun_lines understands the following aesthetics (required aesthetics
-#'   are in bold):
-#'
-#'   - x
-#'   - y
-#'   - alpha
-#'   - color
-#'   - group
-#'   - linetype
-#'   - size
-#'   - subgroup
+#'   - x - y - alpha - color - group - linetype - size - subgroup
 #'
 #' @section Computed variables:
 #'
@@ -34,8 +19,16 @@
 #' @inheritParams ggplot2::geom_path
 #' @inheritParams ggplot2::stat_identity
 #' @inheritParams ggplot2::stat_density2d
+#' @param fun A function, the joint probability density function on two
+#'   variables, as a function of a vector of length 2.
+#' @param args List of additional arguments passed on to the function `fun` as a
+#'   named list.
+#' @param normalized Is the function normalized? (A proper PDF?) If no, set to
+#'   `FALSE`.
 #' @param probs Probabilities to compute highest density regions for.
 #' @param res Resolution of grid `fun` is evaluated on.
+#' @param xlim,ylim Optionally, restrict the range of the function to this
+#'   range.
 #' @name geom_hdr_fun
 #' @rdname geom_hdr_fun
 #'

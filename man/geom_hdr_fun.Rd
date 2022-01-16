@@ -101,7 +101,19 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
+\item{fun}{A function, the joint probability density function on two
+variables, as a function of a vector of length 2.}
+
+\item{args}{List of additional arguments passed on to the function \code{fun} as a
+named list.}
+
+\item{normalized}{Is the function normalized? (A proper PDF?) If no, set to
+\code{FALSE}.}
+
 \item{probs}{Probabilities to compute highest density regions for.}
+
+\item{xlim, ylim}{Optionally, restrict the range of the function to this
+range.}
 
 \item{res}{Resolution of grid \code{fun} is evaluated on.}
 
@@ -126,31 +138,16 @@ layer, as a string.}
 Highest density regions of a bivariate pdf
 }
 \section{Aesthetics}{
- geom_hdr_fun understands the following aesthetics (required
-aesthetics are in bold):
+ geom_hdr_fun understands the following aesthetics
+(required aesthetics are in bold):
 \itemize{
-\item x
-\item y
-\item alpha
-\item color
-\item fill
-\item group
-\item linetype
-\item size
-\item subgroup
+\item x - y - alpha - color - fill - group - linetype - size - subgroup
 }
 
-geom_hdr_fun_lines understands the following aesthetics (required aesthetics
-are in bold):
+geom_hdr_fun_lines understands the following aesthetics (required
+aesthetics are in bold):
 \itemize{
-\item x
-\item y
-\item alpha
-\item color
-\item group
-\item linetype
-\item size
-\item subgroup
+\item x - y - alpha - color - group - linetype - size - subgroup
 }
 }
 
