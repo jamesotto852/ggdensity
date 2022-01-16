@@ -172,11 +172,16 @@ ggplot() +
 
 # generate example data
 n <- 1000
-th_true <- c(5, 8)
-data <- data.frame(
-  x = rchisq(n, df = th_true[1]),
-  y = rchisq(n, df = th_true[2])
-)
+th_true <- c(3, 8)
+
+rdata <- function(n, th) {
+  gen_single_obs <- function(th) {
+    rchisq(2, df = th) # can be anything
+  }
+  df <- replicate(n, gen_single_obs(th))
+  setNames(as.data.frame(t(df)), c("x", "y"))
+}
+data <- rdata(n, th_true)
 
 # estimate unknown parameters via maximum likelihood
 likelihood <- function(th) {
@@ -190,7 +195,7 @@ likelihood <- function(th) {
 (th_hat <- optim(c(1, 1), likelihood, control = list(fnscale = -1))$par)
 
 # plot f for the give model
-f <- function(x, y, th) dchisq(x, df = th[1]) + dchisq(y, df = th[2])
+f <- function(x, y, th) dchisq(x, df = th[1]) * dchisq(y, df = th[2])
 
 ggplot(data, aes(x, y)) +
   geom_hdr_fun(fun = f, args = list(th = th_hat)) +
@@ -199,7 +204,7 @@ ggplot(data, aes(x, y)) +
 ggplot(data, aes(x, y)) +
   geom_hdr_fun(fun = f, args = list(th = th_hat)) +
   geom_point(size = .25, color = "red") +
-  xlim(0, 100)
+  xlim(0, 40) + ylim(c(0, 40))
 
 
 
