@@ -15,6 +15,10 @@ functions:
 -   `geom_hdr()` ↔ `geom_contour_2d_filled()`
 -   `geom_hdr_lines()` ↔ `geom_contour_2d()`
 
+Also included are the functions `geom_hdr_fun()` and
+`geom_hdr_fun_lines()` for plotting HDRs of user-specified bivariate
+probability density functions.
+
 ## Installation
 
 You can install the development version of ggdensity from
@@ -131,3 +135,52 @@ in HDRs which obey constrained supports.
 <!-- #### Bayesian applications -->
 <!-- In the context of a Bayesian analysis, `geom_hdr()` creates plots of highest posterior regions. -->
 <!-- All we need to do is give `geom_hdr()` a data frame with draws from a posterior, and  -->
+
+## Plotting HDRs for abitrary pdfs with `geom_hdr_fun()`
+
+`geom_hdr_fun()` and `geom_hdr_fun_lines()` compute and plot the HDRs of
+an arbitrary bivariate pdf. These functions behave similarly to
+`geom_function()` from
+[`ggplot2`](https://github.com/tidyverse/ggplot2), accepting the
+argument `fun` specifying the pdf to be summarized. Below, we have
+illustrated this by plotting HDRs corresponding to the bivariate
+standard normal distribution.
+
+``` r
+f <- \(x, y) dnorm(x) * dnorm(y)
+
+ggplot() +
+  geom_hdr_fun(fun = f, xlim = c(-3, 3), ylim = c(-3, 3)) +
+  coord_fixed()
+```
+
+<img src="man/figures/README-ex_hdr_fun_1-1.png" width="100%" />
+
+#### Visualizing parametric density estimates with `geom_hdr_fun()`
+
+In addition to all of the methods of density estimation available with
+`geom_hdr()`, `geom_hdr_fun()` allows for the plotting of parametrically
+estimated HDRs corresponding to any user-specified data model. Below, we
+have found the MLE estimates for the rates of a sample from the
+bivariate exponential distribution and used `geom_hdr_fun()` to plot the
+parametrically estimated HDRs.
+
+``` r
+df <- data.frame(
+  x = rexp(1000, 1),
+  y = rexp(1000, 1)
+)
+
+# pdf for parametric density estimate
+f <- \(x, y, lambda) dexp(x, lambda[1]) * dexp(y, lambda[2])
+
+# estimate parameters governing joint pdf
+lambda_hat <- apply(df, 2, mean)
+
+ggplot(df, aes(x, y)) +
+  geom_hdr_fun(fun = f, args = list(lambda = lambda_hat)) +
+  geom_point(size = .3) +
+  coord_fixed()
+```
+
+<img src="man/figures/README-ex_hdr_fun_2-1.png" width="100%" />

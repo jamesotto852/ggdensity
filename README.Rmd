@@ -32,6 +32,8 @@ set.seed(1)
 - `geom_hdr()` $\longleftrightarrow$ `geom_contour_2d_filled()`
 - `geom_hdr_lines()` $\longleftrightarrow$ `geom_contour_2d()`
 
+Also included are the functions `geom_hdr_fun()` and `geom_hdr_fun_lines()` for plotting HDRs of user-specified bivariate probability density functions.
+
 ## Installation
 
 You can install the development version of ggdensity from [GitHub](https://github.com/) with:
@@ -110,8 +112,8 @@ ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
   facet_wrap(vars(species))
 ```
 
-## More Examples
 
+## More Examples
 
 #### Mapping to different aesthetics
 
@@ -139,6 +141,7 @@ p2 <- p +
 
 p1 | p2
 ```
+
 
 #### Different density estimators
 
@@ -213,6 +216,48 @@ map2(geoms, titles, p_row) |>
 <!-- In the context of a Bayesian analysis, `geom_hdr()` creates plots of highest posterior regions. -->
 <!-- All we need to do is give `geom_hdr()` a data frame with draws from a posterior, and  -->
 
+
+
+
+## Plotting HDRs for abitrary pdfs with `geom_hdr_fun()` 
+
+`geom_hdr_fun()` and `geom_hdr_fun_lines()` compute and plot the HDRs of an arbitrary bivariate pdf. 
+These functions behave similarly to `geom_function()` from [`ggplot2`](https://github.com/tidyverse/ggplot2), 
+accepting the argument `fun` specifying the pdf to be summarized.
+Below, we have illustrated this by plotting HDRs corresponding to the bivariate standard normal distribution.
+
+```{r ex_hdr_fun_1}
+f <- \(x, y) dnorm(x) * dnorm(y)
+
+ggplot() +
+  geom_hdr_fun(fun = f, xlim = c(-3, 3), ylim = c(-3, 3)) +
+  coord_fixed()
+```
+
+#### Visualizing parametric density estimates with `geom_hdr_fun()`
+
+In addition to all of the methods of density estimation available with `geom_hdr()`,
+`geom_hdr_fun()` allows for the plotting of parametrically estimated HDRs corresponding to any user-specified data model.
+Below, we have found the MLE estimates for the rates of a sample from the bivariate exponential distribution
+and used `geom_hdr_fun()` to plot the parametrically estimated HDRs. 
+
+```{r ex_hdr_fun_2}
+df <- data.frame(
+  x = rexp(1000, 1),
+  y = rexp(1000, 1)
+)
+
+# pdf for parametric density estimate
+f <- \(x, y, lambda) dexp(x, lambda[1]) * dexp(y, lambda[2])
+
+# estimate parameters governing joint pdf
+lambda_hat <- apply(df, 2, mean)
+
+ggplot(df, aes(x, y)) +
+  geom_hdr_fun(fun = f, args = list(lambda = lambda_hat)) +
+  geom_point(size = .3) +
+  coord_fixed()
+```
 
 
 
