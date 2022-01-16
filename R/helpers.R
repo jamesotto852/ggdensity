@@ -10,6 +10,7 @@ xyz_to_isobands <- get("xyz_to_isobands", asNamespace("ggplot2"))
 xyz_to_isolines <- get("xyz_to_isolines", asNamespace("ggplot2"))
 iso_to_polygon <- get("iso_to_polygon", asNamespace("ggplot2"))
 iso_to_path <- get("iso_to_path", asNamespace("ggplot2"))
+ensure_nonempty_data <- get("ensure_nonempty_data", asNamespace("ggplot2"))
 
 
 

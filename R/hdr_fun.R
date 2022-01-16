@@ -107,9 +107,7 @@ stat_hdr_fun <- function(mapping = NULL, data = NULL,
                                          show.legend = NA,
                                          inherit.aes = TRUE) {
 
-  if (is.null(data)) {
-    data <- ggplot2:::ensure_nonempty_data
-  }
+  if (is.null(data)) data <- ensure_nonempty_data
 
   layer(
     data = data,
@@ -181,9 +179,7 @@ geom_hdr_fun <- function(mapping = NULL, data = NULL,
                          show.legend = NA,
                          inherit.aes = TRUE) {
 
-  if (is.null(data)) {
-    data <- ggplot2:::ensure_nonempty_data
-  }
+  if (is.null(data)) data <- ensure_nonempty_data
 
   layer(
     data = data,
