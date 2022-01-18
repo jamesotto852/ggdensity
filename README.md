@@ -4,6 +4,10 @@
 # ggdensity <img src="man/figures/logo.png"  align="right"  width="120" style="padding-left:10px;background-color:white;" />
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/jamesotto852/ggdensity/workflows/R-CMD-check/badge.svg)](https://github.com/jamesotto852/ggdensity/actions)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version-ago/ggdensity)](https://cran.r-project.org/package=ggdensity)
+[![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/ggdensity)](https://cran.r-project.org/package=ggdensity)
 <!-- badges: end -->
 
 `ggdensity` extends [`ggplot2`](https://github.com/tidyverse/ggplot2)
@@ -41,8 +45,6 @@ smallest regions containing 50%, 80%, 95%, and 99% of the estimated
 density (the HDRs). This results in a very interpretable graphic,
 conveying more information than arbitrary density contours.
 
-<!-- Minor sleight-of-hand, don't want readers to worry about theme and patchwork syntax -->
-
 ``` r
 df <- data.frame(x = rnorm(1000), y = rnorm(1000))
 
@@ -53,7 +55,7 @@ ggplot(df, aes(x, y)) +
   geom_hdr()
 ```
 
-<img src="man/figures/README-ex1_code-1.png" width="100%" />
+<img src="man/figures/README-ex1-1.png" width="50%" /><img src="man/figures/README-ex1-2.png" width="50%" />
 
 #### Grouping
 
@@ -67,7 +69,7 @@ illustrate this with the `penguins` data from
 library("palmerpenguins")
 
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
-  geom_hdr() +
+  geom_hdr(xlim = c(160, 240), ylim = c(30, 70)) +
   geom_point(shape = 21)
 ```
 
@@ -81,7 +83,7 @@ To alleviate overplotting, we can use `geom_hdr_lines()` or facet:
 
 ``` r
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, color = species)) +
-  geom_hdr_lines() +
+  geom_hdr_lines(xlim = c(160, 240), ylim = c(30, 70)) +
   geom_point(size = .5)
 ```
 
@@ -93,7 +95,7 @@ ggplot(penguins, aes(flipper_length_mm, bill_length_mm, color = species)) +
 
 ``` r
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
-  geom_hdr() +
+  geom_hdr(xlim = c(160, 240), ylim = c(30, 70)) +
   geom_point(shape = 21) +
   facet_wrap(vars(species))
 ```
@@ -109,17 +111,17 @@ the `alpha` aesthetic by default. This is easy to change via
 `after_stat()`, just be sure to override the `alpha` aesthetic by
 setting `alpha = 1`.
 
-<!-- Again, sleight-of-hand for legend formatting and patchwork -->
-
 ``` r
 ggplot(faithful) +
-  geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1)
+  geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1, 
+           xlim = c(0, 8), ylim = c(30, 110))
 
 ggplot(faithful) +
-  geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1)
+  geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1, 
+                 xlim = c(0, 8), ylim = c(30, 110))
 ```
 
-<img src="man/figures/README-ex_after_stat_code-1.png" width="100%" />
+<img src="man/figures/README-ex_after_stat-1.png" width="50%" /><img src="man/figures/README-ex_after_stat-2.png" width="50%" />
 
 #### Different density estimators
 

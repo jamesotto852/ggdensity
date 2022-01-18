@@ -15,7 +15,6 @@ knitr::opts_chunk$set(
 
 ```{r, include = FALSE}
 library("ggplot2"); theme_set(theme_bw())
-library("patchwork")
 library("ggdensity")
 
 set.seed(1)
@@ -24,6 +23,9 @@ set.seed(1)
 # ggdensity <img src="man/figures/logo.png"  align="right"  width="120" style="padding-left:10px;background-color:white;" />
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/jamesotto852/ggdensity/workflows/R-CMD-check/badge.svg)](https://github.com/jamesotto852/ggdensity/actions)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version-ago/ggdensity)](https://cran.r-project.org/package=ggdensity)
+[![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/ggdensity)](https://cran.r-project.org/package=ggdensity)
 <!-- badges: end -->
 
 `ggdensity` extends [`ggplot2`](https://github.com/tidyverse/ggplot2) providing more interpretable visualizations of density estimates based on highest density regions (HDRs).
@@ -52,8 +54,7 @@ Both plots show contours from the same density surface, but the contours plotted
 showing the smallest regions containing $50\%$, $80\%$, $95\%$, and $99\%$ of the estimated density (the HDRs).
 This results in a very interpretable graphic, conveying more information than arbitrary density contours.
 
-<!-- Minor sleight-of-hand, don't want readers to worry about theme and patchwork syntax -->
-```{r ex1_echo, eval = FALSE}
+```{r ex1, fig.show="hold", out.width="50%"}
 df <- data.frame(x = rnorm(1000), y = rnorm(1000))
 
 ggplot(df, aes(x, y)) + 
@@ -62,23 +63,7 @@ ggplot(df, aes(x, y)) +
 ggplot(df, aes(x, y)) + 
   geom_hdr()
 ```
-```{r ex1_code, echo = FALSE, warning = FALSE, fig.width = 11}
-df <- data.frame(x = rnorm(1000), y = rnorm(1000))
 
-p <- ggplot(df, aes(x, y)) + coord_equal(xlim = c(-3.5, 3.5), ylim = c(-3.5, 3.5), expand = FALSE)
-
-p1 <- p +
-  geom_density_2d_filled() + 
-  scale_x_continuous(lim = c(-3.5, 3.5)) +
-  scale_y_continuous(lim = c(-3.5, 3.5)) +
-  theme(legend.position = "left", legend.key.size = unit(.5, "cm"))
-  # theme(legend.position = "left")
-
-p2 <- p +
-  geom_hdr()
-
-p1 | p2
-```
 
 #### Grouping
 
@@ -89,7 +74,7 @@ This allows for easy comparison of HDRs between groups in a data set, below we i
 library("palmerpenguins")
 
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
-  geom_hdr() +
+  geom_hdr(xlim = c(160, 240), ylim = c(30, 70)) +
   geom_point(shape = 21)
 ```
 
@@ -99,7 +84,7 @@ To alleviate overplotting, we can use `geom_hdr_lines()` or facet:
 
 ```{r ex_penguins_lines, warning = FALSE}
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, color = species)) +
-  geom_hdr_lines() +
+  geom_hdr_lines(xlim = c(160, 240), ylim = c(30, 70)) +
   geom_point(size = .5)
 ```
 
@@ -107,7 +92,7 @@ ggplot(penguins, aes(flipper_length_mm, bill_length_mm, color = species)) +
 
 ```{r ex_penguins_facet, fig.width = 11, warning = FALSE}
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
-  geom_hdr() +
+  geom_hdr(xlim = c(160, 240), ylim = c(30, 70)) +
   geom_point(shape = 21) +
   facet_wrap(vars(species))
 ```
@@ -121,25 +106,14 @@ ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
 This is easy to change via `after_stat()`,
 just be sure to override the `alpha` aesthetic by setting `alpha = 1`.
 
-<!-- Again, sleight-of-hand for legend formatting and patchwork -->
-```{r ex_after_stat_echo, eval = FALSE}
+```{r ex_after_stat, fig.show="hold", out.width="50%"}
 ggplot(faithful) +
-  geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1)
+  geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1, 
+           xlim = c(0, 8), ylim = c(30, 110))
 
 ggplot(faithful) +
-  geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1)
-```
-```{r ex_after_stat_code, echo = FALSE, fig.width = 11}
-p <- ggplot(faithful)
-
-p1 <- p +
-  geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1) +
-  theme(legend.position = "left")
-
-p2 <- p +
-  geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1)
-
-p1 | p2
+  geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1, 
+                 xlim = c(0, 8), ylim = c(30, 110))
 ```
 
 
@@ -152,6 +126,7 @@ For example, histogram estimators result in HDRs which obey constrained supports
 
 ```{r ex_methods, echo = FALSE, fig.width = 11, fig.height = 17}
 library("purrr")
+library("patchwork")
 
 df_norm <- data.frame(
   x = rnorm(5000),
@@ -180,7 +155,7 @@ p_row <- function(layer, title, ylabs = FALSE) {
   p_title <- grid::textGrob(title)
   p_norm <- p_df(df_norm) + layer + coord_fixed(xlim = c(-3.5, 3.5), ylim = c(-3.5, 3.5))
   p_norm_mix <- p_df(df_norm_mix) + layer + coord_fixed(xlim = c(-4.5, 4.5), ylim = c(-4.5, 4.5))
-  p_norm_exp <- p_df(df_exp) + layer + coord_fixed(xlim = c(0, 6), ylim = c(0, 6))
+  p_norm_exp <- p_df(df_exp) + layer + coord_fixed(xlim = c(-.25, 6), ylim = c(-.25, 6))
   
   list(p_title, p_norm, p_norm_mix, p_norm_exp)
 }
@@ -189,10 +164,11 @@ p_row <- function(layer, title, ylabs = FALSE) {
 geoms <- list(
   geom_point(size = .3, alpha = .6),
   # geom_density_2d_filled(),
-  geom_hdr(method = "kde"),
-  geom_hdr(method = "mvnorm"),
+  # extreme xlim, ylim ensure that HDRs aren't clipped
+  geom_hdr(method = "kde", xlim = c(-10, 10), ylim = c(-10, 10)),
+  geom_hdr(method = "mvnorm", xlim = c(-10, 10), ylim = c(-10, 10)),
   geom_hdr(method = "histogram"),
-  geom_hdr(method = "freqpoly")
+  geom_hdr(method = "freqpoly", xlim = c(-10, 10), ylim = c(-10, 10))
 )
 
 titles <- c(

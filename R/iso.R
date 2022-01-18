@@ -9,10 +9,13 @@ kde_iso <- function(probs, data, res, rangex, rangey, h, adjust, type) {
 
   kdeout <- MASS::kde2d(
                x = data$x, y = data$y, n = res, h = h,
-               lims = c(
-                 scales::expand_range(rangex, .25),
-                 scales::expand_range(rangey, .25)
-               )
+               lims = c(rangex, rangey)
+               # automatic expansion of rangex and rangey to counteract clipping has been
+               # disabled to avoid issues w/ scale_x/y_continuous()
+               # lims = c(
+               #   scales::expand_range(rangex, .25),
+               #   scales::expand_range(rangey, .25)
+               # )
              )
 
   df <- with(kdeout, expand.grid("x" = x, "y" = y))
@@ -47,8 +50,11 @@ mvnorm_iso <- function(probs, data, res, rangex, rangey, type) {
     pchisq(Mdist, df = 2)
   }
 
-  rangex <- scales::expand_range(rangex, .25)
-  rangey <- scales::expand_range(rangey, .25)
+
+  # automatic expansion of rangex and rangey to counteract clipping has been
+  # disabled to avoid issues w/ scale_x/y_continuous()
+  # rangex <- scales::expand_range(rangex, .25)
+  # rangey <- scales::expand_range(rangey, .25)
 
   df <- expand.grid(
     "x" = seq(rangex[1], rangex[2], length.out = res),
@@ -156,6 +162,7 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
     # Sensible default for n near 1e4:
     # k <- 50
 
+    # Currently determining k heuristically - not based on any theoretical results
     # The necessary value of k seems to be O((nx*ny)^(-1/3))
     # found constant which yields k = 50 for nx*ny = 10^2
     k <- if (nx*ny > 10^2) max(floor(225/((nx * ny)^(1/3))), 5) else 50
@@ -329,6 +336,7 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
   }
 
 
+  # Currently determining k heuristically - not based on any theoretical results
   # The necessary value of k seems to be O((nx*ny)^(-1/4))
   k <- if (nx * ny > 10^2) max(floor(30/((nx * ny)^(1/4))), 3) else 10
 
@@ -356,6 +364,10 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
 
 
 fun_iso <- function(fun, args, normalized, probs, res, rangex, rangey, scales, type) {
+  # browser()
+
+  rangex_trans <- if (is.null(scales$x)) rangex else scales$x$trans$inverse(rangex)
+  rangey_trans <- if (is.null(scales$y)) rangey else scales$y$trans$inverse(rangey)
 
   if (length(res) == 1L) res <- rep(res, 2)
 
@@ -364,19 +376,21 @@ fun_iso <- function(fun, args, normalized, probs, res, rangex, rangey, scales, t
     "y" = seq(rangey[1], rangey[2], length.out = res[2])
   )
 
-  x_trans <- scales$x$trans$inverse(df$x)
-  y_trans <- scales$x$trans$inverse(df$y)
+  df_trans <- expand.grid(
+    "x" = seq(rangex_trans[1], rangex_trans[2], length.out = res),
+    "y" = seq(rangey_trans[1], rangey_trans[2], length.out = res)
+  )
 
   # fhat and fhat_discretized are misnomers --
   # should really be fun, fun_discretized
   # (find_cutoff expects df to have certain col names)
-  df$fhat <- do.call(fun, c(quote(x_trans), quote(y_trans), args))
+  df$fhat <- do.call(fun, c(quote(df_trans$x), quote(df_trans$y), args))
   df$fhat_discretized <- normalize(df$fhat)
 
   if (normalized) {
     # Checking that rangex and rangey are a good approx to support:
     # grid_area <- (df$x[2] - df$x[1]) * (df$y[2] -  df$y[1])
-    grid_area <- (rangex[2] - rangex[1]) * (rangey[2] - rangey[1]) / prod(res)
+    grid_area <- (rangex_trans[2] - rangex_trans[1]) * (rangey_trans[2] - rangey_trans[1]) / (res^2)
     approx_prob <- sum(df$fhat * grid_area)
 
     # .95 is chosen as an arbitrary cutoff for a warning

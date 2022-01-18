@@ -144,13 +144,28 @@ Highest density regions of a bivariate pdf
  geom_hdr_fun understands the following aesthetics
 (required aesthetics are in bold):
 \itemize{
-\item x - y - alpha - color - fill - group - linetype - size - subgroup
+\item x
+\item y
+\item alpha
+\item color
+\item fill
+\item group
+\item linetype
+\item size
+\item subgroup
 }
 
 geom_hdr_fun_lines understands the following aesthetics (required
 aesthetics are in bold):
 \itemize{
-\item x - y - alpha - color - group - linetype - size - subgroup
+\item x
+\item y
+\item alpha
+\item color
+\item group
+\item linetype
+\item size
+\item subgroup
 }
 }
 

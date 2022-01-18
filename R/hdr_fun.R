@@ -4,12 +4,27 @@
 #' @section Aesthetics: geom_hdr_fun understands the following aesthetics
 #'   (required aesthetics are in bold):
 #'
-#'   - x - y - alpha - color - fill - group - linetype - size - subgroup
+#'   - x
+#'   - y
+#'   - alpha
+#'   - color
+#'   - fill
+#'   - group
+#'   - linetype
+#'   - size
+#'   - subgroup
 #'
 #'   geom_hdr_fun_lines understands the following aesthetics (required
 #'   aesthetics are in bold):
 #'
-#'   - x - y - alpha - color - group - linetype - size - subgroup
+#'   - x
+#'   - y
+#'   - alpha
+#'   - color
+#'   - group
+#'   - linetype
+#'   - size
+#'   - subgroup
 #'
 #' @section Computed variables:
 #'
@@ -147,15 +162,8 @@ StatHdrFun <- ggproto("StatHdrFun", Stat,
                            fun, args = list(), normalized = TRUE, probs = c(.99, .95, .8, .5),
                            n = 100, xlim = NULL, ylim = NULL)  {
 
-  # Allow for use if data = NULL
-  if (is.null(scales$x)) {
-    rangex <- xlim %||% c(0, 1)
-    rangey <- ylim %||% c(0, 1)
-  } else {
-    rangex <- xlim %||% scales$x$dimension()
-    rangey <- ylim %||% scales$y$dimension()
-  }
-
+  rangex <- if(is.null(scales$x)) xlim %||% c(0, 1) else xlim %||% scales$x$dimension()
+  rangey <- if(is.null(scales$y)) ylim %||% c(0, 1) else ylim %||% scales$y$dimension()
 
   probs <- sort(probs, decreasing = TRUE)
 
