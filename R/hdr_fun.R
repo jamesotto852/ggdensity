@@ -38,12 +38,10 @@
 #'   variables, as a function of a vector of length 2.
 #' @param args List of additional arguments passed on to the function `fun` as a
 #'   named list.
-#' @param res Resolution of grid used in discrete approximations for kernel
-#'   density and parametric estimators.
 #' @param normalized Is the function normalized? (A proper PDF?) If no, set to
 #'   `FALSE`.
 #' @param probs Probabilities to compute highest density regions for.
-#' @param n Resolution of grid `fun` is evaluated on.
+#' @param res Resolution of grid `fun` is evaluated on.
 #' @param xlim,ylim Optionally, restrict the range of the function to this
 #'   range.
 #' @name geom_hdr_fun
@@ -53,13 +51,9 @@
 #'
 #' @examples
 #'
-#' f <- function(x, y) dnorm(x) * dnorm(y)
+#' f <- function(x, y) dexp(x) * dexp(y)
 #' ggplot() +
-#'   geom_hdr_fun(fun = f, xlim = c(-10, 10), ylim = c(-10, 10))
-#'
-#' df <- expand.grid(x = c(-10, 10), y = c(-10, 10))
-#' ggplot(df, aes(x, y)) +
-#'   geom_hdr_fun(fun = f)
+#'   geom_hdr_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
 #'
 #'
 #' # the hdr of a custom parametric model
@@ -100,9 +94,7 @@
 #'   geom_point(size = .25, color = "red") +
 #'   xlim(0, 40) + ylim(c(0, 40))
 #'
-#' ggplot(data, aes(x, y)) +
-#'   geom_hdr_fun(fun = f, args = list(th = th_hat), n = c(10, 10)) +
-#'   geom_point(size = .25, color = "red")
+#'
 #'
 NULL
 
@@ -114,14 +106,14 @@ NULL
 #' @rdname geom_hdr_fun
 #' @export
 stat_hdr_fun <- function(mapping = NULL, data = NULL,
-                                         geom = "hdr_fun", position = "identity",
-                                         ...,
-                                         fun, args = list(), normalized = TRUE,
-                                         probs = c(.99, .95, .8, .5),
-                                         xlim = NULL, ylim = NULL, n = 101,
-                                         na.rm = FALSE,
-                                         show.legend = NA,
-                                         inherit.aes = TRUE) {
+  geom = "hdr_fun", position = "identity",
+  ...,
+  fun, args = list(), normalized = TRUE,
+  probs = c(.99, .95, .8, .5),
+  xlim = NULL, ylim = NULL, res = 100,
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE) {
 
   if (is.null(data)) data <- ensure_nonempty_data
 
@@ -138,7 +130,7 @@ stat_hdr_fun <- function(mapping = NULL, data = NULL,
       args = args,
       normalized = normalized,
       probs = probs,
-      n = n,
+      res = res,
       xlim = xlim,
       ylim = ylim,
       na.rm = na.rm,
@@ -159,21 +151,21 @@ StatHdrFun <- ggproto("StatHdrFun", Stat,
   default_aes = aes(order = after_stat(level), alpha = after_stat(level)),
 
   compute_group = function(data, scales, na.rm = FALSE,
-                           fun, args = list(), normalized = TRUE, probs = c(.99, .95, .8, .5),
-                           n = 100, xlim = NULL, ylim = NULL)  {
+    fun, args = list(), normalized = TRUE, probs = c(.99, .95, .8, .5),
+    res = 100, xlim = NULL, ylim = NULL)  {
 
-  rangex <- if(is.null(scales$x)) xlim %||% c(0, 1) else xlim %||% scales$x$dimension()
-  rangey <- if(is.null(scales$y)) ylim %||% c(0, 1) else ylim %||% scales$y$dimension()
+    rangex <- if(is.null(scales$x)) xlim %||% c(0, 1) else xlim %||% scales$x$dimension()
+    rangey <- if(is.null(scales$y)) ylim %||% c(0, 1) else ylim %||% scales$y$dimension()
 
-  probs <- sort(probs, decreasing = TRUE)
+    probs <- sort(probs, decreasing = TRUE)
 
-  isobands <- fun_iso(fun, args, normalized, probs, n, rangex, rangey, scales, type = "bands")
+    isobands <- fun_iso(fun, args, normalized, probs, res, rangex, rangey, scales, type = "bands")
 
-  names(isobands) <- scales::percent_format(accuracy = 1)(probs)
-  path_df <- iso_to_polygon(isobands, data$group[1])
-  path_df$level <- ordered(path_df$level, levels = names(isobands))
+    names(isobands) <- scales::percent_format(accuracy = 1)(probs)
+    path_df <- iso_to_polygon(isobands, data$group[1])
+    path_df$level <- ordered(path_df$level, levels = names(isobands))
 
-  path_df
+    path_df
 
   }
 )
@@ -182,11 +174,11 @@ StatHdrFun <- ggproto("StatHdrFun", Stat,
 #' @rdname geom_hdr_fun
 #' @export
 geom_hdr_fun <- function(mapping = NULL, data = NULL,
-                         stat = "hdr_fun", position = "identity",
-                         ...,
-                         na.rm = FALSE,
-                         show.legend = NA,
-                         inherit.aes = TRUE) {
+  stat = "hdr_fun", position = "identity",
+  ...,
+  na.rm = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE) {
 
   if (is.null(data)) data <- ensure_nonempty_data
 
