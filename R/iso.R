@@ -167,9 +167,7 @@ histogram_iso <- function(probs, df, bins, rangex, rangey, nudgex, nudgey, smoot
     # found constant which yields k = 50 for bins[1]*bins[2] = 10^2
     k <- if (bins[1] * bins[2] > 10^2) max(floor(225/((bins[1] * bins[2])^(1/3))), 5) else 50
 
-    bbins <- numeric(2)
-    bbins[1] <- bins[1] * k
-    bbins[2] <- bins[2] * k
+    bbins <- bins * k
 
     ssx <- seq(rangex[1], rangex[2], length.out = bbins[1])
     ssy <- seq(rangey[1], rangey[2], length.out = bbins[2])
@@ -236,8 +234,7 @@ freqpoly_iso <- function(probs, df, bins, rangex, rangey, type) {
   rangex[2] <- rangex[2] + de_x
   rangey[1] <- rangey[1] - de_y
   rangey[2] <- rangey[2] + de_y
-  bins[1] <- bins[1] + 2
-  bins[2] <- bins[2] + 2
+  bins <- bins + 2
   sx <- seq(rangex[1], rangex[2], length.out = bins[1] + 1)
   sy <- seq(rangey[1], rangey[2], length.out = bins[2] + 1)
 
