@@ -8,15 +8,15 @@ kde_iso <- function(probs, data, res, rangex, rangey, h, adjust, type) {
   }
 
   kdeout <- MASS::kde2d(
-               x = data$x, y = data$y, n = res, h = h,
-               lims = c(rangex, rangey)
-               # automatic expansion of rangex and rangey to counteract clipping has been
-               # disabled to avoid issues w/ scale_x/y_continuous()
-               # lims = c(
-               #   scales::expand_range(rangex, .25),
-               #   scales::expand_range(rangey, .25)
-               # )
-             )
+    x = data$x, y = data$y, n = res, h = h,
+    lims = c(rangex, rangey)
+    # automatic expansion of rangex and rangey to counteract clipping has been
+    # disabled to avoid issues w/ scale_x/y_continuous()
+    # lims = c(
+    #   scales::expand_range(rangex, .25),
+    #   scales::expand_range(rangey, .25)
+    # )
+  )
 
   df <- with(kdeout, expand.grid("x" = x, "y" = y))
 
@@ -210,10 +210,6 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
 }
 
 
-
-
-
-
 freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
   xvals <- df$x
   yvals <- df$y
@@ -358,22 +354,15 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
 }
 
 
-
-
-
-
-
 fun_iso <- function(fun, args, normalized, probs, res, rangex, rangey, scales, type) {
   # browser()
 
   rangex_trans <- if (is.null(scales$x)) rangex else scales$x$trans$inverse(rangex)
   rangey_trans <- if (is.null(scales$y)) rangey else scales$y$trans$inverse(rangey)
 
-  if (length(res) == 1L) res <- rep(res, 2)
-
   df <- expand.grid(
-    "x" = seq(rangex[1], rangex[2], length.out = res[1]),
-    "y" = seq(rangey[1], rangey[2], length.out = res[2])
+    "x" = seq(rangex[1], rangex[2], length.out = res),
+    "y" = seq(rangey[1], rangey[2], length.out = res)
   )
 
   df_trans <- expand.grid(
@@ -418,5 +407,4 @@ fun_iso <- function(fun, args, normalized, probs, res, rangex, rangey, scales, t
     xyz_to_isolines(df, breaks)
   }
 }
-
 
