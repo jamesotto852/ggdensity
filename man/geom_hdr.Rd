@@ -256,4 +256,7 @@ ggplot(df, aes(x^2, y^2)) + geom_hdr(method = "histogram")
 
 
 }
+\references{
+Scott, David W. Multivariate Density Estimation (2e), Wiley.
+}
 \keyword{datasets}

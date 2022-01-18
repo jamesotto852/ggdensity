@@ -59,6 +59,7 @@
 #'   `NULL`.
 #' @name geom_hdr
 #' @rdname geom_hdr
+#' @references Scott, David W. Multivariate Density Estimation (2e), Wiley.
 #'
 #' @import ggplot2
 #'
