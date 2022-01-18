@@ -4,12 +4,27 @@
 #' @section Aesthetics: geom_hdr_fun understands the following aesthetics
 #'   (required aesthetics are in bold):
 #'
-#'   - x - y - alpha - color - fill - group - linetype - size - subgroup
+#'   - x
+#'   - y
+#'   - alpha
+#'   - color
+#'   - fill
+#'   - group
+#'   - linetype
+#'   - size
+#'   - subgroup
 #'
 #'   geom_hdr_fun_lines understands the following aesthetics (required
 #'   aesthetics are in bold):
 #'
-#'   - x - y - alpha - color - group - linetype - size - subgroup
+#'   - x
+#'   - y
+#'   - alpha
+#'   - color
+#'   - group
+#'   - linetype
+#'   - size
+#'   - subgroup
 #'
 #' @section Computed variables:
 #'
