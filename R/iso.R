@@ -162,6 +162,7 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
     # Sensible default for n near 1e4:
     # k <- 50
 
+    # Currently determining k heuristically - not based on any theoretical results
     # The necessary value of k seems to be O((nx*ny)^(-1/3))
     # found constant which yields k = 50 for nx*ny = 10^2
     k <- if (nx*ny > 10^2) max(floor(225/((nx * ny)^(1/3))), 5) else 50
@@ -331,6 +332,7 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
   }
 
 
+  # Currently determining k heuristically - not based on any theoretical results
   # The necessary value of k seems to be O((nx*ny)^(-1/4))
   k <- if (nx * ny > 10^2) max(floor(30/((nx * ny)^(1/4))), 3) else 10
 
