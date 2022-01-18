@@ -1,6 +1,6 @@
 Package: ggdensity
 Title: Interpretable 2-d Density Estimation with ggplot2
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: 
     c(person(given = "James",
            family = "Otto",
