@@ -69,7 +69,7 @@ illustrate this with the `penguins` data from
 library("palmerpenguins")
 
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
-  geom_hdr() +
+  geom_hdr(xlim = c(160, 240), ylim = c(30, 70)) +
   geom_point(shape = 21)
 ```
 
@@ -83,7 +83,7 @@ To alleviate overplotting, we can use `geom_hdr_lines()` or facet:
 
 ``` r
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, color = species)) +
-  geom_hdr_lines() +
+  geom_hdr_lines(xlim = c(160, 240), ylim = c(30, 70)) +
   geom_point(size = .5)
 ```
 
@@ -95,7 +95,7 @@ ggplot(penguins, aes(flipper_length_mm, bill_length_mm, color = species)) +
 
 ``` r
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
-  geom_hdr() +
+  geom_hdr(xlim = c(160, 240), ylim = c(30, 70)) +
   geom_point(shape = 21) +
   facet_wrap(vars(species))
 ```
@@ -113,11 +113,15 @@ setting `alpha = 1`.
 
 ``` r
 ggplot(faithful) +
-  geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1)
+  geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1, 
+           xlim = c(0, 8), ylim = c(30, 110))
 
 ggplot(faithful) +
-  geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1)
+  geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1, 
+                 xlim = c(0, 8), ylim = c(30, 110))
 ```
+
+<img src="man/figures/README-ex_after_stat-1.png" width="50%" /><img src="man/figures/README-ex_after_stat-2.png" width="50%" />
 
 #### Different density estimators
 
