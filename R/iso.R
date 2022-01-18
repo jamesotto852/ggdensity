@@ -203,6 +203,10 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
 }
 
 
+
+
+
+
 freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
   xvals <- df$x
   yvals <- df$y
@@ -346,11 +350,18 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
 }
 
 
+
+
+
+
+
 fun_iso <- function(fun, args, normalized, probs, res, rangex, rangey, scales, type) {
 
+  if (length(res) == 1L) res <- rep(res, 2)
+
   df <- expand.grid(
-    "x" = seq(rangex[1], rangex[2], length.out = res),
-    "y" = seq(rangey[1], rangey[2], length.out = res)
+    "x" = seq(rangex[1], rangex[2], length.out = res[1]),
+    "y" = seq(rangey[1], rangey[2], length.out = res[2])
   )
 
   x_trans <- scales$x$trans$inverse(df$x)
@@ -365,7 +376,7 @@ fun_iso <- function(fun, args, normalized, probs, res, rangex, rangey, scales, t
   if (normalized) {
     # Checking that rangex and rangey are a good approx to support:
     # grid_area <- (df$x[2] - df$x[1]) * (df$y[2] -  df$y[1])
-    grid_area <- (rangex[2] - rangex[1]) * (rangey[2] - rangey[1]) / (res^2)
+    grid_area <- (rangex[2] - rangex[1]) * (rangey[2] - rangey[1]) / prod(res)
     approx_prob <- sum(df$fhat * grid_area)
 
     # .95 is chosen as an arbitrary cutoff for a warning

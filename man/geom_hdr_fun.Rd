@@ -24,7 +24,7 @@ stat_hdr_fun(
   probs = c(0.99, 0.95, 0.8, 0.5),
   xlim = NULL,
   ylim = NULL,
-  res = 100,
+  n = 101,
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE
@@ -115,7 +115,7 @@ named list.}
 \item{xlim, ylim}{Optionally, restrict the range of the function to this
 range.}
 
-\item{res}{Resolution of grid \code{fun} is evaluated on.}
+\item{n}{Resolution of grid \code{fun} is evaluated on.}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -133,6 +133,9 @@ the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 
 \item{stat}{The statistical transformation to use on the data for this
 layer, as a string.}
+
+\item{res}{Resolution of grid used in discrete approximations for kernel
+density and parametric estimators.}
 }
 \description{
 Highest density regions of a bivariate pdf
@@ -203,7 +206,9 @@ ggplot(data, aes(x, y)) +
   geom_point(size = .25, color = "red") +
   xlim(0, 40) + ylim(c(0, 40))
 
-
+ggplot(data, aes(x, y)) +
+  geom_hdr_fun(fun = f, args = list(th = th_hat), n = c(100, 100)) +
+  geom_point(size = .25, color = "red")
 
 }
 \keyword{datasets}

@@ -23,10 +23,12 @@
 #'   variables, as a function of a vector of length 2.
 #' @param args List of additional arguments passed on to the function `fun` as a
 #'   named list.
+#' @param res Resolution of grid used in discrete approximations for kernel
+#'   density and parametric estimators.
 #' @param normalized Is the function normalized? (A proper PDF?) If no, set to
 #'   `FALSE`.
 #' @param probs Probabilities to compute highest density regions for.
-#' @param res Resolution of grid `fun` is evaluated on.
+#' @param n Resolution of grid `fun` is evaluated on.
 #' @param xlim,ylim Optionally, restrict the range of the function to this
 #'   range.
 #' @name geom_hdr_fun
@@ -36,9 +38,13 @@
 #'
 #' @examples
 #'
-#' f <- function(x, y) dexp(x) * dexp(y)
+#' f <- function(x, y) dnorm(x) * dnorm(y)
 #' ggplot() +
-#'   geom_hdr_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
+#'   geom_hdr_fun(fun = f, xlim = c(-10, 10), ylim = c(-10, 10))
+#'
+#' df <- expand.grid(x = c(-10, 10), y = c(-10, 10))
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr_fun(fun = f)
 #'
 #'
 #' # the hdr of a custom parametric model
@@ -79,7 +85,9 @@
 #'   geom_point(size = .25, color = "red") +
 #'   xlim(0, 40) + ylim(c(0, 40))
 #'
-#'
+#' ggplot(data, aes(x, y)) +
+#'   geom_hdr_fun(fun = f, args = list(th = th_hat), n = c(10, 10)) +
+#'   geom_point(size = .25, color = "red")
 #'
 NULL
 
@@ -95,7 +103,7 @@ stat_hdr_fun <- function(mapping = NULL, data = NULL,
                                          ...,
                                          fun, args = list(), normalized = TRUE,
                                          probs = c(.99, .95, .8, .5),
-                                         xlim = NULL, ylim = NULL, res = 100,
+                                         xlim = NULL, ylim = NULL, n = 101,
                                          na.rm = FALSE,
                                          show.legend = NA,
                                          inherit.aes = TRUE) {
@@ -115,7 +123,7 @@ stat_hdr_fun <- function(mapping = NULL, data = NULL,
       args = args,
       normalized = normalized,
       probs = probs,
-      res = res,
+      n = n,
       xlim = xlim,
       ylim = ylim,
       na.rm = na.rm,
@@ -137,7 +145,7 @@ StatHdrFun <- ggproto("StatHdrFun", Stat,
 
   compute_group = function(data, scales, na.rm = FALSE,
                            fun, args = list(), normalized = TRUE, probs = c(.99, .95, .8, .5),
-                           res = 100, xlim = NULL, ylim = NULL)  {
+                           n = 100, xlim = NULL, ylim = NULL)  {
 
   # Allow for use if data = NULL
   if (is.null(scales$x)) {
@@ -151,7 +159,7 @@ StatHdrFun <- ggproto("StatHdrFun", Stat,
 
   probs <- sort(probs, decreasing = TRUE)
 
-  isobands <- fun_iso(fun, args, normalized, probs, res, rangex, rangey, scales, type = "bands")
+  isobands <- fun_iso(fun, args, normalized, probs, n, rangex, rangey, scales, type = "bands")
 
   names(isobands) <- scales::percent_format(accuracy = 1)(probs)
   path_df <- iso_to_polygon(isobands, data$group[1])
