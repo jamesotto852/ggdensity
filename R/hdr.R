@@ -41,9 +41,10 @@
 #' @param method Density estimator to use, accepts character vector: `"kde"`,
 #'   `"histogram"`, `"freqpoly"`, or `"mvnorm"`.
 #' @param probs Probabilities to compute highest density regions for.
-#' @param n,nx,ny Number of bins for histogram and frequency polygon estimators.
-#'   Defaults to normal reference rule.
-#' @param res Resolution of grid used in discrete approximations for kernel
+#' @param bins Number of bins along each axis for histogram and frequency polygon estimators.
+#'   Either a vector of length 2 or a scalar value which is recycled for both dimensions.
+#'   Defaults to normal reference rule (Scott, pg 87).
+#' @param n Resolution of grid used in discrete approximations for kernel
 #'   density and parametric estimators.
 #' @param xlim,ylim Range to compute and draw regions. If `NULL`, defaults to
 #'   range of data.
@@ -130,10 +131,8 @@ stat_hdr <- function(mapping = NULL, data = NULL,
                                       ...,
                                       method = "kde",
                                       probs = c(.99, .95, .8, .5),
-                                      n = NULL,
-                                      nx = n,
-                                      ny = n,
-                                      res = 100,
+                                      bins = NULL,
+                                      n = 100,
                                       xlim = NULL,
                                       ylim = NULL,
                                       nudgex = "none",
@@ -155,10 +154,8 @@ stat_hdr <- function(mapping = NULL, data = NULL,
     params = list(
       method = method,
       probs = probs,
+      bins = bins,
       n = n,
-      nx = nx,
-      ny = ny,
-      res = res,
       xlim = xlim,
       ylim = ylim,
       nudgex = nudgex,
@@ -189,25 +186,27 @@ StatHdr <- ggproto("StatHdr", Stat,
                            method = "kde", probs = c(.99, .95, .8, .5),
                            xlim = NULL, ylim = NULL,
                            nudgex = "none", nudgey = "none", smooth = FALSE,
-                           n = NULL, nx = n, ny = n, res = 100,
+                           bins = NULL, n = 100,
                            adjust = c(1, 1), h = NULL) {
 
   rangex <- xlim %||% scales$x$dimension()
   rangey <- ylim %||% scales$y$dimension()
 
   # Should this be factored out?
-  if (is.null(n) & (is.null(nx) | is.null(ny))) {
+  if (is.null(bins)) {
+    bins <- numeric(2)
+
     # define histogram mesh according to Scott p. 87
     if (method == "histogram") {
       rho <- cor(data$x, data$y)
       hx <- 3.504 * sd(data$x) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
       hy <- 3.504 * sd(data$y) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
-      nx <- round((rangex[2] - rangex[1]) / hx)
-      ny <- round((rangey[2] - rangey[1]) / hy)
+      bins[1] <- round((rangex[2] - rangex[1]) / hx)
+      bins[2] <- round((rangey[2] - rangey[1]) / hy)
 
-      # message(paste0("Argument `n` not specified. \n",
-      #                "Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
-      #                "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
+      # message(paste0("Argument `bins` not specified. \n",
+      #                "Setting according to normal reference rule. \n",
+      #                "Specify alternative values for `bins` for improved visualization."))
     }
 
     if (method == "freqpoly") {
@@ -215,22 +214,25 @@ StatHdr <- ggproto("StatHdr", Stat,
         rho <- cor(data$x, data$y)
         hx <- 3.504 * sd(data$x) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
         hy <- 3.504 * sd(data$y) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
-        nx <- round((rangex[2] - rangex[1]) / hx)
-        ny <- round((rangey[2] - rangey[1]) / hy)
+        bins[1] <- round((rangex[2] - rangex[1]) / hx)
+        bins[2] <- round((rangey[2] - rangey[1]) / hy)
 
-        # message(paste0("Argument `n` not specified. \n",
-        #                "Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
-        #                "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
+        # message(paste0("Argument `bins` not specified. \n",
+        #                "Setting according to normal reference rule. \n",
+        #                "Specify alternative values for `bins` for improved visualization."))
     }
   }
+
+  # recycling scalar-valued bins if necessary
+  bins <- rep(bins, length.out = 2)
 
   probs <- sort(probs, decreasing = TRUE)
 
   isobands <- switch(method,
-    "kde" = kde_iso(probs, data, res, rangex, rangey, h, adjust, type = "bands"),
-    "histogram" = histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type = "bands"),
-    "freqpoly" = freqpoly_iso(probs, data, nx, ny, rangex, rangey, type = "bands"),
-    "mvnorm" = mvnorm_iso(probs, data, res, rangex, rangey, type = "bands"),
+    "kde" = kde_iso(probs, data, n, rangex, rangey, h, adjust, type = "bands"),
+    "histogram" = histogram_iso(probs, data, bins, rangex, rangey, nudgex, nudgey, smooth, type = "bands"),
+    "freqpoly" = freqpoly_iso(probs, data, bins, rangex, rangey, type = "bands"),
+    "mvnorm" = mvnorm_iso(probs, data, n, rangex, rangey, type = "bands"),
   )
   if (!(method %in% c("kde", "mvnorm", "histogram", "freqpoly"))) stop("Invalid method specified")
 

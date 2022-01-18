@@ -5,10 +5,8 @@ stat_hdr_lines <- function(mapping = NULL, data = NULL,
                                       ...,
                                       method = "kde",
                                       probs = c(.99, .95, .8, .5),
-                                      n = NULL,
-                                      nx = n,
-                                      ny = n,
-                                      res = 100,
+                                      bins = NULL,
+                                      n = 100,
                                       xlim = NULL,
                                       ylim = NULL,
                                       nudgex = "none",
@@ -30,10 +28,8 @@ stat_hdr_lines <- function(mapping = NULL, data = NULL,
     params = list(
       method = method,
       probs = probs,
+      bins = bins,
       n = n,
-      nx = nx,
-      ny = ny,
-      res = res,
       xlim = xlim,
       ylim = ylim,
       nudgex = nudgex,
@@ -64,52 +60,54 @@ StatHdrLines <- ggproto("StatHdrLines", Stat,
                            method = "kde", probs = c(.99, .95, .8, .5),
                            xlim = NULL, ylim = NULL,
                            nudgex = "none", nudgey = "none", smooth = FALSE,
-                           n = NULL, nx = n, ny = n, res = 100,
+                           bins = NULL, n = 100,
                            adjust = c(1, 1), h = NULL) {
-
 
   rangex <- xlim %||% scales$x$dimension()
   rangey <- ylim %||% scales$y$dimension()
 
   # Should this be factored out?
-  if (is.null(n) & (is.null(nx) | is.null(ny))) {
+  if (is.null(bins)) {
+    bins <- numeric(2)
+
     # define histogram mesh according to Scott p. 87
     if (method == "histogram") {
       rho <- cor(data$x, data$y)
       hx <- 3.504 * sd(data$x) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
       hy <- 3.504 * sd(data$y) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
-      nx <- round((rangex[2] - rangex[1]) / hx)
-      ny <- round((rangey[2] - rangey[1]) / hy)
+      bins[1] <- round((rangex[2] - rangex[1]) / hx)
+      bins[2] <- round((rangey[2] - rangey[1]) / hy)
 
-      # message(paste0("Argument `n` not specified. \n",
-      #                "Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
-      #                "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
-    } else {
-      if (method == "freqpoly") {
+      # message(paste0("Argument `bins` not specified. \n",
+      #                "Setting according to normal reference rule. \n",
+      #                "Specify alternative values for `bins` for improved visualization."))
+    }
+
+    if (method == "freqpoly") {
         # To-Do: fill in with rules for frequency polygons
         rho <- cor(data$x, data$y)
         hx <- 3.504 * sd(data$x) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
         hy <- 3.504 * sd(data$y) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
-        nx <- round((rangex[2] - rangex[1]) / hx)
-        ny <- round((rangey[2] - rangey[1]) / hy)
+        bins[1] <- round((rangex[2] - rangex[1]) / hx)
+        bins[2] <- round((rangey[2] - rangey[1]) / hy)
 
-      # message(paste0("Argument `n` not specified. \n",
-      #                "Setting `nx = ", nx, "` `ny = ", ny, "` according to normal reference rule. \n",
-      #                "Specify alternative values for `n` or `nx`, `ny` for improved visualization."))
-      } else{
-        nx <- 100
-        ny <- 100
-      }
+        # message(paste0("Argument `bins` not specified. \n",
+        #                "Setting according to normal reference rule. \n",
+        #                "Specify alternative values for `bins` for improved visualization."))
     }
   }
 
+  # recycling scalar-valued bins if necessary
+  bins <- rep(bins, length.out = 2)
+
   probs <- sort(probs, decreasing = TRUE)
 
-
-  if (method == "kde")  isolines <- kde_iso(probs, data, res, rangex, rangey, h, adjust, type = "lines")
-  if (method == "histogram") isolines <- histogram_iso(probs, data, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type = "lines")
-  if (method == "freqpoly") isolines <- freqpoly_iso(probs, data, nx, ny, rangex, rangey, type = "lines")
-  if (method == "mvnorm") isolines <- mvnorm_iso(probs, data, res, rangex, rangey, type = "lines")
+  isolines <- switch(method,
+    "kde" = kde_iso(probs, data, n, rangex, rangey, h, adjust, type = "lines"),
+    "histogram" = histogram_iso(probs, data, bins, rangex, rangey, nudgex, nudgey, smooth, type = "lines"),
+    "freqpoly" = freqpoly_iso(probs, data, bins, rangex, rangey, type = "lines"),
+    "mvnorm" = mvnorm_iso(probs, data, n, rangex, rangey, type = "lines"),
+  )
 
   if (!method %in% c("kde", "mvnorm", "histogram", "freqpoly")) stop("Invalid method specified")
 
