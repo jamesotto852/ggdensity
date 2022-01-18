@@ -55,8 +55,7 @@ Both plots show contours from the same density surface, but the contours plotted
 showing the smallest regions containing $50\%$, $80\%$, $95\%$, and $99\%$ of the estimated density (the HDRs).
 This results in a very interpretable graphic, conveying more information than arbitrary density contours.
 
-<!-- Minor sleight-of-hand, don't want readers to worry about theme and patchwork syntax -->
-```{r ex1_echo, eval = FALSE}
+```{r ex1, fig.show="hold", out.width="50%"}
 df <- data.frame(x = rnorm(1000), y = rnorm(1000))
 
 ggplot(df, aes(x, y)) + 
@@ -65,23 +64,7 @@ ggplot(df, aes(x, y)) +
 ggplot(df, aes(x, y)) + 
   geom_hdr()
 ```
-```{r ex1_code, echo = FALSE, warning = FALSE, fig.width = 11}
-df <- data.frame(x = rnorm(1000), y = rnorm(1000))
 
-p <- ggplot(df, aes(x, y)) + coord_equal(xlim = c(-3.5, 3.5), ylim = c(-3.5, 3.5), expand = FALSE)
-
-p1 <- p +
-  geom_density_2d_filled() + 
-  scale_x_continuous(lim = c(-3.5, 3.5)) +
-  scale_y_continuous(lim = c(-3.5, 3.5)) +
-  theme(legend.position = "left", legend.key.size = unit(.5, "cm"))
-  # theme(legend.position = "left")
-
-p2 <- p +
-  geom_hdr()
-
-p1 | p2
-```
 
 #### Grouping
 
@@ -124,25 +107,12 @@ ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
 This is easy to change via `after_stat()`,
 just be sure to override the `alpha` aesthetic by setting `alpha = 1`.
 
-<!-- Again, sleight-of-hand for legend formatting and patchwork -->
-```{r ex_after_stat_echo, eval = FALSE}
+```{r ex_after_stat_echo, eval = FALSE, fig.show="hold", out.width="50%"}
 ggplot(faithful) +
   geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1)
 
 ggplot(faithful) +
   geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1)
-```
-```{r ex_after_stat_code, echo = FALSE, fig.width = 11}
-p <- ggplot(faithful)
-
-p1 <- p +
-  geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1) +
-  theme(legend.position = "left")
-
-p2 <- p +
-  geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1)
-
-p1 | p2
 ```
 
 

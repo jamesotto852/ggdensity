@@ -45,8 +45,6 @@ smallest regions containing 50%, 80%, 95%, and 99% of the estimated
 density (the HDRs). This results in a very interpretable graphic,
 conveying more information than arbitrary density contours.
 
-<!-- Minor sleight-of-hand, don't want readers to worry about theme and patchwork syntax -->
-
 ``` r
 df <- data.frame(x = rnorm(1000), y = rnorm(1000))
 
@@ -57,7 +55,7 @@ ggplot(df, aes(x, y)) +
   geom_hdr()
 ```
 
-<img src="man/figures/README-ex1_code-1.png" width="100%" />
+<img src="man/figures/README-ex1-1.png" width="50%" /><img src="man/figures/README-ex1-2.png" width="50%" />
 
 #### Grouping
 
@@ -113,8 +111,6 @@ the `alpha` aesthetic by default. This is easy to change via
 `after_stat()`, just be sure to override the `alpha` aesthetic by
 setting `alpha = 1`.
 
-<!-- Again, sleight-of-hand for legend formatting and patchwork -->
-
 ``` r
 ggplot(faithful) +
   geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1)
@@ -122,8 +118,6 @@ ggplot(faithful) +
 ggplot(faithful) +
   geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1)
 ```
-
-<img src="man/figures/README-ex_after_stat_code-1.png" width="100%" />
 
 #### Different density estimators
 
