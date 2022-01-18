@@ -1,5 +1,5 @@
 
-kde_iso <- function(probs, data, res, rangex, rangey, h, adjust, type) {
+kde_iso <- function(probs, data, n, rangex, rangey, h, adjust, type) {
   # The way n, h, and adjust are set up is consistent with stat_density_2d
   # Allows for easy tweaking of the MASS default
   if (is.null(h)) {
@@ -8,7 +8,7 @@ kde_iso <- function(probs, data, res, rangex, rangey, h, adjust, type) {
   }
 
   kdeout <- MASS::kde2d(
-    x = data$x, y = data$y, n = res, h = h,
+    x = data$x, y = data$y, n = n, h = h,
     lims = c(rangex, rangey)
     # automatic expansion of rangex and rangey to counteract clipping has been
     # disabled to avoid issues w/ scale_x/y_continuous()
@@ -37,7 +37,7 @@ kde_iso <- function(probs, data, res, rangex, rangey, h, adjust, type) {
 
 
 
-mvnorm_iso <- function(probs, data, res, rangex, rangey, type) {
+mvnorm_iso <- function(probs, data, n, rangex, rangey, type) {
 
   data_matrix <- with(data, cbind(x, y))
   col_means <- colMeans(data_matrix)
@@ -57,8 +57,8 @@ mvnorm_iso <- function(probs, data, res, rangex, rangey, type) {
   # rangey <- scales::expand_range(rangey, .25)
 
   df <- expand.grid(
-    "x" = seq(rangex[1], rangex[2], length.out = res),
-    "y" = seq(rangey[1], rangey[2], length.out = res)
+    "x" = seq(rangex[1], rangex[2], length.out = n),
+    "y" = seq(rangey[1], rangey[2], length.out = n)
   )
 
   df$z <- apply(df, 1, find_quantile, mu = col_means, SigmaInv = SInv)
@@ -78,7 +78,7 @@ mvnorm_iso <- function(probs, data, res, rangex, rangey, type) {
 }
 
 
-histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smooth, type) {
+histogram_iso <- function(probs, df, bins, rangex, rangey, nudgex, nudgey, smooth, type) {
   xvals <- df$x
   yvals <- df$y
 
@@ -97,19 +97,19 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
   }
 
 
-  sx <- seq(rangex[1], rangex[2], length.out = nx + 1)
-  sy <- seq(rangey[1], rangey[2], length.out = ny + 1)
+  sx <- seq(rangex[1], rangex[2], length.out = bins[1] + 1)
+  sy <- seq(rangey[1], rangey[2], length.out = bins[2] + 1)
   de_x <- sx[2] - sx[1]
   de_y <- sy[2] - sy[1]
   box_area <- de_x * de_y
 
-  xbin_mdpts <- sx[-(nx+1)] + de_x/2
-  ybin_mdpts <- sy[-(ny+1)] + de_y/2
+  xbin_mdpts <- sx[-(bins[1]+1)] + de_x/2
+  ybin_mdpts <- sy[-(bins[2]+1)] + de_y/2
 
-  xleft <- sx[-(nx+1)]
+  xleft <- sx[-(bins[1]+1)]
   xright <- sx[-1]
 
-  ybottom <- sy[-(ny+1)]
+  ybottom <- sy[-(bins[2]+1)]
   ytop <- sy[-1]
 
 
@@ -163,15 +163,14 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
     # k <- 50
 
     # Currently determining k heuristically - not based on any theoretical results
-    # The necessary value of k seems to be O((nx*ny)^(-1/3))
-    # found constant which yields k = 50 for nx*ny = 10^2
-    k <- if (nx*ny > 10^2) max(floor(225/((nx * ny)^(1/3))), 5) else 50
+    # The necessary value of k seems to be O((bins[1]*bins[2])^(-1/3))
+    # found constant which yields k = 50 for bins[1]*bins[2] = 10^2
+    k <- if (bins[1] * bins[2] > 10^2) max(floor(225/((bins[1] * bins[2])^(1/3))), 5) else 50
 
-    nnx <- nx * k
-    nny <- ny * k
+    bbins <- bins * k
 
-    ssx <- seq(rangex[1], rangex[2], length.out = nnx)
-    ssy <- seq(rangey[1], rangey[2], length.out = nny)
+    ssx <- seq(rangex[1], rangex[2], length.out = bbins[1])
+    ssy <- seq(rangey[1], rangey[2], length.out = bbins[2])
 
     ddf <- expand.grid(x = ssx, y = ssy)
 
@@ -186,11 +185,11 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
     #                3, 3, 4, 4
 
 
-    # m <- matrix(df$fhat, nrow = ny, byrow = TRUE)
+    # m <- matrix(df$fhat, nrow = bins[2], byrow = TRUE)
     # ddf$fhat <- as.vector(kronecker(m, matrix(1, k, k)))
 
 
-    fhat <- split(df$fhat, factor(rep(1:ny, each = nx))) # split into rows
+    fhat <- split(df$fhat, factor(rep(1:bins[2], each = bins[1]))) # split into rows
     fhat <- lapply(fhat, function(x) rep(x, each = k)) # repeat within rows (horizontal)
     fhat <- lapply(fhat, function(x) rep(x, times = k)) # repeat rows (vertical)
     fhat <- unlist(fhat) # concatenate
@@ -210,7 +209,7 @@ histogram_iso <- function(probs, df, nx, ny, rangex, rangey, nudgex, nudgey, smo
 }
 
 
-freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
+freqpoly_iso <- function(probs, df, bins, rangex, rangey, type) {
   xvals <- df$x
   yvals <- df$y
 
@@ -229,27 +228,26 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
   }
 
 
-  de_x <- (rangex[2] - rangex[1]) / nx
-  de_y <- (rangey[2] - rangey[1]) / ny
+  de_x <- (rangex[2] - rangex[1]) / bins[1]
+  de_y <- (rangey[2] - rangey[1]) / bins[2]
   rangex[1] <- rangex[1] - de_x
   rangex[2] <- rangex[2] + de_x
   rangey[1] <- rangey[1] - de_y
   rangey[2] <- rangey[2] + de_y
-  nx <- nx + 2
-  ny <- ny + 2
-  sx <- seq(rangex[1], rangex[2], length.out = nx + 1)
-  sy <- seq(rangey[1], rangey[2], length.out = ny + 1)
+  bins <- bins + 2
+  sx <- seq(rangex[1], rangex[2], length.out = bins[1] + 1)
+  sy <- seq(rangey[1], rangey[2], length.out = bins[2] + 1)
 
 
   box_area <- de_x * de_y
 
-  xbin_mdpts <- sx[-(nx+1)] + de_x/2
-  ybin_mdpts <- sy[-(ny+1)] + de_y/2
+  xbin_mdpts <- sx[-(bins[1]+1)] + de_x/2
+  ybin_mdpts <- sy[-(bins[2]+1)] + de_y/2
 
-  xleft <- sx[-(nx+1)]
+  xleft <- sx[-(bins[1]+1)]
   xright <- sx[-1]
 
-  ybottom <- sy[-(ny+1)]
+  ybottom <- sy[-(bins[2]+1)]
   ytop <- sy[-1]
 
 
@@ -273,8 +271,8 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
   df$fhat_discretized <- normalize(df$fhat)
 
   grid <- expand.grid(
-    x = sx[2:nx],
-    y = sy[2:ny]
+    x = sx[2:bins[1]],
+    y = sy[2:bins[2]]
   )
 
   x_midpts <- unique(df$xbin_midpt)
@@ -333,8 +331,8 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
 
 
   # Currently determining k heuristically - not based on any theoretical results
-  # The necessary value of k seems to be O((nx*ny)^(-1/4))
-  k <- if (nx * ny > 10^2) max(floor(30/((nx * ny)^(1/4))), 3) else 10
+  # The necessary value of k seems to be O((bins[1]*bins[2])^(-1/4))
+  k <- if (bins[1] * bins[2] > 10^2) max(floor(30/((bins[1] * bins[2])^(1/4))), 3) else 10
 
   surface_list <- apply(df_A, 1, coeffs_to_surface, k, simplify = FALSE)
   df <- do.call(rbind, surface_list)
@@ -354,20 +352,20 @@ freqpoly_iso <- function(probs, df, nx, ny, rangex, rangey, type) {
 }
 
 
-fun_iso <- function(fun, args, normalized, probs, res, rangex, rangey, scales, type) {
+fun_iso <- function(fun, args, normalized, probs, n, rangex, rangey, scales, type) {
   # browser()
 
   rangex_trans <- if (is.null(scales$x)) rangex else scales$x$trans$inverse(rangex)
   rangey_trans <- if (is.null(scales$y)) rangey else scales$y$trans$inverse(rangey)
 
   df <- expand.grid(
-    "x" = seq(rangex[1], rangex[2], length.out = res),
-    "y" = seq(rangey[1], rangey[2], length.out = res)
+    "x" = seq(rangex[1], rangex[2], length.out = n),
+    "y" = seq(rangey[1], rangey[2], length.out = n)
   )
 
   df_trans <- expand.grid(
-    "x" = seq(rangex_trans[1], rangex_trans[2], length.out = res),
-    "y" = seq(rangey_trans[1], rangey_trans[2], length.out = res)
+    "x" = seq(rangex_trans[1], rangex_trans[2], length.out = n),
+    "y" = seq(rangey_trans[1], rangey_trans[2], length.out = n)
   )
 
   # fhat and fhat_discretized are misnomers --
@@ -379,7 +377,7 @@ fun_iso <- function(fun, args, normalized, probs, res, rangex, rangey, scales, t
   if (normalized) {
     # Checking that rangex and rangey are a good approx to support:
     # grid_area <- (df$x[2] - df$x[1]) * (df$y[2] -  df$y[1])
-    grid_area <- (rangex_trans[2] - rangex_trans[1]) * (rangey_trans[2] - rangey_trans[1]) / (res^2)
+    grid_area <- (rangex_trans[2] - rangex_trans[1]) * (rangey_trans[2] - rangey_trans[1]) / (n^2)
     approx_prob <- sum(df$fhat * grid_area)
 
     # .95 is chosen as an arbitrary cutoff for a warning
