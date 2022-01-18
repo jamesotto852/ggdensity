@@ -4,6 +4,8 @@
 # ggdensity <img src="man/figures/logo.png"  align="right"  width="120" style="padding-left:10px;background-color:white;" />
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/jamesotto852/ggdensity/workflows/R-CMD-check/badge.svg)](https://github.com/jamesotto852/ggdensity/actions)
 <!-- badges: end -->
 
 `ggdensity` extends [`ggplot2`](https://github.com/tidyverse/ggplot2)
