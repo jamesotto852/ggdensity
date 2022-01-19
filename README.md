@@ -39,10 +39,10 @@ Since it’s not on CRAN yet, the implementation interface may shift a
 bit, but we feel it’s stable enough to share with you now, so don’t
 expect big changes.
 
-## `ggplot2::geom_contour_2d()` vs. `ggdensity::geom_hdr()`
+## `geom_density_2d_filled()` vs. `geom_hdr()`
 
 The standard way to visualize the joint distribution of two continuous
-variables in **ggplot2** is to use `geom_density_2d()` or
+variables in **ggplot2** is to use `ggplot2::geom_density_2d()` or
 `geom_density_2d_filled()`. Here’s an example:
 
 ``` r
