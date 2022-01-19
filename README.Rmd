@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%",
   dev = "png", dpi = 300,
-  fig.height = 4
+  fig.height = 3.5
 )
 ```
 
