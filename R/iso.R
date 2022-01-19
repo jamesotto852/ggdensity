@@ -382,13 +382,13 @@ fun_iso <- function(fun, args, normalized, probs, n, rangex, rangey, scales, typ
 
     # .95 is chosen as an arbitrary cutoff for a warning
     if (approx_prob < .95) {
-      # warning(paste0(
-      #   "Plotting range is not be large enough to guarantee accurate HDRs. \n",
-      #   # "fun integrates to ", round(approx_prob, digits = 2), ".",
-      #   "Specify larger values of xlim, ylim for accurate HDRs.\n\n",
-      #   "If fun is not normalized to integrate to 1, specify normalized = FALSE",
-      #   "to disable this message."
-      # ))
+      warning(call. = FALSE, paste0(
+        "Plotting range is not large enough to guarantee accurate HDRs. \n",
+        # "fun integrates to ", round(approx_prob, digits = 2), ".",
+        "Specify larger values of xlim, ylim for accurate HDRs."
+        # "If fun is not normalized to integrate to 1, specify normalized = FALSE",
+        # "to disable this message."
+      ))
 
     }
   }
