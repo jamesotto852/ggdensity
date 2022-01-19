@@ -52,14 +52,15 @@ library("ggplot2"); theme_set(theme_bw())
 library("ggdensity")
 
 df <- data.frame("x" = rnorm(1000), "y" = rnorm(1000))
+p <- ggplot(df, aes(x, y)) + coord_equal()
 
-ggplot(df, aes(x, y)) + geom_density_2d_filled()
+p + geom_density_2d_filled()
 ```
 
 <img src="man/figures/README-ex1-1.png" width="100%" />
 
 ``` r
-ggplot(df, aes(x, y)) + geom_hdr()
+p + geom_hdr()
 ```
 
 <img src="man/figures/README-ex1-2.png" width="100%" />
@@ -95,7 +96,7 @@ To alleviate overplotting, we can use `geom_hdr_lines()` or facet:
 ``` r
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, color = species)) +
   geom_hdr_lines(xlim = c(160, 240), ylim = c(30, 70)) +
-  geom_point(size = .5)
+  geom_point(size = 1)
 ```
 
 <img src="man/figures/README-ex_penguins_lines-1.png" width="100%" />
@@ -128,7 +129,11 @@ ggplot(faithful, aes(eruptions, waiting)) +
     aes(fill = after_stat(level)), 
     alpha = 1, xlim = c(0, 8), ylim = c(30, 110)
   )
+```
 
+<img src="man/figures/README-ex_after_stat-1.png" width="100%" />
+
+``` r
 ggplot(faithful, aes(eruptions, waiting)) +
   geom_hdr_lines(
     aes(color = after_stat(level)), 
@@ -136,7 +141,7 @@ ggplot(faithful, aes(eruptions, waiting)) +
   )
 ```
 
-<img src="man/figures/README-ex_after_stat-1.png" width="50%" /><img src="man/figures/README-ex_after_stat-2.png" width="50%" />
+<img src="man/figures/README-ex_after_stat-2.png" width="100%" />
 
 #### Different density estimators
 
@@ -194,7 +199,7 @@ lambda_hat <- apply(df, 2, mean)
 # pass estimated density into geom_hdr_fun()
 ggplot(df, aes(x, y)) +
   geom_hdr_fun(fun = f, args = list(lambda = lambda_hat)) +
-  geom_point(size = .3) +
+  geom_point(shape = 21, fill = "lightgreen") +
   coord_fixed()
 ```
 

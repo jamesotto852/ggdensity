@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%",
   dev = "png", dpi = 300,
-  fig.height = 3
+  fig.height = 4
 )
 ```
 
@@ -61,9 +61,10 @@ library("ggplot2"); theme_set(theme_bw())
 library("ggdensity")
 
 df <- data.frame("x" = rnorm(1000), "y" = rnorm(1000))
+p <- ggplot(df, aes(x, y)) + coord_equal()
 
-ggplot(df, aes(x, y)) + geom_density_2d_filled()
-ggplot(df, aes(x, y)) + geom_hdr()
+p + geom_density_2d_filled()
+p + geom_hdr()
 ```
 
 <!-- p_ggplot    <- ggplot(df, aes(x, y)) + geom_density_2d_filled() -->
@@ -90,7 +91,7 @@ To alleviate overplotting, we can use `geom_hdr_lines()` or facet:
 ```{r ex_penguins_lines, warning = FALSE}
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, color = species)) +
   geom_hdr_lines(xlim = c(160, 240), ylim = c(30, 70)) +
-  geom_point(size = .5)
+  geom_point(size = 1)
 ```
 
 <div style = "height:40px;"></div>
@@ -111,7 +112,7 @@ ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
 This is easy to change via `after_stat()`,
 just be sure to override the `alpha` aesthetic by setting `alpha = 1`.
 
-```{r ex_after_stat, fig.show="hold", out.width="50%"}
+```{r ex_after_stat}
 ggplot(faithful, aes(eruptions, waiting)) +
   geom_hdr(
     aes(fill = after_stat(level)), 
@@ -240,7 +241,7 @@ lambda_hat <- apply(df, 2, mean)
 # pass estimated density into geom_hdr_fun()
 ggplot(df, aes(x, y)) +
   geom_hdr_fun(fun = f, args = list(lambda = lambda_hat)) +
-  geom_point(size = .3) +
+  geom_point(shape = 21, fill = "lightgreen") +
   coord_fixed()
 ```
 
