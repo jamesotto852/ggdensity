@@ -48,14 +48,16 @@ conveying more information than arbitrary density contours.
 ``` r
 library("ggplot2"); theme_set(theme_bw())
 library("ggdensity")
+library("patchwork") 
 
 df <- data.frame("x" = rnorm(1000), "y" = rnorm(1000))
 
-ggplot(df, aes(x, y)) + geom_density_2d_filled()
-ggplot(df, aes(x, y)) + geom_hdr()
+p_ggplot    <- ggplot(df, aes(x, y)) + geom_density_2d_filled()
+p_ggdensity <- ggplot(df, aes(x, y)) + geom_hdr()
+p_ggplot + p_ggdensity
 ```
 
-<img src="man/figures/README-ex1-1.png" width="50%" /><img src="man/figures/README-ex1-2.png" width="50%" />
+<img src="man/figures/README-ex1-1.png" width="100%" />
 
 #### Grouping
 
