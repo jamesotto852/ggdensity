@@ -254,7 +254,7 @@ ggplot() +
 In addition to all of the methods of density estimation available with `geom_hdr()`{.R}, one of the perks of having 
 `geom_hdr_fun()`{.R} is that it allows you to plot parametric densities that you estimate outside the **ggdensity** framework.  The basic idea is that you fit your distribution outside **ggdensity** calls with your method of choice, say maximum likelihood, and then plug the maximum likelihood estimate into the density formula to obtain a function to plug into `geom_hdr_fun()`{.R}.
 
-Here's an example of how you can do that that assuming that the underlying data are independent exponentially distributions with unknown rates.
+Here's an example of how you can do that that assuming that the underlying data are independent and exponentially distributed with unknown rates.
 
 ```{r ex_hdr_fun_2}
 set.seed(123)

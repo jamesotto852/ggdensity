@@ -235,8 +235,8 @@ maximum likelihood, and then plug the maximum likelihood estimate into
 the density formula to obtain a function to plug into `geom_hdr_fun()`.
 
 Here’s an example of how you can do that that assuming that the
-underlying data are independent exponentially distributions with unknown
-rates.
+underlying data are independent and exponentially distributed with
+unknown rates.
 
 ``` r
 set.seed(123)
