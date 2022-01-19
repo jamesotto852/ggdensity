@@ -10,11 +10,11 @@
 [![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/ggdensity)](https://cran.r-project.org/package=ggdensity)
 <!-- badges: end -->
 
-`ggdensity` extends [`ggplot2`](https://github.com/tidyverse/ggplot2)
-providing more interpretable visualizations of density estimates based
-on highest density regions (HDRs). `ggdensity` offers drop-in
-replacements for [`ggplot2`](https://github.com/tidyverse/ggplot2)
-functions:
+**ggdensity** extends
+[**ggplot2**](https://github.com/tidyverse/ggplot2) providing more
+interpretable visualizations of density estimates based on highest
+density regions (HDRs). **ggdensity** offers drop-in replacements for
+[**ggplot2**](https://github.com/tidyverse/ggplot2) functions:
 
 -   `geom_hdr()` ↔ `geom_contour_2d_filled()`
 -   `geom_hdr_lines()` ↔ `geom_contour_2d()`
@@ -25,12 +25,12 @@ probability density functions.
 
 ## Installation
 
-You can install the development version of ggdensity from
+You can install the development version of **ggdensity** from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("jamesotto852/ggdensity")
+if (!requireNamespace("remotes")) install.packages("remotes")
+remotes::install_github("jamesotto852/ggdensity")
 ```
 
 ## Simple Examples
@@ -46,13 +46,11 @@ density (the HDRs). This results in a very interpretable graphic,
 conveying more information than arbitrary density contours.
 
 ``` r
-df <- data.frame(x = rnorm(1000), y = rnorm(1000))
+df <- data.frame("x" = rnorm(1000), "y" = rnorm(1000))
 
-ggplot(df, aes(x, y)) + 
-  geom_density_2d_filled()
+ggplot(df, aes(x, y)) + geom_density_2d_filled()
 
-ggplot(df, aes(x, y)) + 
-  geom_hdr()
+ggplot(df, aes(x, y)) + geom_hdr()
 ```
 
 <img src="man/figures/README-ex1-1.png" width="50%" /><img src="man/figures/README-ex1-2.png" width="50%" />
@@ -112,13 +110,17 @@ the `alpha` aesthetic by default. This is easy to change via
 setting `alpha = 1`.
 
 ``` r
-ggplot(faithful) +
-  geom_hdr(aes(eruptions, waiting, fill = after_stat(level)), alpha = 1, 
-           xlim = c(0, 8), ylim = c(30, 110))
+ggplot(faithful, aes(eruptions, waiting)) +
+  geom_hdr(
+    aes(fill = after_stat(level)), 
+    alpha = 1, xlim = c(0, 8), ylim = c(30, 110)
+  )
 
-ggplot(faithful) +
-  geom_hdr_lines(aes(eruptions, waiting, color = after_stat(level)), alpha = 1, 
-                 xlim = c(0, 8), ylim = c(30, 110))
+ggplot(faithful, aes(eruptions, waiting)) +
+  geom_hdr_lines(
+    aes(color = after_stat(level)), 
+    alpha = 1, xlim = c(0, 8), ylim = c(30, 110)
+  )
 ```
 
 <img src="man/figures/README-ex_after_stat-1.png" width="50%" /><img src="man/figures/README-ex_after_stat-2.png" width="50%" />
@@ -143,13 +145,13 @@ in HDRs which obey constrained supports.
 `geom_hdr_fun()` and `geom_hdr_fun_lines()` compute and plot the HDRs of
 an arbitrary bivariate pdf. These functions behave similarly to
 `geom_function()` from
-[`ggplot2`](https://github.com/tidyverse/ggplot2), accepting the
+[**ggplot2**](https://github.com/tidyverse/ggplot2), accepting the
 argument `fun` specifying the pdf to be summarized. Below, we have
 illustrated this by plotting HDRs corresponding to the bivariate
 standard normal distribution.
 
 ``` r
-f <- \(x, y) dnorm(x) * dnorm(y)
+f <- function(x, y) dnorm(x) * dnorm(y)
 
 ggplot() +
   geom_hdr_fun(fun = f, xlim = c(-3, 3), ylim = c(-3, 3)) +
@@ -168,17 +170,15 @@ bivariate exponential distribution and used `geom_hdr_fun()` to plot the
 parametrically estimated HDRs.
 
 ``` r
-df <- data.frame(
-  x = rexp(1000, 1),
-  y = rexp(1000, 1)
-)
+df <- data.frame("x" = rexp(1000, 1), "y" = rexp(1000, 1))
 
 # pdf for parametric density estimate
-f <- \(x, y, lambda) dexp(x, lambda[1]) * dexp(y, lambda[2])
+f <- function(x, y, lambda) dexp(x, lambda[1]) * dexp(y, lambda[2])
 
 # estimate parameters governing joint pdf
 lambda_hat <- apply(df, 2, mean)
 
+# pass estimated density into geom_hdr_fun()
 ggplot(df, aes(x, y)) +
   geom_hdr_fun(fun = f, args = list(lambda = lambda_hat)) +
   geom_point(size = .3) +
