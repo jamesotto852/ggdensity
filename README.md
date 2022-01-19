@@ -39,9 +39,7 @@ Since it’s not on CRAN yet, the implementation interface may shift a
 bit, but we feel it’s stable enough to share with you now, so don’t
 expect big changes.
 
-## Simple Examples
-
-#### `ggplot2::geom_contour_2d()` vs. `ggdensity::geom_hdr()`
+## `ggplot2::geom_contour_2d()` vs. `ggdensity::geom_hdr()`
 
 The standard way to visualize the joint distribution of two continuous
 variables in **ggplot2** is to use `geom_density_2d()` or
@@ -87,7 +85,7 @@ and 99% HDRs of the estimated density, but this can be changed with the
 plot made with `geom_density_2d_filled()` is subtlely yet significantly
 different than that of the plot made by `geom_hdr()`.
 
-#### Visualizing subpopulations and `geom_hdr_lines()`
+## Visualizing subpopulations and `geom_hdr_lines()`
 
 **ggdensity**’s functions were designed to be seamlessly consistent with
 the rest of the **ggplot2** framework. As a consequence, pretty much
@@ -149,7 +147,7 @@ The main point here is that you should really think of `geom_hdr()` and
 `geom_density_2d_filled()`, `geom_density2d()`, and so on, and you can
 expect all of the rest of the **ggplot2** stuff to just work.
 
-#### A deeper cut illustrating **ggplot2** integration
+## A deeper cut illustrating **ggplot2** integration
 
 The underlying stat used by `geom_hdr()` creates the computed variable
 `level` that can be mapped in the standard way you map computed
@@ -181,7 +179,7 @@ ggplot(faithful, aes(eruptions, waiting)) +
 
 <img src="man/figures/README-ex_after_stat-2.png" width="100%" />
 
-#### Statistics details
+## Statistics details
 
 In addition to trying to make the visuals clean and the functions what
 you would expect as a **ggplot2** user, we’ve spent considerable effort
@@ -214,11 +212,10 @@ behave similarly to `geom_function()` from
 argument `fun` specifying the pdf to be summarized. Here’s an example:
 
 ``` r
-f <- function(x, y) dnorm(x) * dnorm(y)
+f <- function(x, y) dnorm(x) * dgamma(y, 5, 3)
 
 ggplot() +
-  geom_hdr_fun(fun = f, xlim = c(-3, 3), ylim = c(-3, 3)) +
-  coord_fixed()
+  geom_hdr_fun(fun = f, xlim = c(-4, 4), ylim = c(0, 5))
 ```
 
 <img src="man/figures/README-ex_hdr_fun_1-1.png" width="100%" />
@@ -227,7 +224,7 @@ ggplot() +
 <!-- In the context of a Bayesian analysis, `geom_hdr()` creates plots of highest posterior regions. -->
 <!-- All we need to do is give `geom_hdr()` a data frame with draws from a posterior, and  -->
 
-#### Visualizing custom parametric density estimates with `geom_hdr_fun()`
+### Visualizing custom parametric density estimates with `geom_hdr_fun()`
 
 In addition to all of the methods of density estimation available with
 `geom_hdr()`, one of the perks of having `geom_hdr_fun()` is that it
@@ -248,7 +245,7 @@ df <- data.frame("x" = rexp(1000, th[1]), "y" = rexp(1000, th[2]))
 
 # construct the likelihood function
 l <- function(th) {
-  log_liks <-apply(df, 1, function(xy) {
+  log_liks <- apply(df, 1, function(xy) {
     dexp(xy[1], rate = th[1], log = TRUE) +
     dexp(xy[2], rate = th[2], log = TRUE)
   })
@@ -271,6 +268,6 @@ ggplot(df, aes(x, y)) +
 
 <img src="man/figures/README-ex_hdr_fun_2-1.png" width="100%" />
 
-#### Stay tuned!
+## Stay tuned!
 
 We have a number of neat new features cooking. Check back soon!
