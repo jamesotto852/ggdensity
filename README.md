@@ -22,7 +22,7 @@ density regions (HDRs). **ggdensity** offers drop-in replacements for
     `ggdensity::geom_hdr_lines()`.
 
 Also included are the functions `geom_hdr_fun()` and
-`geom_hdr_fun_lines()` for plotting HDRs of user-specified bivariate
+`geom_hdr_lines_fun()` for plotting HDRs of user-specified bivariate
 probability density functions.
 
 ## Installation
@@ -206,8 +206,8 @@ from data. But in some instances, you have the distribution in the form
 of a function that encodes the [joint
 PDF](https://en.wikipedia.org/wiki/Probability_density_function). In
 those circumstances, you can use `geom_hdr_fun()` and
-`geom_hdr_fun_lines()` to make the analogous plots. These functions
-behave similarly to `geom_function()` from
+`geom_hdr_lines_fun` to make the analogous plots. These functions behave
+similarly to `geom_function()` from
 [**ggplot2**](https://github.com/tidyverse/ggplot2), accepting the
 argument `fun` specifying the pdf to be summarized. Here’s an example:
 

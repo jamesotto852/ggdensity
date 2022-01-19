@@ -33,7 +33,7 @@ set.seed(1)
 - instead of `ggplot2::geom_contour_2d_filled()`{.R}, use `ggdensity::geom_hdr()`{.R};
 - instead of `ggplot2::geom_contour_2d()`{.R}, use `ggdensity::geom_hdr_lines()`{.R}.
 
-Also included are the functions `geom_hdr_fun()` and `geom_hdr_fun_lines()` for plotting HDRs of user-specified bivariate probability density functions.
+Also included are the functions `geom_hdr_fun()` and `geom_hdr_lines_fun()` for plotting HDRs of user-specified bivariate probability density functions.
 
 
 
@@ -227,7 +227,7 @@ map2(geoms, titles, p_row) |>
 
 ## If you know your PDF
 
-The above discussion has focused around densities that are estimated from data. But in some instances, you have the distribution in the form of a function that encodes the [joint PDF](https://en.wikipedia.org/wiki/Probability_density_function). In those circumstances, you can use `geom_hdr_fun()`{.R} and `geom_hdr_fun_lines()`{.R} to make the analogous plots.
+The above discussion has focused around densities that are estimated from data. But in some instances, you have the distribution in the form of a function that encodes the [joint PDF](https://en.wikipedia.org/wiki/Probability_density_function). In those circumstances, you can use `geom_hdr_fun()`{.R} and `geom_hdr_lines_fun`{.R} to make the analogous plots.
 These functions behave similarly to `geom_function()`{.R} from [**ggplot2**](https://github.com/tidyverse/ggplot2), 
 accepting the argument `fun` specifying the pdf to be summarized. Here's an example:
 
