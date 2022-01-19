@@ -46,10 +46,12 @@ density (the HDRs). This results in a very interpretable graphic,
 conveying more information than arbitrary density contours.
 
 ``` r
+library("ggplot2"); theme_set(theme_bw())
+library("ggdensity")
+
 df <- data.frame("x" = rnorm(1000), "y" = rnorm(1000))
 
 ggplot(df, aes(x, y)) + geom_density_2d_filled()
-
 ggplot(df, aes(x, y)) + geom_hdr()
 ```
 
@@ -61,7 +63,7 @@ Because `geom_hdr()` maps to the `alpha` aesthetic, the `fill` and
 `color` aesthetics are available for mapping to variables. This allows
 for easy comparison of HDRs between groups in a data set, below we
 illustrate this with the `penguins` data from
-[`palmerpenguins`](https://github.com/allisonhorst/palmerpenguins).
+[**palmerpenguins**](https://github.com/allisonhorst/palmerpenguins).
 
 ``` r
 library("palmerpenguins")

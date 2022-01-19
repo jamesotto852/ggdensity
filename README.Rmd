@@ -15,9 +15,6 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, include = FALSE}
-library("ggplot2"); theme_set(theme_bw())
-library("ggdensity")
-
 set.seed(1)
 ```
 
@@ -56,10 +53,12 @@ showing the smallest regions containing $50\%$, $80\%$, $95\%$, and $99\%$ of th
 This results in a very interpretable graphic, conveying more information than arbitrary density contours.
 
 ```{r ex1, fig.show="hold", out.width="50%"}
+library("ggplot2"); theme_set(theme_bw())
+library("ggdensity")
+
 df <- data.frame("x" = rnorm(1000), "y" = rnorm(1000))
 
 ggplot(df, aes(x, y)) + geom_density_2d_filled()
-
 ggplot(df, aes(x, y)) + geom_hdr()
 ```
 
@@ -67,7 +66,7 @@ ggplot(df, aes(x, y)) + geom_hdr()
 #### Grouping
 
 Because `geom_hdr()` maps to the `alpha` aesthetic, the `fill` and `color` aesthetics are available for mapping to variables.
-This allows for easy comparison of HDRs between groups in a data set, below we illustrate this with the `penguins` data from [`palmerpenguins`](https://github.com/allisonhorst/palmerpenguins).
+This allows for easy comparison of HDRs between groups in a data set, below we illustrate this with the `penguins` data from [**palmerpenguins**](https://github.com/allisonhorst/palmerpenguins).
 
 ```{r ex_penguins, warning = FALSE}
 library("palmerpenguins")
