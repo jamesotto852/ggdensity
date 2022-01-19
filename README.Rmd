@@ -52,18 +52,22 @@ Both plots show contours from the same density surface, but the contours plotted
 showing the smallest regions containing $50\%$, $80\%$, $95\%$, and $99\%$ of the estimated density (the HDRs).
 This results in a very interpretable graphic, conveying more information than arbitrary density contours.
 
-```{r ex1, fig.show="hold", out.width="100%"}
+
+<!-- ```{r ex1, fig.show="hold", out.width="100%"} -->
+ 
+```{r ex1}
 library("ggplot2"); theme_set(theme_bw())
 library("ggdensity")
-library("patchwork") 
 
 df <- data.frame("x" = rnorm(1000), "y" = rnorm(1000))
 
-p_ggplot    <- ggplot(df, aes(x, y)) + geom_density_2d_filled()
-p_ggdensity <- ggplot(df, aes(x, y)) + geom_hdr()
-p_ggplot + p_ggdensity
+ggplot(df, aes(x, y)) + geom_density_2d_filled()
+ggplot(df, aes(x, y)) + geom_hdr()
 ```
 
+<!-- p_ggplot    <- ggplot(df, aes(x, y)) + geom_density_2d_filled() -->
+<!-- p_ggdensity <- ggplot(df, aes(x, y)) + geom_hdr() -->
+<!-- p_ggplot + p_ggdensity -->
 
 #### Grouping
 
@@ -90,7 +94,7 @@ ggplot(penguins, aes(flipper_length_mm, bill_length_mm, color = species)) +
 
 <div style = "height:40px;"></div>
 
-```{r ex_penguins_facet, fig.width = 11, warning = FALSE}
+```{r ex_penguins_facet, warning = FALSE}
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
   geom_hdr(xlim = c(160, 240), ylim = c(30, 70)) +
   geom_point(shape = 21) +

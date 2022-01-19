@@ -45,19 +45,28 @@ smallest regions containing 50%, 80%, 95%, and 99% of the estimated
 density (the HDRs). This results in a very interpretable graphic,
 conveying more information than arbitrary density contours.
 
+<!-- ```{r ex1, fig.show="hold", out.width="100%"} -->
+
 ``` r
 library("ggplot2"); theme_set(theme_bw())
 library("ggdensity")
-library("patchwork") 
 
 df <- data.frame("x" = rnorm(1000), "y" = rnorm(1000))
 
-p_ggplot    <- ggplot(df, aes(x, y)) + geom_density_2d_filled()
-p_ggdensity <- ggplot(df, aes(x, y)) + geom_hdr()
-p_ggplot + p_ggdensity
+ggplot(df, aes(x, y)) + geom_density_2d_filled()
 ```
 
 <img src="man/figures/README-ex1-1.png" width="100%" />
+
+``` r
+ggplot(df, aes(x, y)) + geom_hdr()
+```
+
+<img src="man/figures/README-ex1-2.png" width="100%" />
+
+<!-- p_ggplot    <- ggplot(df, aes(x, y)) + geom_density_2d_filled() -->
+<!-- p_ggdensity <- ggplot(df, aes(x, y)) + geom_hdr() -->
+<!-- p_ggplot + p_ggdensity -->
 
 #### Grouping
 
