@@ -31,7 +31,7 @@ set.seed(1)
 **ggdensity** offers drop-in replacements for [**ggplot2**](https://github.com/tidyverse/ggplot2) functions:
 
 - instead of `ggplot2::geom_contour_2d_filled()`{.R}, use `ggdensity::geom_hdr()`{.R};
-- instead of `ggplot2::geom_contour_2d()`{.R}, use `ggdensity::geom_hdr_lines()`{.R}.
+- instead of `ggplot2::geom_density_2d()`{.R}, use `ggdensity::geom_hdr_lines()`{.R}.
 
 Also included are the functions `geom_hdr_fun()` and `geom_hdr_lines_fun()` for plotting HDRs of user-specified bivariate probability density functions.
 

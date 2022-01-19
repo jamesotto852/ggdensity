@@ -18,7 +18,7 @@ density regions (HDRs). **ggdensity** offers drop-in replacements for
 
 -   instead of `ggplot2::geom_contour_2d_filled()`, use
     `ggdensity::geom_hdr()`;
--   instead of `ggplot2::geom_contour_2d()`, use
+-   instead of `ggplot2::geom_density_2d()`, use
     `ggdensity::geom_hdr_lines()`.
 
 Also included are the functions `geom_hdr_fun()` and
