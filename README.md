@@ -16,7 +16,7 @@ interpretable visualizations of density estimates based on highest
 density regions (HDRs). **ggdensity** offers drop-in replacements for
 [**ggplot2**](https://github.com/tidyverse/ggplot2) functions:
 
--   instead of `ggplot2::geom_contour_2d_filled()`, use
+-   instead of `ggplot2::geom_density_2d_filled()`, use
     `ggdensity::geom_hdr()`;
 -   instead of `ggplot2::geom_density_2d()`, use
     `ggdensity::geom_hdr_lines()`.
