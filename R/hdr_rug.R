@@ -53,8 +53,7 @@
 #'
 #' ggplot(dfs, aes(x)) +
 #'   geom_density() +
-#'   geom_hdr_rug(show.legend = FALSE) +
-#'   coord_fixed()
+#'   geom_hdr_rug(show.legend = FALSE)
 #'
 #' ggplot(dfs, aes(y = y)) +
 #'   geom_density() +
