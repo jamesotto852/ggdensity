@@ -145,10 +145,7 @@ by \code{probs}, corresponding to each point.} }
 
 \examples{
 
-dfs <- tibble(
-  x = rnorm(100),
-  y = rnorm(100)
-)
+dfs <- data.frame(x = rnorm(100), y = rnorm(100))
 
 ggplot(dfs, aes(x)) +
   geom_density() +
@@ -166,7 +163,8 @@ ggplot(dfs, aes(x, y)) +
 ggplot(dfs, aes(x, y)) +
   geom_hdr() +
   geom_hdr_rug(show.legend = FALSE) +
-  coord_fixed()
+  lims(x = c(-3,3), y = c(-3,3)) +
+  coord_fixed(xlim = c(-3,3), ylim = c(-3,3))
 
 
 
