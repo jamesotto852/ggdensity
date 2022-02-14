@@ -2,7 +2,7 @@
 #'
 #' Perform 2D density estimation, compute and plot the resulting highest density
 #' regions. `geom_hdr()` draws filled regions, and `geom_hdr_lines()` draws
-#' lines outlining the regions. Note, the plotted objects have the level mapped
+#' lines outlining the regions. Note, the plotted objects have the probs mapped
 #' to the `alpha` aesthetic by default.
 #'
 #' @section Aesthetics: geom_hdr understands the following aesthetics (required
@@ -32,8 +32,8 @@
 #'
 #' @section Computed variables:
 #'
-#'   \describe{ \item{level}{The level of the highest density region, specified
-#'   by `probs`, corresponding to each point.} }
+#'   \describe{ \item{probs}{The probability associated with the highest density region, specified
+#'   by `probs`.} }
 #'
 #' @inheritParams ggplot2::geom_path
 #' @inheritParams ggplot2::stat_identity
@@ -181,7 +181,7 @@ stat_hdr <- function(mapping = NULL, data = NULL,
 StatHdr <- ggproto("StatHdr", Stat,
 
   required_aes = c("x", "y"),
-  default_aes = aes(order = after_stat(level), alpha = after_stat(level)),
+  default_aes = aes(order = after_stat(probs), alpha = after_stat(probs)),
 
   compute_group = function(data, scales, na.rm = FALSE,
                            method = "kde", probs = c(.99, .95, .8, .5),
@@ -239,7 +239,7 @@ StatHdr <- ggproto("StatHdr", Stat,
 
   names(isobands) <- scales::percent_format(accuracy = 1)(probs)
   path_df <- iso_to_polygon(isobands, data$group[1])
-  path_df$level <- ordered(path_df$level, levels = names(isobands))
+  path_df$probs <- ordered(path_df$level, levels = names(isobands))
 
   path_df
 

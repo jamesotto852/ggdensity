@@ -159,7 +159,7 @@ layer, as a string.}
 \description{
 Perform 2D density estimation, compute and plot the resulting highest density
 regions. \code{geom_hdr()} draws filled regions, and \code{geom_hdr_lines()} draws
-lines outlining the regions. Note, the plotted objects have the level mapped
+lines outlining the regions. Note, the plotted objects have the probs mapped
 to the \code{alpha} aesthetic by default.
 }
 \section{Aesthetics}{
@@ -194,8 +194,8 @@ are in bold):
 \section{Computed variables}{
 
 
-\describe{ \item{level}{The level of the highest density region, specified
-by \code{probs}, corresponding to each point.} }
+\describe{ \item{probs}{The probability associated with the highest density region, specified
+by \code{probs}.} }
 }
 
 \examples{

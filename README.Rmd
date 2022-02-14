@@ -77,7 +77,7 @@ While it's a nice looking plot, it isn't immediately clear how we should underst
 p + geom_hdr()
 ```
 
-`level` here tells us the probability bounded by the corresponding region, and the regions are computed to be the smallest such regions that bound that level of probability; these are called highest density regions or HDRs. By default, the plotted regions show the $50\%$, $80\%$, $95\%$, and $99\%$ HDRs of the estimated density, but this can be changed with the `probs` argument to `geom_hdr()`{.R}. Notice that your take-away from the plot made with `geom_density_2d_filled()`{.R} is subtlely yet significantly different than that of the plot made by `geom_hdr()`{.R}.
+`probs` here tells us the probability bounded by the corresponding region, and the regions are computed to be the smallest such regions that bound that level of probability; these are called highest density regions or HDRs. By default, the plotted regions show the $50\%$, $80\%$, $95\%$, and $99\%$ HDRs of the estimated density, but this can be changed with the `probs` argument to `geom_hdr()`{.R}. Notice that your take-away from the plot made with `geom_density_2d_filled()`{.R} is subtlely yet significantly different than that of the plot made by `geom_hdr()`{.R}.
 
 
 
@@ -129,21 +129,21 @@ The main point here is that you should really think of `geom_hdr()`{.R} and `geo
 
 ## A deeper cut illustrating **ggplot2** integration
 
-The underlying stat used by `geom_hdr()`{.R} creates the computed variable `level` that can be mapped in the standard way you map computed variables in **ggplot2**, with `after_stat()`{.R}.
+The underlying stat used by `geom_hdr()`{.R} creates the computed variable `probs` that can be mapped in the standard way you map computed variables in **ggplot2**, with `after_stat()`{.R}.
 
-For example, `geom_hdr()` and `geom_hdr_lines()` map `level` to the `alpha` aesthetic by default. But you can override it like this, just be sure to override the `alpha` aesthetic by setting `alpha = 1`.
+For example, `geom_hdr()` and `geom_hdr_lines()` map `probs` to the `alpha` aesthetic by default. But you can override it like this, just be sure to override the `alpha` aesthetic by setting `alpha = 1`.
 
 ```{r ex_after_stat}
 ggplot(faithful, aes(eruptions, waiting)) +
   geom_hdr(
-    aes(fill = after_stat(level)), 
+    aes(fill = after_stat(probs)), 
     alpha = 1, xlim = c(0, 8), ylim = c(30, 110)
   ) +
   scale_fill_viridis_d()
 
 ggplot(faithful, aes(eruptions, waiting)) +
   geom_hdr_lines(
-    aes(color = after_stat(level)), 
+    aes(color = after_stat(probs)), 
     alpha = 1, xlim = c(0, 8), ylim = c(30, 110)
   ) +
   scale_color_viridis_d()

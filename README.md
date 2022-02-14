@@ -76,7 +76,7 @@ p + geom_hdr()
 
 <img src="man/figures/README-ex1-1.png" width="100%" />
 
-`level` here tells us the probability bounded by the corresponding
+`probs` here tells us the probability bounded by the corresponding
 region, and the regions are computed to be the smallest such regions
 that bound that level of probability; these are called highest density
 regions or HDRs. By default, the plotted regions show the 50%, 80%, 95%,
@@ -150,17 +150,17 @@ expect all of the rest of the **ggplot2** stuff to just work.
 ## A deeper cut illustrating **ggplot2** integration
 
 The underlying stat used by `geom_hdr()` creates the computed variable
-`level` that can be mapped in the standard way you map computed
+`probs` that can be mapped in the standard way you map computed
 variables in **ggplot2**, with `after_stat()`.
 
-For example, `geom_hdr()` and `geom_hdr_lines()` map `level` to the
+For example, `geom_hdr()` and `geom_hdr_lines()` map `probs` to the
 `alpha` aesthetic by default. But you can override it like this, just be
 sure to override the `alpha` aesthetic by setting `alpha = 1`.
 
 ``` r
 ggplot(faithful, aes(eruptions, waiting)) +
   geom_hdr(
-    aes(fill = after_stat(level)), 
+    aes(fill = after_stat(probs)), 
     alpha = 1, xlim = c(0, 8), ylim = c(30, 110)
   ) +
   scale_fill_viridis_d()
@@ -171,7 +171,7 @@ ggplot(faithful, aes(eruptions, waiting)) +
 ``` r
 ggplot(faithful, aes(eruptions, waiting)) +
   geom_hdr_lines(
-    aes(color = after_stat(level)), 
+    aes(color = after_stat(probs)), 
     alpha = 1, xlim = c(0, 8), ylim = c(30, 110)
   ) +
   scale_color_viridis_d()
