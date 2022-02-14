@@ -67,7 +67,7 @@
 #' @examples
 #'
 #' # basic simulated data with bivariate normal data and various methods
-#' # (note: code s commented out in this file to save cran check time)
+#' # (note: code is commented out in this file to save cran check time)
 #' df <- data.frame(x = rnorm(1000), y = rnorm(1000))
 #' p <- ggplot(df, aes(x, y)) + coord_equal()
 #' p + geom_hdr()
