@@ -209,12 +209,13 @@ p + geom_hdr(method = "histogram")
 p + geom_hdr(method = "freqpoly")
 
 
+
 # adding point layers on top to visually assess region estimates
 pts <- geom_point(size = .2, color = "red")
 p + geom_hdr() + pts
 p + geom_hdr(method = "mvnorm") + pts
-p + geom_hdr(method = "histogram") + pts
-p + geom_hdr(method = "mvnorm") + pts
+# p + geom_hdr(method = "histogram") + pts
+
 
 
 # 2+ groups - mapping other aesthetics in the geom
@@ -232,17 +233,20 @@ pf <- ggplot(dfc, aes(x, y, fill = c)) + coord_equal()
 pf + geom_hdr()
 pf + geom_hdr(method = "mvnorm")
 pf + geom_hdr(method = "mvnorm", probs = .90, alpha = .5)
-pf + geom_hdr(method = "histogram")
-pf + geom_hdr(method = "freqpoly")
+# pf + geom_hdr(method = "histogram")
+# pf + geom_hdr(method = "freqpoly")
+
 
 
 # highest density region boundary lines
 p + geom_hdr_lines()
 p + geom_hdr_lines(method = "mvnorm")
+
 pc <- ggplot(dfc, aes(x, y, color = c)) + coord_equal() + theme_minimal() +
   theme(panel.grid.minor = element_blank())
 pc + geom_hdr_lines()
 pc + geom_hdr_lines(method = "mvnorm")
+
 
 
 # data with boundaries
