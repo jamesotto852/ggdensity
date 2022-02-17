@@ -66,6 +66,7 @@ StatHdrLinesFun <- ggproto("StatHdrlinesfun", Stat,
   names(isobands) <- scales::percent_format(accuracy = 1)(probs)
   path_df <- iso_to_polygon(isobands, data$group[1])
   path_df$probs <- ordered(path_df$level, levels = names(isobands))
+  path_df$level <- NULL
 
   path_df
 
