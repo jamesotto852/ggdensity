@@ -1,5 +1,5 @@
 Package: ggdensity
-Title: Interpretable Bivariate Density Visualization with ggplot2
+Title: Interpretable Bivariate Density Visualization with 'ggplot2'
 Version: 0.0.1.900
 Authors@R: 
     c(person(given = "James",
