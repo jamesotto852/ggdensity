@@ -41,16 +41,13 @@ Also included are the functions `geom_hdr_fun()` and `geom_hdr_lines_fun()` for 
 
 ## Installation
 
-**ggdensity** isn't on CRAN yet, but you can install its development version from [GitHub](https://github.com/) with:
+**ggdensity** is available on CRAN and can be installed with `install.packages("ggdensity")`.
+You can also install its development version from [GitHub](https://github.com/) with:
 
 ``` r
 if (!requireNamespace("remotes")) install.packages("remotes")
 remotes::install_github("jamesotto852/ggdensity")
 ```
-
-Since it's not on CRAN yet, the implementation interface may shift a bit, but we feel it's stable enough to share with you now, so don't expect big changes.
-
-
 
 
 

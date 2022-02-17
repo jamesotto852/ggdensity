@@ -27,17 +27,14 @@ probability density functions.
 
 ## Installation
 
-**ggdensity** isn’t on CRAN yet, but you can install its development
+**ggdensity** is available on CRAN and can be installed with
+`install.packages("ggdensity")`. You can also install its development
 version from [GitHub](https://github.com/) with:
 
 ``` r
 if (!requireNamespace("remotes")) install.packages("remotes")
 remotes::install_github("jamesotto852/ggdensity")
 ```
-
-Since it’s not on CRAN yet, the implementation interface may shift a
-bit, but we feel it’s stable enough to share with you now, so don’t
-expect big changes.
 
 ## `geom_density_2d_filled()` vs. `geom_hdr()`
 
