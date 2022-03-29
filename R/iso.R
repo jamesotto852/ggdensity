@@ -91,12 +91,11 @@ mvnorm_iso <- function(probs, data, n, rangex, rangey, type, HDR_fun = FALSE) {
     HDR_fun <- function(x, y) {
       if (length(x) > 1) return(mapply(HDR_fun, x, y, SIMPLIFY = TRUE))
 
-      # inefficient?
-      df$dist <- (x - df$x)^2 + (y - df$y)^2
-      fhat <- df[which.min(df$dist), "z"]
+      # In terms of estimated quantiles, not estimated f_hat
+      quant_hat <- find_quantile(c(x, y), mu = col_means, SigmaInv = SInv)
 
-      HDRs <- which(fhat >= breaks)
-      if (length(HDRs) == 0) return(1)
+      HDRs <- which(quant_hat <= breaks)
+      if (length(HDRs) %in% c(0, 1)) return(1)
 
       probs[max(HDRs)]
     }
