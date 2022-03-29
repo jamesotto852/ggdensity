@@ -95,7 +95,7 @@ mvnorm_iso <- function(probs, data, n, rangex, rangey, type, HDR_fun = FALSE) {
       quant_hat <- find_quantile(c(x, y), mu = col_means, SigmaInv = SInv)
 
       HDRs <- which(quant_hat <= breaks)
-      if (length(HDRs) %in% c(0, 1)) return(1)
+      if (length(HDRs) == 0) return(1)
 
       probs[max(HDRs)]
     }
