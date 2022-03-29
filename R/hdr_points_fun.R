@@ -1,3 +1,51 @@
+#' Scatterplot colored according to highest density regions of a bivariate pdf
+#'
+#' To-do
+#'
+#' @section Aesthetics: geom_hdr_points_fun understands the following aesthetics
+#'   (required aesthetics are in bold):
+#'
+#'   - **x**
+#'   - y
+#'   - alpha
+#'   - color
+#'   - fill
+#'   - group
+#'   - linetype
+#'   - size
+#'   - subgroup
+#'
+#' @section Computed variables:
+#'
+#'   \describe{ \item{probs}{The probability associated with the highest density region, specified
+#'   by `probs`.} }
+#'
+#' @inheritParams ggplot2::geom_path
+#' @inheritParams ggplot2::stat_identity
+#' @inheritParams ggplot2::stat_density2d
+#' @inheritParams geom_hdr_fun
+#'
+#' @name geom_hdr_points_fun
+#' @rdname geom_hdr_points_fun
+#'
+#' @import ggplot2
+#'
+#' @examples
+#'
+#' f <- function(x, y) dexp(x) * dexp(y)
+#' df <- data.frame(x = rexp(1000), y = rexp(1000))
+#'
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr_points_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
+#'
+#'
+#'
+#'
+NULL
+
+
+#' @export
+#' @rdname geom_hdr_points_fun
 stat_hdr_points_fun <- function(mapping = NULL, data = NULL,
                                 geom = "hdr_points_fun", position = "identity",
                                 ...,
@@ -17,17 +65,13 @@ stat_hdr_points_fun <- function(mapping = NULL, data = NULL,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
     params = list(
-      method = method,
+      fun = fun,
+      args = args,
+      normalized = normalized,
       probs = probs,
-      bins = bins,
-      n = n,
+      res = res,
       xlim = xlim,
       ylim = ylim,
-      nudgex = nudgex,
-      nudgey = nudgey,
-      smooth = smooth,
-      adjust = adjust,
-      h = h,
       na.rm = na.rm,
       ...
     )
@@ -35,6 +79,8 @@ stat_hdr_points_fun <- function(mapping = NULL, data = NULL,
 }
 
 
+#' @export
+#' @rdname geom_hdr_points_fun
 StatHdrPointsFun <- ggproto("StatHdrpointsfun", Stat,
   required_aes = c("x", "y"),
   default_aes = aes(order = after_stat(probs), color = after_stat(probs)),
@@ -65,7 +111,8 @@ StatHdrPointsFun <- ggproto("StatHdrpointsfun", Stat,
   }
 )
 
-
+#' @export
+#' @rdname geom_hdr_points_fun
 geom_hdr_points_fun <- function(mapping = NULL, data = NULL,
                                 stat = "hdr_points_fun", position = "identity",
                                 ...,

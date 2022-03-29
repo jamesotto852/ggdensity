@@ -1,3 +1,55 @@
+#' Scatterplot illustrating highest density regions of a 2D density estimate
+#'
+#' To-do
+#'
+#' @section Aesthetics: geom_hdr_points understands the following aesthetics (required
+#'   aesthetics are in bold):
+#'
+#'   - **x**
+#'   - **y**
+#'   - alpha
+#'   - color
+#'   - fill
+#'   - group
+#'   - linetype
+#'   - size
+#'   - subgroup
+#'
+#' @section Computed variables:
+#'
+#'   \describe{ \item{probs}{The probability associated with the highest density region, specified
+#'   by `probs`.} }
+#'
+#' @inheritParams ggplot2::geom_path
+#' @inheritParams ggplot2::stat_identity
+#' @inheritParams ggplot2::stat_density2d
+#' @inheritParams geom_hdr
+#'
+#' @name geom_hdr_points
+#' @rdname geom_hdr_points
+#'
+#' @import ggplot2
+#'
+#' @examples
+#'
+#' # basic simulated data with bivariate normal data and various methods
+#' # (note: code is commented out in this file to save cran check time)
+#' df <- data.frame(x = rnorm(1000), y = rnorm(1000))
+#' p <- ggplot(df, aes(x, y)) + coord_equal()
+#' p + geom_hdr_points()
+#' p + geom_hdr_points(method = "mvnorm")
+#' p + geom_hdr_points(method = "freqpoly")
+#' # p + geom_hdr_points(method = "histogram")
+#'
+#'
+#'
+#'
+NULL
+
+
+
+#' @export
+#' @rdname geom_hdr_points
 stat_hdr_points <- function(mapping = NULL,
                             data = NULL,
                             geom = "point",
@@ -45,6 +97,8 @@ stat_hdr_points <- function(mapping = NULL,
 }
 
 
+#' @export
+#' @rdname geom_hdr_points
 StatHdrPoints <- ggproto("StatHdrPoints", Stat,
   required_aes = c("x", "y"),
   default_aes = aes(order = after_stat(probs), color = after_stat(probs)),
@@ -113,6 +167,8 @@ StatHdrPoints <- ggproto("StatHdrPoints", Stat,
 )
 
 
+#' @export
+#' @rdname geom_hdr_points
 geom_hdr_points <- function(mapping = NULL,
                             data = NULL,
                             stat = "hdr_points",
