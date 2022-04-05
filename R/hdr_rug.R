@@ -260,7 +260,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
      }
 
      # move the rug to outside the main plot space
-     rug_length <- if (!outside) length else -length
+     if (outside) length <- -length
 
      # Set up data frames for x and y:
      data_x <- data[data$axis == "x",]
@@ -285,7 +285,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
            x = unit(data_x$x, "native"),
            y = unit(0, "npc"),
            width = data_x$width,
-           height = rug_length,
+           height = length,
            just = "bottom",
            gp = gp_x
          )
@@ -296,7 +296,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
            x = unit(data_x$x, "native"),
            y = unit(1, "npc"),
            width = data_x$width,
-           height = rug_length,
+           height = length,
            just = "top",
            gp = gp_x
          )
@@ -320,7 +320,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
          rugs$y_l <- grid::rectGrob(
            x = unit(0, "npc"),
            y = unit(data_y$y, "native"),
-           width = rug_length,
+           width = length,
            height = data_y$height,
            just = "left",
            gp = gp_y
@@ -331,7 +331,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
          rugs$y_r <- grid::rectGrob(
            x = unit(1, "npc"),
            y = unit(data_y$y, "native"),
-           width = rug_length,
+           width = length,
            height = data_y$height,
            just = "right",
            gp = gp_y
@@ -346,7 +346,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
 
    default_aes = aes(colour = NA, size = NA, linetype = 1, fill = "grey20", alpha = NA),
 
-   draw_key = draw_key_rect
+  draw_key = draw_key_polygon
 )
 
 
