@@ -166,9 +166,10 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
 
     df_x <- switch(method,
       "kde" = kde_marginal(data$x, data$weight, rangex[1], rangex[2], bw[1], adjust[1], kernel[1], n[1]),
-      "histogram" = hist_marginal(data$x, rangex[1], rangex[2], bins[1])
+      "histogram" = hist_marginal(data$x, rangex[1], rangex[2], bins[1]),
+      "norm" = norm_marginal(data$x, rangex[1], rangex[2], n[1])
     )
-    if (!(method %in% c("kde", "mvnorm", "histogram", "freqpoly"))) stop("Invalid method specified")
+    if (!(method %in% c("kde", "norm", "histogram", "freqpoly"))) stop("Invalid method specified")
 
     # Find vals. of f_hat for different HDRs
     cutoffs_x <- find_cutoff(df_x, probs)
@@ -192,9 +193,10 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
 
     df_y <- switch(method,
       "kde" = kde_marginal(data$y, data$weight, rangey[1], rangey[2], bw[1], adjust[1], kernel[1], n[1]),
-      "histogram" = hist_marginal(data$y, rangey[1], rangey[2], bins[1])
+      "histogram" = hist_marginal(data$y, rangey[1], rangey[2], bins[1]),
+      "norm" = norm_marginal(data$x, rangex[1], rangex[2], n[1])
     )
-    if (!(method %in% c("kde", "mvnorm", "histogram", "freqpoly"))) stop("Invalid method specified")
+    if (!(method %in% c("kde", "norm", "histogram", "freqpoly"))) stop("Invalid method specified")
 
     cutoffs_y <- find_cutoff(df_y, probs)
     find_hdr_y <- assign_cutoff(probs, cutoffs_y)

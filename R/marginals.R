@@ -78,3 +78,30 @@ hist_marginal <- function(x, from, to, bins) {
     fhat_discretized = normalize(n)
   )
 }
+
+
+norm_marginal <- function(x, from, to, n = 512) {
+  nx <- length(x)
+
+  # if less than 2 points return data frame of NAs and a warning
+  if (nx < 2) {
+    message("Groups with fewer than two data points have been dropped.")
+    return(data.frame(
+      x = NA_real_,
+      fhat = NA_real_,
+      fhat_discretized = NA_real_
+    ))
+  }
+
+  sx <- seq(from, to, length.out = n)
+
+  mu_x <- mean(x)
+  sd_x <- sd(x)
+  dens <- dnorm(sx, mu_x, sd_x)
+
+  data.frame(
+    x = sx,
+    fhat = dens,
+    fhat_discretized = normalize(dens)
+  )
+}
