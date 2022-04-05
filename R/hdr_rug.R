@@ -92,6 +92,8 @@ stat_hdr_rug <- function(mapping = NULL, data = NULL,
                                       ylim = NULL,
                                       bw = "nrd0",
                                       adjust = 1,
+                                      kernel = "gaussian",
+                                      bins = NULL,
                                       n = 512,
                                       na.rm = FALSE,
                                       show.legend = TRUE,
@@ -111,6 +113,8 @@ stat_hdr_rug <- function(mapping = NULL, data = NULL,
       ylim = ylim,
       bw = bw,
       adjust = adjust,
+      kernel = kernel,
+      bins = bins,
       n = n,
       na.rm = na.rm,
       ...
@@ -133,6 +137,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
                            bw = "nrd0",
                            adjust = 1,
                            kernel = "gaussian",
+                           bins = NULL,
                            n = 512) {
 
   probs <- probs[order(probs, decreasing = TRUE)]
@@ -144,6 +149,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
   bw <- rep(bw, 2)
   adjust <- rep(adjust, 2)
   kernel <- rep(kernel, 2)
+  bins <- rep(bins, 2)
   n <- rep(n, 2)
 
   # Estimate marginal densities
@@ -154,12 +160,15 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
   df_x <- data.frame()
   df_y <- data.frame()
 
-
   if (!is.null(data$x)) {
 
     rangex <- xlim %||% scales$x$dimension()
 
-    df_x <- kde_marginal(data$x, data$weight, rangex[1], rangex[2], bw[1], adjust[1], kernel[1], n[1])
+    df_x <- switch(method,
+      "kde" = kde_marginal(data$x, data$weight, rangex[1], rangex[2], bw[1], adjust[1], kernel[1], n[1]),
+      "histogram" = hist_marginal(data$x, rangex[1], rangex[2], bins[1])
+    )
+    if (!(method %in% c("kde", "mvnorm", "histogram", "freqpoly"))) stop("Invalid method specified")
 
     # Find vals. of f_hat for different HDRs
     cutoffs_x <- find_cutoff(df_x, probs)
@@ -181,7 +190,11 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
 
     rangey <- ylim %||% scales$y$dimension()
 
-    df_y <- kde_marginal(data$y, data$weight, rangey[1], rangey[2], bw[2], adjust[2], kernel[2], n[2])
+    df_y <- switch(method,
+      "kde" = kde_marginal(data$y, data$weight, rangey[1], rangey[2], bw[1], adjust[1], kernel[1], n[1]),
+      "histogram" = hist_marginal(data$y, rangey[1], rangey[2], bins[1])
+    )
+    if (!(method %in% c("kde", "mvnorm", "histogram", "freqpoly"))) stop("Invalid method specified")
 
     cutoffs_y <- find_cutoff(df_y, probs)
     find_hdr_y <- assign_cutoff(probs, cutoffs_y)
