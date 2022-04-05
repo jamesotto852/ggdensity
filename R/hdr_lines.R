@@ -54,7 +54,7 @@ stat_hdr_lines <- function(mapping = NULL, data = NULL,
 StatHdrLines <- ggproto("StatHdrLines", Stat,
 
   required_aes = c("x", "y"),
-  default_aes = aes(order = after_stat(level), alpha = after_stat(level)),
+  default_aes = aes(order = after_stat(probs), alpha = after_stat(probs)),
 
   compute_group = function(data, scales, na.rm = FALSE,
                            method = "kde", probs = c(.99, .95, .8, .5),
@@ -115,7 +115,8 @@ StatHdrLines <- ggproto("StatHdrLines", Stat,
 
   names(isolines) <- scales::percent_format(accuracy = 1)(probs)
   path_df <- iso_to_path(isolines, data$group[1])
-  path_df$level <- ordered(path_df$level, levels = names(isolines))
+  path_df$probs <- ordered(path_df$level, levels = names(isolines))
+  path_df$level <- NULL
 
   path_df
 

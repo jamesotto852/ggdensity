@@ -2,6 +2,8 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
+^README\.md$
+^README_cache$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$

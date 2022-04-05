@@ -43,7 +43,7 @@ stat_hdr_lines_fun <- function(mapping = NULL, data = NULL,
 #' @export
 StatHdrLinesFun <- ggproto("StatHdrlinesfun", Stat,
 
-  default_aes = aes(order = after_stat(level), alpha = after_stat(level)),
+  default_aes = aes(order = after_stat(probs), alpha = after_stat(probs)),
 
   compute_group = function(data, scales, na.rm = FALSE,
                            fun, args = list(), normalized = TRUE, probs = c(.99, .95, .8, .5),
@@ -65,7 +65,8 @@ StatHdrLinesFun <- ggproto("StatHdrlinesfun", Stat,
 
   names(isobands) <- scales::percent_format(accuracy = 1)(probs)
   path_df <- iso_to_polygon(isobands, data$group[1])
-  path_df$level <- ordered(path_df$level, levels = names(isobands))
+  path_df$probs <- ordered(path_df$level, levels = names(isobands))
+  path_df$level <- NULL
 
   path_df
 

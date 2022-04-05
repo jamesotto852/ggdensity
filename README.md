@@ -16,9 +16,9 @@ interpretable visualizations of density estimates based on highest
 density regions (HDRs). **ggdensity** offers drop-in replacements for
 [**ggplot2**](https://github.com/tidyverse/ggplot2) functions:
 
--   instead of `ggplot2::geom_contour_2d_filled()`, use
+-   instead of `ggplot2::geom_density_2d_filled()`, use
     `ggdensity::geom_hdr()`;
--   instead of `ggplot2::geom_contour_2d()`, use
+-   instead of `ggplot2::geom_density_2d()`, use
     `ggdensity::geom_hdr_lines()`.
 
 Also included are the functions `geom_hdr_fun()` and
@@ -27,7 +27,8 @@ probability density functions.
 
 ## Installation
 
-**ggdensity** isn’t on CRAN yet, but you can install its development
+**ggdensity** is available on CRAN and can be installed with
+`install.packages("ggdensity")`. You can also install its development
 version from [GitHub](https://github.com/) with:
 
 ``` r
@@ -35,14 +36,10 @@ if (!requireNamespace("remotes")) install.packages("remotes")
 remotes::install_github("jamesotto852/ggdensity")
 ```
 
-Since it’s not on CRAN yet, the implementation interface may shift a
-bit, but we feel it’s stable enough to share with you now, so don’t
-expect big changes.
-
-## `ggplot2::geom_contour_2d()` vs. `ggdensity::geom_hdr()`
+## `geom_density_2d_filled()` vs. `geom_hdr()`
 
 The standard way to visualize the joint distribution of two continuous
-variables in **ggplot2** is to use `geom_density_2d()` or
+variables in **ggplot2** is to use `ggplot2::geom_density_2d()` or
 `geom_density_2d_filled()`. Here’s an example:
 
 ``` r
@@ -76,7 +73,7 @@ p + geom_hdr()
 
 <img src="man/figures/README-ex1-1.png" width="100%" />
 
-`level` here tells us the probability bounded by the corresponding
+`probs` here tells us the probability bounded by the corresponding
 region, and the regions are computed to be the smallest such regions
 that bound that level of probability; these are called highest density
 regions or HDRs. By default, the plotted regions show the 50%, 80%, 95%,
@@ -150,17 +147,17 @@ expect all of the rest of the **ggplot2** stuff to just work.
 ## A deeper cut illustrating **ggplot2** integration
 
 The underlying stat used by `geom_hdr()` creates the computed variable
-`level` that can be mapped in the standard way you map computed
+`probs` that can be mapped in the standard way you map computed
 variables in **ggplot2**, with `after_stat()`.
 
-For example, `geom_hdr()` and `geom_hdr_lines()` map `level` to the
+For example, `geom_hdr()` and `geom_hdr_lines()` map `probs` to the
 `alpha` aesthetic by default. But you can override it like this, just be
 sure to override the `alpha` aesthetic by setting `alpha = 1`.
 
 ``` r
 ggplot(faithful, aes(eruptions, waiting)) +
   geom_hdr(
-    aes(fill = after_stat(level)), 
+    aes(fill = after_stat(probs)), 
     alpha = 1, xlim = c(0, 8), ylim = c(30, 110)
   ) +
   scale_fill_viridis_d()
@@ -171,7 +168,7 @@ ggplot(faithful, aes(eruptions, waiting)) +
 ``` r
 ggplot(faithful, aes(eruptions, waiting)) +
   geom_hdr_lines(
-    aes(color = after_stat(level)), 
+    aes(color = after_stat(probs)), 
     alpha = 1, xlim = c(0, 8), ylim = c(30, 110)
   ) +
   scale_color_viridis_d()
@@ -206,8 +203,8 @@ from data. But in some instances, you have the distribution in the form
 of a function that encodes the [joint
 PDF](https://en.wikipedia.org/wiki/Probability_density_function). In
 those circumstances, you can use `geom_hdr_fun()` and
-`geom_hdr_lines_fun` to make the analogous plots. These functions behave
-similarly to `geom_function()` from
+`geom_hdr_lines_fun()` to make the analogous plots. These functions
+behave similarly to `geom_function()` from
 [**ggplot2**](https://github.com/tidyverse/ggplot2), accepting the
 argument `fun` specifying the pdf to be summarized. Here’s an example:
 

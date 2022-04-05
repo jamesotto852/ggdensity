@@ -159,7 +159,7 @@ layer, as a string.}
 \description{
 Perform 2D density estimation, compute and plot the resulting highest density
 regions. \code{geom_hdr()} draws filled regions, and \code{geom_hdr_lines()} draws
-lines outlining the regions. Note, the plotted objects have the level mapped
+lines outlining the regions. Note, the plotted objects have the probs mapped
 to the \code{alpha} aesthetic by default.
 }
 \section{Aesthetics}{
@@ -194,27 +194,28 @@ are in bold):
 \section{Computed variables}{
 
 
-\describe{ \item{level}{The level of the highest density region, specified
-by \code{probs}, corresponding to each point.} }
+\describe{ \item{probs}{The probability associated with the highest density region, specified
+by \code{probs}.} }
 }
 
 \examples{
 
 # basic simulated data with bivariate normal data and various methods
+# (note: code is commented out in this file to save cran check time)
 df <- data.frame(x = rnorm(1000), y = rnorm(1000))
 p <- ggplot(df, aes(x, y)) + coord_equal()
 p + geom_hdr()
 p + geom_hdr(method = "mvnorm")
-p + geom_hdr(method = "histogram")
 p + geom_hdr(method = "freqpoly")
+# p + geom_hdr(method = "histogram")
 
 
 # adding point layers on top to visually assess region estimates
 pts <- geom_point(size = .2, color = "red")
 p + geom_hdr() + pts
 p + geom_hdr(method = "mvnorm") + pts
-p + geom_hdr(method = "histogram") + pts
-p + geom_hdr(method = "mvnorm") + pts
+p + geom_hdr(method = "freqpoly") + pts
+# p + geom_hdr(method = "histogram") + pts
 
 
 # 2+ groups - mapping other aesthetics in the geom
@@ -230,19 +231,23 @@ rdata <- function(n, n_groups = 3, radius = 3) {
 dfc <- rdata(1000, n_groups = 5)
 pf <- ggplot(dfc, aes(x, y, fill = c)) + coord_equal()
 pf + geom_hdr()
-pf + geom_hdr(method = "mvnorm")
-pf + geom_hdr(method = "mvnorm", probs = .90, alpha = .5)
-pf + geom_hdr(method = "histogram")
-pf + geom_hdr(method = "freqpoly")
+if (FALSE) {
+  pf + geom_hdr(method = "mvnorm")
+  pf + geom_hdr(method = "mvnorm", probs = .90, alpha = .5)
+  pf + geom_hdr(method = "histogram")
+  pf + geom_hdr(method = "freqpoly")
+}
 
 
 # highest density region boundary lines
 p + geom_hdr_lines()
 p + geom_hdr_lines(method = "mvnorm")
-pc <- ggplot(dfc, aes(x, y, color = c)) + coord_equal() + theme_minimal() +
-  theme(panel.grid.minor = element_blank())
-pc + geom_hdr_lines()
-pc + geom_hdr_lines(method = "mvnorm")
+if (FALSE) {
+  pc <- ggplot(dfc, aes(x, y, color = c)) + coord_equal() + theme_minimal() +
+    theme(panel.grid.minor = element_blank())
+  pc + geom_hdr_lines()
+  pc + geom_hdr_lines(method = "mvnorm")
+}
 
 
 # data with boundaries

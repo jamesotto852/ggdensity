@@ -169,8 +169,8 @@ aesthetics are in bold):
 \section{Computed variables}{
 
 
-\describe{ \item{level}{The level of the highest density region, specified
-by \code{probs}, corresponding to each point.} }
+\describe{ \item{probs}{The probability associated with the highest density region, specified
+by \code{probs}.} }
 }
 
 \examples{

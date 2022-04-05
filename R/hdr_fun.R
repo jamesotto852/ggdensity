@@ -28,8 +28,8 @@
 #'
 #' @section Computed variables:
 #'
-#'   \describe{ \item{level}{The level of the highest density region, specified
-#'   by `probs`, corresponding to each point.} }
+#'   \describe{ \item{probs}{The probability associated with the highest density region, specified
+#'   by `probs`.} }
 #'
 #' @inheritParams ggplot2::geom_path
 #' @inheritParams ggplot2::stat_identity
@@ -148,7 +148,7 @@ stat_hdr_fun <- function(mapping = NULL, data = NULL,
 #' @export
 StatHdrFun <- ggproto("StatHdrFun", Stat,
 
-  default_aes = aes(order = after_stat(level), alpha = after_stat(level)),
+  default_aes = aes(order = after_stat(probs), alpha = after_stat(probs)),
 
   compute_group = function(data, scales, na.rm = FALSE,
     fun, args = list(), normalized = TRUE, probs = c(.99, .95, .8, .5),
@@ -163,7 +163,7 @@ StatHdrFun <- ggproto("StatHdrFun", Stat,
 
     names(isobands) <- scales::percent_format(accuracy = 1)(probs)
     path_df <- iso_to_polygon(isobands, data$group[1])
-    path_df$level <- ordered(path_df$level, levels = names(isobands))
+    path_df$probs <- ordered(path_df$level, levels = names(isobands))
 
     path_df
 
