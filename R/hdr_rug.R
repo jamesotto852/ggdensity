@@ -167,6 +167,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
     df_x <- switch(method,
       "kde" = kde_marginal(data$x, data$weight, rangex[1], rangex[2], bw[1], adjust[1], kernel[1], n[1]),
       "histogram" = hist_marginal(data$x, rangex[1], rangex[2], bins[1]),
+      "freqpoly" = freqpoly_marginal(data$x, rangex[1], rangex[2], bins[1], n[1]),
       "norm" = norm_marginal(data$x, rangex[1], rangex[2], n[1])
     )
     if (!(method %in% c("kde", "norm", "histogram", "freqpoly"))) stop("Invalid method specified")
@@ -194,7 +195,8 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
     df_y <- switch(method,
       "kde" = kde_marginal(data$y, data$weight, rangey[1], rangey[2], bw[1], adjust[1], kernel[1], n[1]),
       "histogram" = hist_marginal(data$y, rangey[1], rangey[2], bins[1]),
-      "norm" = norm_marginal(data$x, rangex[1], rangex[2], n[1])
+      "freqpoly" = freqpoly_marginal(data$y, rangey[1], rangey[2], bins[2], n[2]),
+      "norm" = norm_marginal(data$y, rangey[1], rangey[2], n[2])
     )
     if (!(method %in% c("kde", "norm", "histogram", "freqpoly"))) stop("Invalid method specified")
 

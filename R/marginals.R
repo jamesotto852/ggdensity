@@ -79,6 +79,53 @@ hist_marginal <- function(x, from, to, bins) {
   )
 }
 
+freqpoly_marginal <- function(x, from, to, bins, n = 512) {
+  df <- hist_marginal(x, from, to, bins)
+  hx <- df$x[2] - df$x[1]
+
+  # need to pad df from hist_marginal() w/ bins that have est prob of 0
+  # so that we can interpolate
+  df <- rbind(
+    # add initial bin w/ est prob of 0
+    data.frame(
+      x = min(df$x) - hx,
+      fhat = 0,
+      fhat_discretized = 0
+    ),
+
+    # include original histogram estimator
+    df,
+
+    # add final bin w/ est prob of 0
+    data.frame(
+      x = max(df$x) + hx,
+      fhat = 0,
+      fhat_discretized = 0
+    )
+  )
+
+  sx <- seq(from, to, length.out = n)
+
+  interpolate_fhat <- function(x) {
+    lower_x <- df$x[max(which(df$x < x))]
+    upper_x <- df$x[min(which(df$x >= x))]
+
+    lower_fhat <- df$fhat[max(which(df$x < x))]
+    upper_fhat <- df$fhat[min(which(df$x >= x))]
+
+    lower_fhat + (x - lower_x) * (upper_fhat - lower_fhat) / (upper_x - lower_x)
+  }
+
+  dens <- vapply(sx, interpolate_fhat, numeric(1))
+
+  data.frame(
+    x = sx,
+    fhat = dens,
+    fhat_discretized = normalize(dens)
+  )
+
+}
+
 
 norm_marginal <- function(x, from, to, n = 512) {
   nx <- length(x)
