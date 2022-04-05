@@ -29,7 +29,7 @@ kde_marginal <- function(x, w, from, to, bw = "nrd0", adjust = 1,
 
   # if less than 2 points return data frame of NAs and a warning
   if (nx < 2) {
-    warn("Groups with fewer than two data points have been dropped.")
+    message("Groups with fewer than two data points have been dropped.")
     return(data.frame(
       x = NA_real_,
       density = NA_real_
