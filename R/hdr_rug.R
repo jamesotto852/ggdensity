@@ -344,7 +344,9 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
 
    },
 
-   default_aes = aes(colour = NA, size = NA, linetype = 1, fill = "grey20", alpha = NA),
+  # ggplot2 bug requires we set size = 0, or else guide won't render correctly
+  # https://github.com/tidyverse/ggplot2/issues/4559
+  default_aes = aes(colour = NA, size = 0, linetype = 1, fill = "grey20", alpha = NA),
 
   draw_key = draw_key_polygon
 )

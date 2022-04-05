@@ -139,7 +139,7 @@ aesthetics are in bold):
 \section{Computed variables}{
 
 
-\describe{ \item{level}{The level of the highest density region, specified
+\describe{ \item{probs}{The probability of the highest density region, specified
 by \code{probs}, corresponding to each point.} }
 }
 
@@ -166,7 +166,12 @@ ggplot(dfs, aes(x, y)) +
   lims(x = c(-3,3), y = c(-3,3)) +
   coord_fixed(xlim = c(-3,3), ylim = c(-3,3))
 
+ggplot(faithful, aes(waiting, eruptions)) +
+  geom_point()
 
+ggplot(faithful, aes(waiting, eruptions)) +
+  geom_point() +
+  geom_hdr_rug(show.legend = FALSE, color = "red")
 
 }
 \references{
