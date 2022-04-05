@@ -137,7 +137,6 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
 
   probs <- probs[order(probs, decreasing = TRUE)]
 
-
   # For now: just implementing kde along each dimension.
   # TO-DO: Other estimators (implement in marginals.R)
 
@@ -199,8 +198,13 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
 
   }
 
-  rbind(df_x, df_y)
+  df <- rbind(df_x, df_y)
 
+  # Need to remove extra col if only plotting x or y rug
+  if (is.null(data$x)) df$x <- NULL
+  if (is.null(data$y)) df$y <- NULL
+
+  df
   }
 )
 
@@ -261,6 +265,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
      # Set up data frames for x and y:
      data_x <- data[data$axis == "x",]
      data_y <- data[data$axis == "y",]
+
 
      if (nrow(data_x) > 0) {
 
@@ -341,7 +346,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
 
    default_aes = aes(colour = NA, size = NA, linetype = 1, fill = "grey20", alpha = NA),
 
-   draw_key = draw_key_polygon
+   draw_key = draw_key_rect
 )
 
 
