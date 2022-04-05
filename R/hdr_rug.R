@@ -17,7 +17,7 @@
 #'
 #' @section Computed variables:
 #'
-#'   \describe{ \item{level}{The level of the highest density region, specified
+#'   \describe{ \item{probs}{The probability of the highest density region, specified
 #'   by `probs`, corresponding to each point.} }
 #'
 #' @inheritParams ggplot2::geom_path
@@ -125,7 +125,7 @@ stat_hdr_rug <- function(mapping = NULL, data = NULL,
 StatHdrRug <- ggproto("StatHdrRug", Stat,
 
   required_aes = c("x|y"),
-  default_aes = aes(order = after_stat(level), alpha = after_stat(level)),
+  default_aes = aes(alpha = after_stat(probs)),
 
   compute_group = function(data, scales, na.rm = FALSE,
                            method = "kde", probs = c(.99, .95, .8, .5),
@@ -167,12 +167,13 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
     find_hdr_x <- assign_cutoff(probs, cutoffs_x)
 
     # Assign each point along axes to an HDR
-    df_x$level <- find_hdr_x(df_x$fhat)
-    df_x <- df_x[!is.na(df_x$level),]
-    df_x$level <- scales::percent_format(accuracy = 1)(df_x$level)
-    df_x$level <- ordered(df_x$level, scales::percent_format(accuracy = 1)(probs))
+    df_x$probs <- find_hdr_x(df_x$fhat)
+    df_x <- df_x[!is.na(df_x$probs),]
+    df_x$probs <- scales::percent_format(accuracy = 1)(df_x$probs)
+    df_x$probs <- ordered(df_x$probs, scales::percent_format(accuracy = 1)(probs))
 
     df_x$axis <- "x"
+    df_x$y <- NA
 
   }
 
@@ -186,12 +187,15 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
     cutoffs_y <- find_cutoff(df_y, probs)
     find_hdr_y <- assign_cutoff(probs, cutoffs_y)
 
-    df_y$level <- find_hdr_y(df_y$fhat)
-    df_y <- df_y[!is.na(df_y$level),]
-    df_y$level <- scales::percent_format(accuracy = 1)(df_y$level)
-    df_y$level <- ordered(df_y$level, scales::percent_format(accuracy = 1)(probs))
+    df_y$probs <- find_hdr_y(df_y$fhat)
+    df_y <- df_y[!is.na(df_y$probs),]
+    df_y$probs <- scales::percent_format(accuracy = 1)(df_y$probs)
+    df_y$probs <- ordered(df_y$probs, scales::percent_format(accuracy = 1)(probs))
 
     df_y$axis <- "y"
+    # Needs correct name for ggplot2 internals
+    df_y$y <- df_y$x
+    df_y$x <- NA
 
   }
 
@@ -221,6 +225,9 @@ geom_hdr_rug <- function(mapping = NULL, data = NULL,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
     params = list(
+      outside = outside,
+      sides = sides,
+      length = length,
       na.rm = na.rm,
       ...
     )
@@ -249,20 +256,11 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
      }
 
      # move the rug to outside the main plot space
-     rug_length <- if (!outside) {
-       list(min = length, max = unit(1, "npc") - length)
-     } else {
-       list(min = -1 * length, max = unit(1, "npc") + length)
-     }
-
+     rug_length <- if (!outside) length else -length
 
      # Set up data frames for x and y:
      data_x <- data[data$axis == "x",]
      data_y <- data[data$axis == "y",]
-
-     # Fixing name of data_y coordinate column
-     data_y$y <- data_y$x
-     data_y$x <- NULL
 
      if (nrow(data_x) > 0) {
 
@@ -282,7 +280,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
            x = unit(data_x$x, "native"),
            y = unit(0, "npc"),
            width = data_x$width,
-           height = rug_length$min,
+           height = rug_length,
            just = "bottom",
            gp = gp_x
          )
@@ -293,7 +291,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
            x = unit(data_x$x, "native"),
            y = unit(1, "npc"),
            width = data_x$width,
-           height = rug_length$max,
+           height = rug_length,
            just = "top",
            gp = gp_x
          )
@@ -317,7 +315,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
          rugs$y_l <- grid::rectGrob(
            x = unit(0, "npc"),
            y = unit(data_y$y, "native"),
-           width = rug_length$min,
+           width = rug_length,
            height = data_y$height,
            just = "left",
            gp = gp_y
@@ -326,9 +324,9 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
 
        if (grepl("r", sides)) {
          rugs$y_r <- grid::rectGrob(
-           x = unit(0, "npc"),
+           x = unit(1, "npc"),
            y = unit(data_y$y, "native"),
-           width = rug_length$max,
+           width = rug_length,
            height = data_y$height,
            just = "right",
            gp = gp_y
@@ -341,7 +339,7 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
 
    },
 
-   default_aes = aes(colour = NA, size = NA, linetype = 1, fill = "black", alpha = NA),
+   default_aes = aes(colour = NA, size = NA, linetype = 1, fill = "grey20", alpha = NA),
 
    draw_key = draw_key_polygon
 )
