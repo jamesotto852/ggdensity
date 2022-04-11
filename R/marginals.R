@@ -18,7 +18,7 @@ assign_cutoff <- function(probs, cutoffs) {
 
 
 # Inspired by ggplot2::compute_density()
-kde_marginal <- function(x, w, from, to, bw = "nrd0", adjust = 1,
+kde_marginal <- function(x, w, from, to, h = "nrd0", adjust = 1,
                             kernel = "gaussian", n = 512) {
   nx <- length(x)
   if (is.null(w)) {
@@ -37,7 +37,7 @@ kde_marginal <- function(x, w, from, to, bw = "nrd0", adjust = 1,
     ))
   }
 
-  dens <- stats::density(x, weights = w, bw = bw, adjust = adjust,
+  dens <- stats::density(x, weights = w, bw = h, adjust = adjust,
                          kernel = kernel, n = n, from = from, to = to)
 
   data.frame(

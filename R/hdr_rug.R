@@ -90,7 +90,7 @@ stat_hdr_rug <- function(mapping = NULL, data = NULL,
                                       probs = c(.99, .95, .8, .5),
                                       xlim = NULL,
                                       ylim = NULL,
-                                      bw = "nrd0",
+                                      h = "nrd0",
                                       adjust = 1,
                                       kernel = "gaussian",
                                       bins = NULL,
@@ -111,7 +111,7 @@ stat_hdr_rug <- function(mapping = NULL, data = NULL,
       probs = probs,
       xlim = xlim,
       ylim = ylim,
-      bw = bw,
+      h = h,
       adjust = adjust,
       kernel = kernel,
       bins = bins,
@@ -134,7 +134,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
   compute_group = function(data, scales, na.rm = FALSE,
                            method = "kde", probs = c(.99, .95, .8, .5),
                            xlim = NULL, ylim = NULL,
-                           bw = "nrd0",
+                           h = "nrd0",
                            adjust = 1,
                            kernel = "gaussian",
                            bins = NULL,
@@ -146,7 +146,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
   # TO-DO: Other estimators (implement in marginals.R)
 
   # Recycle vectors of length 1 for both x, y
-  bw <- rep(bw, 2)
+  h <- rep(h, 2)
   adjust <- rep(adjust, 2)
   kernel <- rep(kernel, 2)
   bins <- rep(bins, 2)
@@ -165,7 +165,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
     rangex <- xlim %||% scales$x$dimension()
 
     df_x <- switch(method,
-      "kde" = kde_marginal(data$x, data$weight, rangex[1], rangex[2], bw[1], adjust[1], kernel[1], n[1]),
+      "kde" = kde_marginal(data$x, data$weight, rangex[1], rangex[2], h[1], adjust[1], kernel[1], n[1]),
       "histogram" = hist_marginal(data$x, rangex[1], rangex[2], bins[1]),
       "freqpoly" = freqpoly_marginal(data$x, rangex[1], rangex[2], bins[1], n[1]),
       "norm" = norm_marginal(data$x, rangex[1], rangex[2], n[1])
@@ -193,7 +193,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
     rangey <- ylim %||% scales$y$dimension()
 
     df_y <- switch(method,
-      "kde" = kde_marginal(data$y, data$weight, rangey[1], rangey[2], bw[1], adjust[1], kernel[1], n[1]),
+      "kde" = kde_marginal(data$y, data$weight, rangey[1], rangey[2], h[1], adjust[1], kernel[1], n[1]),
       "histogram" = hist_marginal(data$y, rangey[1], rangey[2], bins[1]),
       "freqpoly" = freqpoly_marginal(data$y, rangey[1], rangey[2], bins[2], n[2]),
       "norm" = norm_marginal(data$y, rangey[1], rangey[2], n[2])
