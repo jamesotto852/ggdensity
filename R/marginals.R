@@ -53,7 +53,7 @@ hist_marginal <- function(x, from, to, bins) {
 
   # Default to normal reference rule (Scott p. 59)
   if (is.null(bins)) {
-    hx <- 3.504 * sd(x) * nx^(-1/3)
+    hx <- 3.504 * stats::sd(x) * nx^(-1/3)
     bins <- round((to - from) / hx)
   }
 
@@ -143,8 +143,8 @@ norm_marginal <- function(x, from, to, n = 512) {
   sx <- seq(from, to, length.out = n)
 
   mu_x <- mean(x)
-  sd_x <- sd(x)
-  dens <- dnorm(sx, mu_x, sd_x)
+  sd_x <- stats::sd(x)
+  dens <- stats::dnorm(sx, mu_x, sd_x)
 
   data.frame(
     x = sx,
