@@ -5,10 +5,7 @@
 \alias{geom_hdr_points}
 \alias{stat_hdr_points}
 \alias{StatHdrPoints}
-\title{Scatterplot illustrating highest density regions of a 2D density estimate}
-\format{
-An object of class \code{StatHdrPoints} (inherits from \code{Stat}, \code{ggproto}, \code{gg}) of length 4.
-}
+\title{Scatterplot colored by highest density regions of a 2D density estimate}
 \usage{
 stat_hdr_points(
   mapping = NULL,
@@ -31,8 +28,6 @@ stat_hdr_points(
   show.legend = NA,
   inherit.aes = TRUE
 )
-
-StatHdrPoints
 
 geom_hdr_points(
   mapping = NULL,
@@ -135,11 +130,13 @@ rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 
-\item{stat}{The statistical transformation to use on the data for this
-layer, as a string.}
+\item{stat}{Use to override the default connection between
+\code{geom_density_2d()} and \code{stat_density_2d()}.}
 }
 \description{
-To-do
+Perform 2D density estimation, compute the resulting highest density regions (HDRs),
+and plot the provided data as a scatterplot with points colored according to
+their corresponding HDR
 }
 \section{Aesthetics}{
  geom_hdr_points understands the following aesthetics (required
@@ -168,15 +165,19 @@ by \code{probs}.} }
 
 # basic simulated data with bivariate normal data and various methods
 # (note: code is commented out in this file to save cran check time)
-df <- data.frame(x = rnorm(1000), y = rnorm(1000))
+df <- data.frame(x = rnorm(500), y = rnorm(500))
 p <- ggplot(df, aes(x, y)) + coord_equal()
 p + geom_hdr_points()
 p + geom_hdr_points(method = "mvnorm")
 p + geom_hdr_points(method = "freqpoly")
 # p + geom_hdr_points(method = "histogram")
 
+# setting aes(fill = after_stat(probs)), color = "black", and shape = 21 helps alleviate overplotting:
+p + geom_hdr_points(aes(fill = after_stat(probs)), color = "black", shape = 21, size = 2)
 
-
+# also works well with geom_hdr_lines():
+p + geom_hdr_lines(aes(color = after_stat(probs)), alpha = 1) +
+ geom_hdr_points(aes(fill = after_stat(probs)), color = "black", shape = 21, size = 2)
 
 }
 \keyword{datasets}

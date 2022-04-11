@@ -1,6 +1,8 @@
-#' Scatterplot illustrating highest density regions of a 2D density estimate
+#' Scatterplot colored by highest density regions of a 2D density estimate
 #'
-#' To-do
+#' Perform 2D density estimation, compute the resulting highest density regions (HDRs),
+#' and plot the provided data as a scatterplot with points colored according to
+#' their corresponding HDR
 #'
 #' @section Aesthetics: geom_hdr_points understands the following aesthetics (required
 #'   aesthetics are in bold):
@@ -20,7 +22,6 @@
 #'   \describe{ \item{probs}{The probability associated with the highest density region, specified
 #'   by `probs`.} }
 #'
-#' @inheritParams ggplot2::geom_path
 #' @inheritParams ggplot2::stat_identity
 #' @inheritParams ggplot2::stat_density2d
 #' @inheritParams geom_hdr
@@ -34,15 +35,19 @@
 #'
 #' # basic simulated data with bivariate normal data and various methods
 #' # (note: code is commented out in this file to save cran check time)
-#' df <- data.frame(x = rnorm(1000), y = rnorm(1000))
+#' df <- data.frame(x = rnorm(500), y = rnorm(500))
 #' p <- ggplot(df, aes(x, y)) + coord_equal()
 #' p + geom_hdr_points()
 #' p + geom_hdr_points(method = "mvnorm")
 #' p + geom_hdr_points(method = "freqpoly")
 #' # p + geom_hdr_points(method = "histogram")
 #'
+#' # setting aes(fill = after_stat(probs)), color = "black", and shape = 21 helps alleviate overplotting:
+#' p + geom_hdr_points(aes(fill = after_stat(probs)), color = "black", shape = 21, size = 2)
 #'
-#'
+#' # also works well with geom_hdr_lines():
+#' p + geom_hdr_lines(aes(color = after_stat(probs)), alpha = 1) +
+#'  geom_hdr_points(aes(fill = after_stat(probs)), color = "black", shape = 21, size = 2)
 #'
 NULL
 
@@ -99,6 +104,8 @@ stat_hdr_points <- function(mapping = NULL,
 
 #' @export
 #' @rdname geom_hdr_points
+#' @format NULL
+#' @usage NULL
 StatHdrPoints <- ggproto("StatHdrPoints", Stat,
   required_aes = c("x", "y"),
   default_aes = aes(order = after_stat(probs), color = after_stat(probs)),
