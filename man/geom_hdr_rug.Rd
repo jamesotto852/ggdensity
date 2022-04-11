@@ -6,12 +6,7 @@
 \alias{stat_hdr_rug}
 \alias{StatHdrRug}
 \alias{GeomHdrRug}
-\title{Rug plots of marginal highest density regions}
-\format{
-An object of class \code{StatHdrRug} (inherits from \code{Stat}, \code{ggproto}, \code{gg}) of length 4.
-
-An object of class \code{GeomHdrRug} (inherits from \code{Geom}, \code{ggproto}, \code{gg}) of length 5.
-}
+\title{Rug plots of marginal highest density region estimates}
 \usage{
 stat_hdr_rug(
   mapping = NULL,
@@ -23,15 +18,15 @@ stat_hdr_rug(
   probs = c(0.99, 0.95, 0.8, 0.5),
   xlim = NULL,
   ylim = NULL,
-  bw = "nrd0",
+  h = "nrd0",
   adjust = 1,
+  kernel = "gaussian",
+  bins = NULL,
   n = 512,
   na.rm = FALSE,
   show.legend = TRUE,
   inherit.aes = TRUE
 )
-
-StatHdrRug
 
 geom_hdr_rug(
   mapping = NULL,
@@ -46,8 +41,6 @@ geom_hdr_rug(
   show.legend = TRUE,
   inherit.aes = TRUE
 )
-
-GeomHdrRug
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}} or
@@ -70,7 +63,8 @@ the plot data. The return value must be a \code{data.frame}, and
 will be used as the layer data. A \code{function} can be created
 from a \code{formula} (e.g. \code{~ head(.x, 10)}).}
 
-\item{geom}{The geometric object to use display the data}
+\item{geom}{Use to override the default connection between
+\code{geom_density()} and \code{stat_density()}.}
 
 \item{position}{Position adjustment, either as a string, or the result of
 a call to a position adjustment function.}
@@ -80,19 +74,34 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
-\item{method}{Density estimator to use, accepts character vector: \code{"kde"}}
+\item{method}{Density estimator to use, accepts character vector: \code{"kde"},
+\code{"histogram"}, \code{"freqpoly"}, or \code{"mvnorm"}.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
-\item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
+\item{xlim}{Range to compute and draw regions. If \code{NULL}, defaults to
 range of data.}
 
-\item{adjust}{A multiplicative bandwidth adjustment to be used if \code{h} is
-\code{NULL}.}
+\item{ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
+range of data.}
+
+\item{h}{The smoothing bandwidth to be used.
+If numeric, the standard deviation of the smoothing kernel.
+If character, a rule to choose the bandwidth, as listed in
+\code{\link[stats:bandwidth]{stats::bw.nrd()}}.}
+
+\item{adjust}{A multiplicate bandwidth adjustment. This makes it possible
+to adjust the bandwidth while still using the a bandwidth estimator.
+For example, \code{adjust = 1/2} means use half of the default bandwidth.}
+
+\item{kernel}{Kernel. See list of available kernels in \code{\link[=density]{density()}}.}
+
+\item{bins}{Number of bins along each axis for histogram and frequency polygon estimators.
+Either a vector of length 2 or a scalar value which is recycled for both dimensions.
+Defaults to normal reference rule (Scott, pg 87).}
 
 \item{n}{Resolution of grid used in discrete approximations for kernel
-density and parametric estimators. Either a vector of length 2 or a scalar value
-which is recycled for both dimensions.}
+density and parametric estimators.}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -111,21 +120,23 @@ the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 \item{stat}{The statistical transformation to use on the data for this
 layer, as a string.}
 
-\item{bins}{Number of bins along each axis for histogram and frequency polygon estimators.
-Either a vector of length 2 or a scalar value which is recycled for both dimensions.
-Defaults to normal reference rule (Scott, pg 87).}
+\item{outside}{logical that controls whether to move the rug tassels outside of the plot area. Default is off (FALSE). You will also need to use \code{coord_cartesian(clip = "off")}. When set to TRUE, also consider changing the sides argument to "tr". See examples.}
 
-\item{h}{Bandwidth for kernel density estimator. If \code{NULL}, estimated using
-\code{\link[MASS:bandwidth.nrd]{MASS::bandwidth.nrd()}}}
+\item{sides}{A string that controls which sides of the plot the rugs appear on.
+It can be set to a string containing any of \code{"trbl"}, for top, right,
+bottom, and left.}
+
+\item{length}{A \code{\link[grid:unit]{grid::unit()}} object that sets the length of the rug lines. Use scale expansion to avoid overplotting of data.}
 }
 \description{
-Desc here
+Perform 1D density estimation, compute and plot the resulting highest density
+regions in a way similar to \code{\link[ggplot2:geom_rug]{ggplot2::geom_rug()}}. Note, the plotted objects have the probs mapped to the \code{alpha}
+aesthetic by default.
 }
 \section{Aesthetics}{
  geom_hdr_rug understands the following aesthetics (required
 aesthetics are in bold):
 \itemize{
-\item \strong{x | y}
 \item alpha
 \item color
 \item fill
@@ -133,6 +144,8 @@ aesthetics are in bold):
 \item linetype
 \item size
 \item subgroup
+\item x
+\item y
 }
 }
 
@@ -145,33 +158,44 @@ by \code{probs}, corresponding to each point.} }
 
 \examples{
 
-dfs <- data.frame(x = rnorm(100), y = rnorm(100))
+df <- data.frame(x = rnorm(100), y = rnorm(100))
 
-ggplot(dfs, aes(x)) +
-  geom_density() +
-  geom_hdr_rug(show.legend = FALSE)
-
-ggplot(dfs, aes(y = y)) +
-  geom_density() +
-  geom_hdr_rug(show.legend = FALSE)
-
-ggplot(dfs, aes(x, y)) +
+# Plot marginal HDRs for bivariate data
+ggplot(df, aes(x, y)) +
   geom_point() +
-  geom_hdr_rug(show.legend = FALSE) +
+  geom_hdr_rug() +
   coord_fixed()
 
-ggplot(dfs, aes(x, y)) +
+ggplot(df, aes(x, y)) +
   geom_hdr() +
-  geom_hdr_rug(show.legend = FALSE) +
-  lims(x = c(-3,3), y = c(-3,3)) +
-  coord_fixed(xlim = c(-3,3), ylim = c(-3,3))
+  geom_hdr_rug() +
+  coord_fixed()
 
-ggplot(faithful, aes(waiting, eruptions)) +
-  geom_point()
+# Or, plot marginal HDR for univariate data
+ggplot(df, aes(x)) +
+  geom_density() +
+  geom_hdr_rug()
 
-ggplot(faithful, aes(waiting, eruptions)) +
-  geom_point() +
-  geom_hdr_rug(show.legend = FALSE, color = "red")
+ggplot(df, aes(y = y)) +
+  geom_density() +
+  geom_hdr_rug()
+
+# Can specify location of marginal HDRs as in ggplot2::geom_rug(),
+ggplot(df, aes(x, y)) +
+  geom_hdr() +
+  geom_hdr_rug(sides = "tr", outside = TRUE) +
+  coord_fixed(clip = "off")
+
+# Can use same methods of density estimation as geom_hdr().
+# For data with constrained support, we suggest setting method = "histogram":
+ggplot(df, aes(x^2)) +
+ geom_histogram(bins = 30, boundary = 0) +
+ geom_hdr_rug(method = "histogram")
+
+ggplot(df, aes(x^2, y^2)) +
+ geom_hdr(method = "histogram") +
+ geom_hdr_rug(method = "histogram") +
+ coord_fixed()
 
 }
 \references{

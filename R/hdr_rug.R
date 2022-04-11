@@ -1,11 +1,12 @@
-#' Rug plots of marginal highest density regions
+#' Rug plots of marginal highest density region estimates
 #'
-#' Desc here
+#' Perform 1D density estimation, compute and plot the resulting highest density
+#' regions in a way similar to [ggplot2::geom_rug()]. Note, the plotted objects have the probs mapped to the `alpha`
+#' aesthetic by default.
 #'
 #' @section Aesthetics: geom_hdr_rug understands the following aesthetics (required
 #'   aesthetics are in bold):
 #'
-#'   - **x | y**
 #'   - alpha
 #'   - color
 #'   - fill
@@ -13,31 +14,26 @@
 #'   - linetype
 #'   - size
 #'   - subgroup
-
+#'   - x
+#'   - y
 #'
 #' @section Computed variables:
 #'
 #'   \describe{ \item{probs}{The probability of the highest density region, specified
 #'   by `probs`, corresponding to each point.} }
 #'
-#' @inheritParams ggplot2::geom_path
-#' @inheritParams ggplot2::stat_identity
-#' @inheritParams ggplot2::stat_density2d
-#' @param method Density estimator to use, accepts character vector: `"kde"`
-#' @param probs Probabilities to compute highest density regions for.
+#' @inheritParams ggplot2::geom_rug
+#' @inheritParams ggplot2::stat_density
+#' @inheritParams stat_hdr
 #' @param bins Number of bins along each axis for histogram and frequency polygon estimators.
 #'   Either a vector of length 2 or a scalar value which is recycled for both dimensions.
 #'   Defaults to normal reference rule (Scott, pg 87).
 #' @param n Resolution of grid used in discrete approximations for kernel
-#'   density and parametric estimators. Either a vector of length 2 or a scalar value
-#'   which is recycled for both dimensions.
-#' @param xlim,ylim Range to compute and draw regions. If `NULL`, defaults to
-#'   range of data.
-#' @param bw
-#' @param h Bandwidth for kernel density estimator. If `NULL`, estimated using
-#'   [MASS::bandwidth.nrd()]
-#' @param adjust A multiplicative bandwidth adjustment to be used if `h` is
-#'   `NULL`.
+#'   density and parametric estimators.
+#' @param h The smoothing bandwidth to be used.
+#'   If numeric, the standard deviation of the smoothing kernel.
+#'   If character, a rule to choose the bandwidth, as listed in
+#'   [stats::bw.nrd()].
 #' @name geom_hdr_rug
 #' @rdname geom_hdr_rug
 #' @references Scott, David W. Multivariate Density Estimation (2e), Wiley.
@@ -46,33 +42,44 @@
 #'
 #' @examples
 #'
-#' dfs <- data.frame(x = rnorm(100), y = rnorm(100))
+#' df <- data.frame(x = rnorm(100), y = rnorm(100))
 #'
-#' ggplot(dfs, aes(x)) +
-#'   geom_density() +
-#'   geom_hdr_rug(show.legend = FALSE)
-#'
-#' ggplot(dfs, aes(y = y)) +
-#'   geom_density() +
-#'   geom_hdr_rug(show.legend = FALSE)
-#'
-#' ggplot(dfs, aes(x, y)) +
+#' # Plot marginal HDRs for bivariate data
+#' ggplot(df, aes(x, y)) +
 #'   geom_point() +
-#'   geom_hdr_rug(show.legend = FALSE) +
+#'   geom_hdr_rug() +
 #'   coord_fixed()
 #'
-#' ggplot(dfs, aes(x, y)) +
+#' ggplot(df, aes(x, y)) +
 #'   geom_hdr() +
-#'   geom_hdr_rug(show.legend = FALSE) +
-#'   lims(x = c(-3,3), y = c(-3,3)) +
-#'   coord_fixed(xlim = c(-3,3), ylim = c(-3,3))
+#'   geom_hdr_rug() +
+#'   coord_fixed()
 #'
-#' ggplot(faithful, aes(waiting, eruptions)) +
-#'   geom_point()
+#' # Or, plot marginal HDR for univariate data
+#' ggplot(df, aes(x)) +
+#'   geom_density() +
+#'   geom_hdr_rug()
 #'
-#' ggplot(faithful, aes(waiting, eruptions)) +
-#'   geom_point() +
-#'   geom_hdr_rug(show.legend = FALSE, color = "red")
+#' ggplot(df, aes(y = y)) +
+#'   geom_density() +
+#'   geom_hdr_rug()
+#'
+#' # Can specify location of marginal HDRs as in ggplot2::geom_rug(),
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr() +
+#'   geom_hdr_rug(sides = "tr", outside = TRUE) +
+#'   coord_fixed(clip = "off")
+#'
+#' # Can use same methods of density estimation as geom_hdr().
+#' # For data with constrained support, we suggest setting method = "histogram":
+#' ggplot(df, aes(x^2)) +
+#'  geom_histogram(bins = 30, boundary = 0) +
+#'  geom_hdr_rug(method = "histogram")
+#'
+#' ggplot(df, aes(x^2, y^2)) +
+#'  geom_hdr(method = "histogram") +
+#'  geom_hdr_rug(method = "histogram") +
+#'  coord_fixed()
 #'
 NULL
 
@@ -125,6 +132,8 @@ stat_hdr_rug <- function(mapping = NULL, data = NULL,
 
 
 #' @rdname geom_hdr_rug
+#' @format NULL
+#' @usage NULL
 #' @export
 StatHdrRug <- ggproto("StatHdrRug", Stat,
 
@@ -257,10 +266,11 @@ geom_hdr_rug <- function(mapping = NULL, data = NULL,
 
 
 #' @rdname geom_hdr_rug
+#' @format NULL
+#' @usage NULL
 #' @export
 GeomHdrRug <- ggproto("GeomHdrRug", Geom,
-  # Something like required_aes = c("x|y")
-   optional_aes = c("x|y"),
+   optional_aes = c("x", "y"),
 
    draw_panel = function(data, panel_params, coord, sides = "bl",
                          outside = FALSE, length = unit(0.03, "npc")) {
