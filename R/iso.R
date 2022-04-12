@@ -1,5 +1,5 @@
 
-kde_iso <- function(probs, data, n, rangex, rangey, h, adjust, type) {
+kde_iso <- function(probs, data, n, rangex, rangey, h, adjust, type, HDR_fun = FALSE) {
   # The way n, h, and adjust are set up is consistent with stat_density_2d
   # Allows for easy tweaking of the MASS default
   if (is.null(h)) {
@@ -28,6 +28,23 @@ kde_iso <- function(probs, data, n, rangex, rangey, h, adjust, type) {
 
   df <- with(df, data.frame("x" = x, "y" = y, "z" = fhat))
 
+  if (HDR_fun) {
+    HDR_fun <- function(x, y) {
+      if (length(x) > 1) return(mapply(HDR_fun, x, y, SIMPLIFY = TRUE))
+
+      # inefficient?
+      df$dist <- (x - df$x)^2 + (y - df$y)^2
+      fhat <- df[which.min(df$dist), "z"]
+
+      HDRs <- which(fhat >= breaks)
+      if (length(HDRs) == 0) return(1)
+
+      probs[max(HDRs)]
+    }
+
+    return(HDR_fun)
+  }
+
   if (type == "bands") {
     xyz_to_isobands(df, breaks)
   } else {
@@ -37,7 +54,7 @@ kde_iso <- function(probs, data, n, rangex, rangey, h, adjust, type) {
 
 
 
-mvnorm_iso <- function(probs, data, n, rangex, rangey, type) {
+mvnorm_iso <- function(probs, data, n, rangex, rangey, type, HDR_fun = FALSE) {
 
   data_matrix <- with(data, cbind(x, y))
   col_means <- colMeans(data_matrix)
@@ -69,6 +86,23 @@ mvnorm_iso <- function(probs, data, n, rangex, rangey, type) {
     breaks <- c(probs, 0)
   }
 
+
+  if (HDR_fun) {
+    HDR_fun <- function(x, y) {
+      if (length(x) > 1) return(mapply(HDR_fun, x, y, SIMPLIFY = TRUE))
+
+      # In terms of estimated quantiles, not estimated f_hat
+      quant_hat <- find_quantile(c(x, y), mu = col_means, SigmaInv = SInv)
+
+      HDRs <- which(quant_hat <= breaks)
+      if (length(HDRs) == 0) return(1)
+
+      probs[max(HDRs)]
+    }
+
+    return(HDR_fun)
+  }
+
   if (type == "bands") {
     xyz_to_isobands(df, breaks)
   } else {
@@ -78,7 +112,7 @@ mvnorm_iso <- function(probs, data, n, rangex, rangey, type) {
 }
 
 
-histogram_iso <- function(probs, df, bins, rangex, rangey, nudgex, nudgey, smooth, type) {
+histogram_iso <- function(probs, df, bins, rangex, rangey, nudgex, nudgey, smooth, type, HDR_fun = FALSE) {
   xvals <- df$x
   yvals <- df$y
 
@@ -200,6 +234,22 @@ histogram_iso <- function(probs, df, bins, rangex, rangey, nudgex, nudgey, smoot
 
   df <- setNames(df[c("x","y","fhat")], c("x","y","z"))
 
+  if (HDR_fun) {
+    HDR_fun <- function(x, y) {
+      if (length(x) > 1) return(mapply(HDR_fun, x, y, SIMPLIFY = TRUE))
+
+      # inefficient?
+      df$dist <- (x - df$x)^2 + (y - df$y)^2
+      fhat <- df[which.min(df$dist), "z"]
+
+      HDRs <- which(fhat >= breaks)
+      if (length(HDRs) == 0) return(1)
+
+      probs[max(HDRs)]
+    }
+
+    return(HDR_fun)
+  }
 
   if (type == "bands") {
     xyz_to_isobands(df, breaks)
@@ -209,7 +259,7 @@ histogram_iso <- function(probs, df, bins, rangex, rangey, nudgex, nudgey, smoot
 }
 
 
-freqpoly_iso <- function(probs, df, bins, rangex, rangey, type) {
+freqpoly_iso <- function(probs, df, bins, rangex, rangey, type, HDR_fun = FALSE) {
   xvals <- df$x
   yvals <- df$y
 
@@ -344,6 +394,23 @@ freqpoly_iso <- function(probs, df, bins, rangex, rangey, type) {
 
   df <- setNames(df[c("x","y","fhat")], c("x","y","z"))
 
+  if (HDR_fun) {
+    HDR_fun <- function(x, y) {
+      if (length(x) > 1) return(mapply(HDR_fun, x, y, SIMPLIFY = TRUE))
+
+      # inefficient?
+      df$dist <- (x - df$x)^2 + (y - df$y)^2
+      fhat <- df[which.min(df$dist), "z"]
+
+      HDRs <- which(fhat >= breaks)
+      if (length(HDRs) == 0) return(1)
+
+      probs[max(HDRs)]
+    }
+
+    return(HDR_fun)
+  }
+
   if (type == "bands") {
     xyz_to_isobands(df, breaks)
   } else {
@@ -352,8 +419,7 @@ freqpoly_iso <- function(probs, df, bins, rangex, rangey, type) {
 }
 
 
-fun_iso <- function(fun, args, normalized, probs, n, rangex, rangey, scales, type) {
-  # browser()
+fun_iso <- function(fun, args, normalized, probs, n, rangex, rangey, scales, type, HDR_fun = FALSE) {
 
   rangex_trans <- if (is.null(scales$x)) rangex else scales$x$trans$inverse(rangex)
   rangey_trans <- if (is.null(scales$y)) rangey else scales$y$trans$inverse(rangey)
@@ -393,10 +459,28 @@ fun_iso <- function(fun, args, normalized, probs, n, rangex, rangey, scales, typ
     }
   }
 
+
+  if (HDR_fun) {
+    # for other purposes, breaks needs to be based on rescaled fhat
+    # not for this closure
+    breaks <- c(find_cutoff(df, probs), Inf)
+
+    HDR_fun <- function(x, y) {
+      if (length(x) > 1) return(mapply(HDR_fun, x, y, SIMPLIFY = TRUE))
+
+      fhat <- do.call(fun, c(quote(x), quote(y), args))
+
+      HDRs <- which(fhat >= breaks)
+      if (length(HDRs) == 0) return(1)
+
+      probs[max(HDRs)]
+    }
+
+    return(HDR_fun)
+  }
+
   df$fhat <- rescale(df$fhat)
-
   breaks <- c(find_cutoff(df, probs), Inf)
-
   df <- with(df, data.frame("x" = x, "y" = y, "z" = fhat))
 
   if (type == "bands") {
