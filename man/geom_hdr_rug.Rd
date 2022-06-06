@@ -138,11 +138,8 @@ aesthetic by default.
 aesthetics are in bold):
 \itemize{
 \item alpha
-\item color
 \item fill
 \item group
-\item linetype
-\item size
 \item subgroup
 \item x
 \item y

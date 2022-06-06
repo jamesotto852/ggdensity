@@ -8,11 +8,8 @@
 #'   aesthetics are in bold):
 #'
 #'   - alpha
-#'   - color
 #'   - fill
 #'   - group
-#'   - linetype
-#'   - size
 #'   - subgroup
 #'   - x
 #'   - y
@@ -300,10 +297,9 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
        data_x$width <- resolution(data_x$x, FALSE)
 
        gp_x <- grid::gpar(
-         col = alpha(data_x$colour, data_x$alpha),
+         col = alpha(data_x$fill, data_x$alpha),
          fill = alpha(data_x$fill, data_x$alpha),
-         lty = data_x$linetype,
-         lwd = data_x$size * .pt
+         lwd = 0
        )
 
        # set up x axis rug rasters
@@ -336,11 +332,11 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
        data_y$height <- resolution(data_y$y, FALSE)
 
        gp_y <- grid::gpar(
-         col = alpha(data_y$colour, data_y$alpha),
+         col = alpha(data_y$fill, data_y$alpha),
          fill = alpha(data_y$fill, data_y$alpha),
-         lty = data_y$linetype,
-         lwd = data_y$size * .pt
+         lwd = 0
        )
+
 
        # set up y axis rug rasters
        if (grepl("l", sides)) {
@@ -371,11 +367,9 @@ GeomHdrRug <- ggproto("GeomHdrRug", Geom,
 
    },
 
-  # ggplot2 bug requires we set size = 0, or else guide won't render correctly
-  # https://github.com/tidyverse/ggplot2/issues/4559
-  default_aes = aes(colour = NA, size = 0, linetype = 1, fill = "grey20", alpha = NA),
+  default_aes = aes(fill = "grey20", alpha = NA),
 
-  draw_key = draw_key_polygon
+  draw_key = draw_key_rect
 )
 
 
