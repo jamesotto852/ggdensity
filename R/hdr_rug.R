@@ -148,9 +148,6 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
 
   probs <- probs[order(probs, decreasing = TRUE)]
 
-  # For now: just implementing kde along each dimension.
-  # TO-DO: Other estimators (implement in marginals.R)
-
   # Recycle vectors of length 1 for both x, y
   h <- rep(h, 2)
   adjust <- rep(adjust, 2)
@@ -159,7 +156,6 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
   n <- rep(n, 2)
 
   # Estimate marginal densities
-  # (For now, only doing kde)
 
   # Initialize dfs for x and y axes,
   # in case only x or y are supplied:
