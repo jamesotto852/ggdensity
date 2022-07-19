@@ -136,7 +136,7 @@ layer, as a string.}
 }
 \description{
 Compute and plot the highest density regions (HDRs) of a bivariate pdf.
-\code{geom_hdr_fun()} draws filled regions, and \code{geom_hdr_fun_lines()} draws
+\code{geom_hdr_fun()} draws filled regions, and \code{geom_hdr_lines_fun()} draws
 lines outlining the regions. Note, the plotted objects have the probs mapped
 to the \code{alpha} aesthetic by default.
 }

@@ -1,7 +1,7 @@
 #' Highest density regions of a bivariate pdf
 #'
 #' Compute and plot the highest density regions (HDRs) of a bivariate pdf.
-#' `geom_hdr_fun()` draws filled regions, and `geom_hdr_fun_lines()` draws
+#' `geom_hdr_fun()` draws filled regions, and `geom_hdr_lines_fun()` draws
 #' lines outlining the regions. Note, the plotted objects have the probs mapped
 #' to the `alpha` aesthetic by default.
 #'
