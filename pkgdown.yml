@@ -1,8 +1,8 @@
 pandoc: 2.7.3
-pkgdown: 2.0.3
+pkgdown: 2.0.6
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-06-06T18:46Z
+last_built: 2022-07-19T22:57Z
 urls:
   reference: https://jamesotto852.github.io/ggdensity/reference
   article: https://jamesotto852.github.io/ggdensity/articles
