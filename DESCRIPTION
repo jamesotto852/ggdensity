@@ -27,4 +27,5 @@ Imports:
     MASS,
     stats,
     scales
-URL: https://jamesotto852.github.io/ggdensity/
+URL: https://jamesotto852.github.io/ggdensity, https://github.com/jamesotto852/ggdensity
+BugReports: https://github.com/jamesotto852/ggdensity/issues/
