@@ -4,6 +4,7 @@
 ^README\.Rmd$
 ^README\.md$
 ^README_cache$
+^man/figures$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
