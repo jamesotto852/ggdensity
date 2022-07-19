@@ -67,21 +67,21 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
-\item{fun}{A function, the joint probability density function on two
-variables, as a function of a vector of length 2.}
+\item{fun}{A function, the joint probability density function, must be
+vectorized in its first two arguments; see examples.}
 
 \item{args}{List of additional arguments passed on to the function \code{fun} as a
 named list.}
 
-\item{normalized}{Is the function normalized? (A proper PDF?) If no, set to
+\item{normalized}{Is the function normalized (a proper PDF)? If no, set to
 \code{FALSE}.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
-\item{xlim}{Optionally, restrict the range of the function to this
+\item{xlim}{Optionally, restrict the support of the pdf (\code{fun}) to this
 range.}
 
-\item{ylim}{Optionally, restrict the range of the function to this
+\item{ylim}{Optionally, restrict the support of the pdf (\code{fun}) to this
 range.}
 
 \item{res}{Resolution of grid \code{fun} is evaluated on.}

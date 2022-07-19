@@ -1,5 +1,9 @@
 #' Highest density regions of a bivariate pdf
 #'
+#' Compute and plot the highest density regions (HDRs) of a bivariate pdf.
+#' `geom_hdr_fun()` draws filled regions, and `geom_hdr_fun_lines()` draws
+#' lines outlining the regions. Note, the plotted objects have the probs mapped
+#' to the `alpha` aesthetic by default.
 #'
 #' @section Aesthetics: geom_hdr_fun understands the following aesthetics
 #'   (required aesthetics are in bold):
@@ -34,15 +38,15 @@
 #' @inheritParams ggplot2::geom_path
 #' @inheritParams ggplot2::stat_identity
 #' @inheritParams ggplot2::stat_density2d
-#' @param fun A function, the joint probability density function on two
-#'   variables, as a function of a vector of length 2.
+#' @param fun A function, the joint probability density function, must be
+#' vectorized in its first two arguments; see examples.
 #' @param args List of additional arguments passed on to the function `fun` as a
 #'   named list.
-#' @param normalized Is the function normalized? (A proper PDF?) If no, set to
+#' @param normalized Is the function normalized (a proper PDF)? If no, set to
 #'   `FALSE`.
 #' @param probs Probabilities to compute highest density regions for.
 #' @param res Resolution of grid `fun` is evaluated on.
-#' @param xlim,ylim Optionally, restrict the range of the function to this
+#' @param xlim,ylim Optionally, restrict the support of the pdf (`fun`) to this
 #'   range.
 #' @name geom_hdr_fun
 #' @rdname geom_hdr_fun
