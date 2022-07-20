@@ -251,10 +251,11 @@ if (FALSE) {
 
 
 # data with boundaries
-ggplot(df, aes(x^2)) + geom_histogram(bins = 30)
-ggplot(df, aes(x^2)) + geom_histogram(bins = 30, boundary = 0)
-ggplot(df, aes(x^2, y^2)) + geom_hdr(method = "histogram")
-
+if (FALSE) {
+  ggplot(df, aes(x^2)) + geom_histogram(bins = 30)
+  ggplot(df, aes(x^2)) + geom_histogram(bins = 30, boundary = 0)
+  ggplot(df, aes(x^2, y^2)) + geom_hdr(method = "histogram")
+}
 
 
 }

@@ -63,8 +63,7 @@ the plot data. The return value must be a \code{data.frame}, and
 will be used as the layer data. A \code{function} can be created
 from a \code{formula} (e.g. \code{~ head(.x, 10)}).}
 
-\item{geom}{Use to override the default connection between
-\code{geom_density()} and \code{stat_density()}.}
+\item{geom}{The geometric object to use display the data}
 
 \item{position}{Position adjustment, either as a string, or the result of
 a call to a position adjustment function.}
@@ -79,10 +78,7 @@ to the paired geom/stat.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
-\item{xlim}{Range to compute and draw regions. If \code{NULL}, defaults to
-range of data.}
-
-\item{ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
+\item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
 range of data.}
 
 \item{h}{The smoothing bandwidth to be used.

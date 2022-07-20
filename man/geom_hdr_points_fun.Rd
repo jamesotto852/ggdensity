@@ -78,10 +78,7 @@ named list.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
-\item{xlim}{Optionally, restrict the support of the pdf (\code{fun}) to this
-range.}
-
-\item{ylim}{Optionally, restrict the support of the pdf (\code{fun}) to this
+\item{xlim, ylim}{Optionally, restrict the support of the pdf (\code{fun}) to this
 range.}
 
 \item{res}{Resolution of grid \code{fun} is evaluated on.}
@@ -100,8 +97,8 @@ rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 
-\item{stat}{Use to override the default connection between
-\code{geom_density_2d()} and \code{stat_density_2d()}.}
+\item{stat}{The statistical transformation to use on the data for this
+layer, as a string.}
 }
 \description{
 Compute the highest density regions (HDRs) of a bivariate pdf and plot the provided

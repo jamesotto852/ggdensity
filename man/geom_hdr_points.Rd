@@ -93,10 +93,7 @@ Defaults to normal reference rule (Scott, pg 87).}
 
 \item{n}{Number of grid points in each direction.}
 
-\item{xlim}{Range to compute and draw regions. If \code{NULL}, defaults to
-range of data.}
-
-\item{ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
+\item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
 range of data.}
 
 \item{nudgex}{Horizontal rule for choosing witness points for smoothed
@@ -130,8 +127,8 @@ rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 
-\item{stat}{Use to override the default connection between
-\code{geom_density_2d()} and \code{stat_density_2d()}.}
+\item{stat}{The statistical transformation to use on the data for this
+layer, as a string.}
 }
 \description{
 Perform 2D density estimation, compute the resulting highest density regions (HDRs),
