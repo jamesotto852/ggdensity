@@ -1,3 +1,10 @@
+# ggdensity (development version)
+
+## Fixes
+
+* Fixed bug in `stat_hdr_lines_fun()` which drew lines between components of disconnected HDRs (Reported by @afranks86, #20)
+
+
 # ggdensity 0.1.0
 
 ## Features
