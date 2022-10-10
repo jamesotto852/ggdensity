@@ -24,6 +24,8 @@ Depends:
     ggplot2
 Imports:
     isoband,
+    vctrs,
+    tibble,
     MASS,
     stats,
     scales
