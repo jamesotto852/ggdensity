@@ -1,4 +1,5 @@
-# unexported functions from ggplot2 (move to their own .R file)
+# unexported functions from ggplot2
+
 `%||%` <- function(x, y) {
   if (is.null(x)) y else x
 }
