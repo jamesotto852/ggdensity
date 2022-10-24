@@ -1,4 +1,4 @@
-# ggdensity (development version)
+# ggdensity 0.1.1
 
 ## Fixes
 
