@@ -199,39 +199,10 @@ StatHdr <- ggproto("StatHdr", Stat,
   rangex <- xlim %||% scales$x$dimension()
   rangey <- ylim %||% scales$y$dimension()
 
-  # Should this be factored out?
-  if (is.null(bins)) {
-    bins <- numeric(2)
-
-    # define histogram mesh according to Scott p. 87
-    if (method == "histogram") {
-      rho <- cor(data$x, data$y)
-      hx <- 3.504 * sd(data$x) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
-      hy <- 3.504 * sd(data$y) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
-      bins[1] <- round((rangex[2] - rangex[1]) / hx)
-      bins[2] <- round((rangey[2] - rangey[1]) / hy)
-
-      # message(paste0("Argument `bins` not specified. \n",
-      #                "Setting according to normal reference rule. \n",
-      #                "Specify alternative values for `bins` for improved visualization."))
-    }
-
-    if (method == "freqpoly") {
-        # To-Do: fill in with rules for frequency polygons
-        rho <- cor(data$x, data$y)
-        hx <- 3.504 * sd(data$x) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
-        hy <- 3.504 * sd(data$y) * (1 - rho^2)^(3/8) * nrow(data)^(-1/4)
-        bins[1] <- round((rangex[2] - rangex[1]) / hx)
-        bins[2] <- round((rangey[2] - rangey[1]) / hy)
-
-        # message(paste0("Argument `bins` not specified. \n",
-        #                "Setting according to normal reference rule. \n",
-        #                "Specify alternative values for `bins` for improved visualization."))
-    }
-  }
-
   # recycling scalar-valued bins if necessary
-  bins <- rep(bins, length.out = 2)
+  if (length(bins) == 1) {
+    bins <- rep(bins, length.out = 2)
+  }
 
   probs <- sort(probs, decreasing = TRUE)
 

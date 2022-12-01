@@ -113,6 +113,22 @@ mvnorm_iso <- function(probs, data, n, rangex, rangey, type, HDR_fun = FALSE) {
 
 
 histogram_iso <- function(probs, df, bins, rangex, rangey, nudgex, nudgey, smooth, type, HDR_fun = FALSE) {
+
+  if (is.null(bins)) {
+    bins <- numeric(2)
+
+    # define histogram mesh according to Scott p. 87
+    rho <- cor(df$x, df$y)
+    hx <- 3.504 * sd(df$x) * (1 - rho^2)^(3/8) * nrow(df)^(-1/4)
+    hy <- 3.504 * sd(df$y) * (1 - rho^2)^(3/8) * nrow(df)^(-1/4)
+    bins[1] <- round((rangex[2] - rangex[1]) / hx)
+    bins[2] <- round((rangey[2] - rangey[1]) / hy)
+
+    # message(paste0("Argument `bins` not specified. \n",
+    #                "Setting according to normal reference rule. \n",
+    #                "Specify alternative values for `bins` for improved visualization."))
+  }
+
   xvals <- df$x
   yvals <- df$y
 
@@ -260,6 +276,23 @@ histogram_iso <- function(probs, df, bins, rangex, rangey, nudgex, nudgey, smoot
 
 
 freqpoly_iso <- function(probs, df, bins, rangex, rangey, type, HDR_fun = FALSE) {
+
+  if (is.null(bins)) {
+    bins <- numeric(2)
+
+    # define histogram mesh according to Scott p. 87
+    # To-Do: fill in with rules for frequency polygons
+    rho <- cor(df$x, df$y)
+    hx <- 3.504 * sd(df$x) * (1 - rho^2)^(3/8) * nrow(df)^(-1/4)
+    hy <- 3.504 * sd(df$y) * (1 - rho^2)^(3/8) * nrow(df)^(-1/4)
+    bins[1] <- round((rangex[2] - rangex[1]) / hx)
+    bins[2] <- round((rangey[2] - rangey[1]) / hy)
+
+    # message(paste0("Argument `bins` not specified. \n",
+    #                "Setting according to normal reference rule. \n",
+    #                "Specify alternative values for `bins` for improved visualization."))
+  }
+
   xvals <- df$x
   yvals <- df$y
 
