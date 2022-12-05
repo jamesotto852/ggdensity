@@ -42,12 +42,10 @@
 #' vectorized in its first two arguments; see examples.
 #' @param args List of additional arguments passed on to the function `fun` as a
 #'   named list.
-#' @param normalized Is the function normalized (a proper PDF)? If no, set to
-#'   `FALSE`.
 #' @param probs Probabilities to compute highest density regions for.
-#' @param res Resolution of grid `fun` is evaluated on.
-#' @param xlim,ylim Optionally, restrict the support of the pdf (`fun`) to this
-#'   range.
+#' @param n Resolution of grid `fun` is evaluated on.
+#' @param xlim,ylim Range to compute and draw regions. If `NULL`, defaults to
+#'   range of data if present.
 #' @name geom_hdr_fun
 #' @rdname geom_hdr_fun
 #'
@@ -112,9 +110,9 @@ NULL
 stat_hdr_fun <- function(mapping = NULL, data = NULL,
   geom = "hdr_fun", position = "identity",
   ...,
-  fun, args = list(), normalized = TRUE,
+  fun, args = list(),
   probs = c(.99, .95, .8, .5),
-  xlim = NULL, ylim = NULL, res = 100,
+  xlim = NULL, ylim = NULL, n = 100,
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE) {
@@ -132,11 +130,10 @@ stat_hdr_fun <- function(mapping = NULL, data = NULL,
     params = list(
       fun = fun,
       args = args,
-      normalized = normalized,
       probs = probs,
-      res = res,
       xlim = xlim,
       ylim = ylim,
+      n = n,
       na.rm = na.rm,
       ...
     )
@@ -154,22 +151,23 @@ StatHdrFun <- ggproto("StatHdrFun", Stat,
 
   default_aes = aes(order = after_stat(probs), alpha = after_stat(probs)),
 
-  compute_group = function(data, scales, na.rm = FALSE,
-    fun, args = list(), normalized = TRUE, probs = c(.99, .95, .8, .5),
-    res = 100, xlim = NULL, ylim = NULL)  {
+  output = "bands",
 
-    rangex <- if(is.null(scales$x)) xlim %||% c(0, 1) else xlim %||% scales$x$dimension()
-    rangey <- if(is.null(scales$y)) ylim %||% c(0, 1) else ylim %||% scales$y$dimension()
+  # very similar to StatHdr$compute_group(),
+  # only difference are the parameters fun + args (vs. method + parameters)
+  compute_group = function(self, data, scales, na.rm = FALSE,
+                           fun, args = list(), probs = c(.99, .95, .8, .5),
+                           n = 100, xlim = NULL, ylim = NULL) {
 
-    probs <- sort(probs, decreasing = TRUE)
+  rangex <- xlim %||% scales$x$dimension()
+  rangey <- ylim %||% scales$y$dimension()
 
-    isobands <- fun_iso(fun, args, normalized, probs, res, rangex, rangey, scales, type = "bands")
+  # Only calculate HDR membership if we need to
+  need_membership <- (self$output == "points")
 
-    names(isobands) <- scales::percent_format(accuracy = 1)(probs)
-    path_df <- iso_to_polygon(isobands, data$group[1])
-    path_df$probs <- ordered(path_df$level, levels = names(isobands))
+  res <- get_hdr(method = "fun", data, probs, n, rangex, rangey, HDR_membership = need_membership, fun = fun, args = args)
 
-    path_df
+  res_to_df(res, probs, data$group[1], self$output)
 
   }
 )

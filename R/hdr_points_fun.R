@@ -86,9 +86,9 @@ NULL
 stat_hdr_points_fun <- function(mapping = NULL, data = NULL,
                                 geom = "hdr_points_fun", position = "identity",
                                 ...,
-                                fun, args = list(), normalized = TRUE,
+                                fun, args = list(),
                                 probs = c(.99, .95, .8, .5),
-                                xlim = NULL, ylim = NULL, res = 100,
+                                xlim = NULL, ylim = NULL, n = 100,
                                 na.rm = FALSE,
                                 show.legend = NA,
                                 inherit.aes = TRUE) {
@@ -104,11 +104,10 @@ stat_hdr_points_fun <- function(mapping = NULL, data = NULL,
     params = list(
       fun = fun,
       args = args,
-      normalized = normalized,
       probs = probs,
-      res = res,
       xlim = xlim,
       ylim = ylim,
+      n = n,
       na.rm = na.rm,
       ...
     )
@@ -120,34 +119,9 @@ stat_hdr_points_fun <- function(mapping = NULL, data = NULL,
 #' @format NULL
 #' @usage NULL
 #' @rdname geom_hdr_points_fun
-StatHdrPointsFun <- ggproto("StatHdrpointsfun", Stat,
-  required_aes = c("x", "y"),
+StatHdrPointsFun <- ggproto("StatHdrPointsFun", StatHdrFun,
   default_aes = aes(order = after_stat(probs), color = after_stat(probs)),
-
-  compute_group = function(data, scales, na.rm = FALSE,
-                           fun, args = list(), normalized = TRUE, probs = c(.99, .95, .8, .5),
-                           res = 100, xlim = NULL, ylim = NULL) {
-
-  # Allow for use if data = NULL
-  if (is.null(scales$x)) {
-    rangex <- xlim %||% c(0, 1)
-    rangey <- ylim %||% c(0, 1)
-  } else {
-    rangex <- xlim %||% scales$x$dimension()
-    rangey <- ylim %||% scales$y$dimension()
-  }
-
-  probs <- sort(probs, decreasing = TRUE)
-
-  HDR_fun <- fun_iso(fun, args, normalized, probs, res, rangex, rangey, scales, type = NULL, HDR_fun = TRUE)
-
-  data$probs <- HDR_fun(data$x, data$y)
-  # Could do this in HDR_fun
-  data$probs <- scales::percent_format(accuracy = 1)(data$probs)
-  data$probs <- ordered(data$probs, levels = scales::percent_format(accuracy = 1)(c(1, probs)))
-
-  data
-  }
+  output = "points"
 )
 
 #' @export
