@@ -155,9 +155,15 @@ StatHdrFun <- ggproto("StatHdrFun", Stat,
 
   # very similar to StatHdr$compute_group(),
   # only difference are the parameters fun + args (vs. method + parameters)
+  # -- this prevents factoring into one compute_group() method,
+  #    compute_group()'s arguments are different.
   compute_group = function(self, data, scales, na.rm = FALSE,
                            fun, args = list(), probs = c(.99, .95, .8, .5),
                            n = 100, xlim = NULL, ylim = NULL) {
+
+  if ((is.null(xlim) & is.null(scales$x)) | (is.null(ylim) & is.null(scales$y))) {
+    stop("If no data is provided to StatHdrFun, xlim and ylim must be specified")
+  }
 
   rangex <- xlim %||% scales$x$dimension()
   rangey <- ylim %||% scales$y$dimension()

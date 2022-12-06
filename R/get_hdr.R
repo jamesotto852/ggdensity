@@ -29,7 +29,7 @@ get_hdr <- function(method = "kde", data, probs = c(.99, .95, .8, .5), n = 100, 
   # Create df_est (estimated density evaluated on a grid) depending on specified method:
   if (is.character(method) && method == "fun") {
 
-    df_est <- f_est(method = NULL, data = data, probs, n, rangex, rangey, fun = fun, args = args)
+    df_est <- f_est(method = NULL, data = data, n, rangex, rangey, fun = fun, args = args)
 
   } else if (is.character(method)) {
 
