@@ -154,7 +154,7 @@ aesthetics are in bold):
 \item fill
 \item group
 \item linetype
-\item size
+\item linewidth
 \item subgroup
 }
 
@@ -167,7 +167,7 @@ are in bold):
 \item color
 \item group
 \item linetype
-\item size
+\item linewidth
 \item subgroup
 }
 }

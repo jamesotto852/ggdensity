@@ -15,7 +15,7 @@
 #'   - fill
 #'   - group
 #'   - linetype
-#'   - size
+#'   - linewidth
 #'   - subgroup
 #'
 #'   geom_hdr_fun_lines understands the following aesthetics (required
@@ -27,7 +27,7 @@
 #'   - color
 #'   - group
 #'   - linetype
-#'   - size
+#'   - linewidth
 #'   - subgroup
 #'
 #' @section Computed variables:

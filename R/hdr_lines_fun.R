@@ -77,11 +77,4 @@ geom_hdr_lines_fun <- function(mapping = NULL, data = NULL,
 #' @format NULL
 #' @usage NULL
 #' @export
-# GeomHdrLinesFun <- ggproto("GeomHdrlinesfun", GeomHdrLines)
-GeomHdrLinesFun <- ggproto("GeomHdrlinesfun", GeomPath,
-  default_aes = aes(
-    size = 1,
-    colour = "#000000",
-    linetype = 1,
-    alpha = NA
-  ))
+GeomHdrLinesFun <- ggproto("GeomHdrlinesfun", GeomHdrLines)

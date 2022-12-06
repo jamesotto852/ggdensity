@@ -152,7 +152,7 @@ to the \code{alpha} aesthetic by default.
 \item fill
 \item group
 \item linetype
-\item size
+\item linewidth
 \item subgroup
 }
 
@@ -165,7 +165,7 @@ aesthetics are in bold):
 \item color
 \item group
 \item linetype
-\item size
+\item linewidth
 \item subgroup
 }
 }
