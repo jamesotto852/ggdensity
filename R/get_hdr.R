@@ -75,6 +75,9 @@ get_hdr <- function(method = "kde", data, probs = c(.99, .95, .8, .5), n = 100, 
   df_est$fhat <- df_est$fhat * fhat_max
   breaks <- breaks * fhat_max
 
+  # Give breaks nicely formatted names, corresponding to HDRs:
+  names(breaks) <- scales::percent_format(accuracy = 1)(probs)
+
   # bundle everything together
   list(
     df_est = df_est,
