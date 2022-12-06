@@ -24,7 +24,7 @@ get_hdr_1d <- function(method = "kde", x, probs = c(.99, .95, .8, .5), n = 512, 
   # Create df_est (estimated density evaluated on a grid) depending on specified method:
   if (is.character(method) && method == "fun") {
 
-    df_est <- f_est_1d(method = NULL, x, probs, n, range, fun = fun, args = args)
+    df_est <- f_est_1d(method = NULL, x, n, range, fun = fun, args = args)
 
   } else if (is.character(method)) {
 
@@ -59,15 +59,24 @@ get_hdr_1d <- function(method = "kde", x, probs = c(.99, .95, .8, .5), n = 512, 
   df_est$HDR <- vapply(df_est$fhat, get_hdr_val, numeric(1), breaks, probs)
 
   # find hdr membership of points from data
-  if (!is.null(data) & HDR_membership) {
-    HDR_membership <- vapply(x, get_hdr_membership_1d, numeric(1), df_est, breaks, probs)
-  }
+  if (!is.null(x) & HDR_membership) {
 
-  # create data frame w/ input data (x) + HDR membership
-  data <- data.frame(
-    x = x,
-    HDR_membership = HDR_membership
-  )
+    data <- data.frame(x = x)
+
+    if (HDR_membership) {
+
+      HDR_membership <- vapply(x, get_hdr_membership_1d, numeric(1), df_est, breaks, probs)
+
+      # create data frame w/ input data (x) + HDR membership
+      data$HDR_membership <- HDR_membership
+
+    }
+
+  } else {
+
+    data <- NULL
+
+  }
 
   # transforming df_est$fhat and breaks back to original scale:
   df_est$fhat <- df_est$fhat * fhat_max
@@ -219,7 +228,6 @@ freqpoly_est_1d <- function(x, n = 512, range, parameters) {
 # method is a function of data vector x
 # fun is a function of vector x -- the grid
 # Might need to be more careful w/ axis transformations here
-# TODO - implement geom_hdr_rug_fun()
 f_est_1d <- function(method, x, n, range, parameters = list(), fun = NULL, args = list()) {
 
   # If fun isn't specified, method returns a closure
