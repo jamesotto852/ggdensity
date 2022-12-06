@@ -22,7 +22,7 @@
 #' @param args Optional, a list of arguments to be provided to `fun`.
 #'
 #' @export
-get_hdr <- function(method = "kde", data, probs = c(.99, .95, .8, .5), n = 100, rangex, rangey, parameters, HDR_membership = TRUE, fun, args = list()) {
+get_hdr <- function(method = "kde", data, probs = c(.99, .95, .8, .5), n = 512, rangex, rangey, parameters, HDR_membership = TRUE, fun, args = list()) {
 
   probs <- sort(probs, decreasing = TRUE)
 
@@ -34,17 +34,17 @@ get_hdr <- function(method = "kde", data, probs = c(.99, .95, .8, .5), n = 100, 
   } else if (is.character(method)) {
 
     df_est <- switch(method,
-      "kde" = kde_est(data, probs, n, rangex, rangey, parameters),
-      "histogram" = histogram_est(data, probs, rangex, rangey, parameters),
-      "freqpoly" = freqpoly_est(data, probs, rangex, rangey, parameters),
-      "mvnorm" = f_est(method_mvnorm, data, probs, n, rangex, rangey, parameters)
+      "kde" = kde_est(data, n, rangex, rangey, parameters),
+      "histogram" = histogram_est(data, rangex, rangey, parameters),
+      "freqpoly" = freqpoly_est(data, rangex, rangey, parameters),
+      "mvnorm" = f_est(method_mvnorm, data, n, rangex, rangey, parameters)
     )
 
     if (!method %in% c("kde", "mvnorm", "histogram", "freqpoly")) stop("Invalid method specified")
 
   } else if (is.function(method)) {
 
-    df_est <- f_est(method, data, probs, n, rangex, rangey, parameters)
+    df_est <- f_est(method, data, n, rangex, rangey, parameters)
 
   }
 
@@ -88,7 +88,7 @@ get_HDR_membership <- function(x, y, df_est, breaks, probs) {
 }
 
 
-kde_est <- function(data, probs, n, rangex, rangey, parameters) {
+kde_est <- function(data, n, rangex, rangey, parameters) {
 
   if (is.null(parameters$adjust)) parameters$adjust <- 1
 
@@ -110,7 +110,7 @@ kde_est <- function(data, probs, n, rangex, rangey, parameters) {
 }
 
 
-histogram_est <- function(data, probs, rangex, rangey, parameters) {
+histogram_est <- function(data, rangex, rangey, parameters) {
 
   if (is.null(parameters$smooth)) parameters$smooth <- FALSE
   if (is.null(parameters$nudgex)) parameters$nudgex <- "none"
@@ -246,7 +246,7 @@ histogram_est <- function(data, probs, rangex, rangey, parameters) {
 }
 
 
-freqpoly_est <- function(data, probs, rangex, rangey, parameters) {
+freqpoly_est <- function(data, rangex, rangey, parameters) {
 
   bins <- parameters$bins
 
@@ -398,7 +398,7 @@ freqpoly_est <- function(data, probs, rangex, rangey, parameters) {
 # method is a function of data
 # fun is a function of vectors x, y
 # Might need to be more careful w/ axis transformations here
-f_est <- function(method, data, probs, n, rangex, rangey, parameters = list(), fun = NULL, args = list()) {
+f_est <- function(method, data, n, rangex, rangey, parameters = list(), fun = NULL, args = list()) {
 
   # If fun isn't specified, method returns a closure
   # representing closed form of density estimate
