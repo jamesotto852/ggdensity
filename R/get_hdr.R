@@ -22,7 +22,7 @@
 #' @param args Optional, a list of arguments to be provided to `fun`.
 #'
 #' @export
-get_hdr <- function(method = "kde", data, probs = c(.99, .95, .8, .5), n = 512, rangex, rangey, parameters, HDR_membership = TRUE, fun, args = list()) {
+get_hdr <- function(method = "kde", data, probs = c(.99, .95, .8, .5), n = 100, rangex, rangey, parameters = list(), HDR_membership = TRUE, fun, args = list()) {
 
   probs <- sort(probs, decreasing = TRUE)
 
@@ -48,6 +48,9 @@ get_hdr <- function(method = "kde", data, probs = c(.99, .95, .8, .5), n = 512, 
 
   }
 
+  # remove unneeded attributes
+  attr(df_est, "out.attrs") <- NULL
+
   # Manipulate df_est to get information about HDRs:
 
   # force estimate to integrate to 1
@@ -60,9 +63,12 @@ get_hdr <- function(method = "kde", data, probs = c(.99, .95, .8, .5), n = 512, 
   # find cutoffs (in terms of rescaled fhat)
   breaks <- c(find_cutoff(df_est, probs), Inf)
 
+  # find HDRs for points in the grid
+  df_est$HDR <- vapply(df_est$fhat, get_hdr_val, numeric(1), breaks, probs)
+
   # find hdr membership of points from data
   if (!is.null(data) & HDR_membership) {
-    data$HDR_membership <- mapply(get_HDR_membership, data$x, data$y, MoreArgs = list(df_est, breaks, probs), SIMPLIFY = TRUE)
+    data$HDR_membership <- mapply(get_hdr_membership, data$x, data$y, MoreArgs = list(df_est, breaks, probs), SIMPLIFY = TRUE)
   }
 
   # transforming df_est$fhat and breaks back to original scale:
@@ -78,15 +84,18 @@ get_hdr <- function(method = "kde", data, probs = c(.99, .95, .8, .5), n = 512, 
 
 }
 
-get_HDR_membership <- function(x, y, df_est, breaks, probs) {
-  df_est$dist <- (x - df_est$x)^2 + (y - df_est$y)^2
-  fhat <- df_est[which.min(df_est$dist), "fhat"]
-
+get_hdr_val <- function(fhat, breaks, probs) {
   HDRs <- which(fhat >= breaks)
   if (length(HDRs) == 0) return(1)
   probs[max(HDRs)]
 }
 
+get_hdr_membership <- function(x, y, df_est, breaks, probs) {
+  df_est$dist <- (x - df_est$x)^2 + (y - df_est$y)^2
+  fhat <- df_est[which.min(df_est$dist), "fhat"]
+
+  get_hdr_val(fhat, breaks, probs)
+}
 
 kde_est <- function(data, n, rangex, rangey, parameters) {
 
