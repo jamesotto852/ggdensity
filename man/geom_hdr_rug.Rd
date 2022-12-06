@@ -15,14 +15,13 @@ stat_hdr_rug(
   position = "identity",
   ...,
   method = "kde",
+  method_y = "kde",
   probs = c(0.99, 0.95, 0.8, 0.5),
   xlim = NULL,
   ylim = NULL,
-  h = "nrd0",
-  adjust = 1,
-  kernel = "gaussian",
-  bins = NULL,
   n = 512,
+  parameters = list(),
+  parameters_y = list(),
   na.rm = FALSE,
   show.legend = TRUE,
   inherit.aes = TRUE
@@ -77,32 +76,22 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
-\item{method}{Density estimator to use, accepts character vector: \code{"kde"},
-\code{"histogram"}, \code{"freqpoly"}, or \code{"mvnorm"}. Alternatively, accepts functions
-which return closures corresponding to density estimates (see \code{?get_hdr})}
+\item{method}{temp}
+
+\item{method_y}{temp}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
 \item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
 range of data.}
 
-\item{h}{The smoothing bandwidth to be used.
-If numeric, the standard deviation of the smoothing kernel.
-If character, a rule to choose the bandwidth, as listed in
-\code{\link[stats:bandwidth]{stats::bw.nrd()}}.}
+\item{n}{Resolution of grid defined by \code{xlim} and \code{ylim}.
+Ignored if \code{method = "histogram"} or \code{method = "freqpoly"}.}
 
-\item{adjust}{A multiplicate bandwidth adjustment. This makes it possible
-to adjust the bandwidth while still using the a bandwidth estimator.
-For example, \code{adjust = 1/2} means use half of the default bandwidth.}
+\item{parameters}{An optional list of parameters governing the density estimation procedure.
+See \code{?get_hdr} for details.}
 
-\item{kernel}{Kernel. See list of available kernels in \code{\link[=density]{density()}}.}
-
-\item{bins}{Number of bins along each axis for histogram and frequency polygon estimators.
-Either a vector of length 2 or a scalar value which is recycled for both dimensions.
-Defaults to normal reference rule (Scott, pg 87).}
-
-\item{n}{Resolution of grid used in discrete approximations for kernel
-density and parametric estimators.}
+\item{parameters_y}{temp}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -197,8 +186,5 @@ ggplot(df, aes(x^2, y^2)) +
  geom_hdr_rug(method = "histogram") +
  coord_fixed()
 
-}
-\references{
-Scott, David W. Multivariate Density Estimation (2e), Wiley.
 }
 \keyword{datasets}
