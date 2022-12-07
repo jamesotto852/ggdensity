@@ -133,88 +133,88 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
                            xlim = NULL, ylim = NULL, n = 512,
                            parameters = list(), parameters_y = list()) {
 
-  # Recycle for both x, y
-  if (length(n) == 1) n <- rep(n, 2)
+    # Recycle for both x, y
+    if (length(n) == 1) n <- rep(n, 2)
 
-  # If no alternative method_y/parameters_y specified for y-axis, use method/parameters
-  if (is.null(method_y)){
+    # If no alternative method_y/parameters_y specified for y-axis, use method/parameters
+    if (is.null(method_y)){
 
-    method_y <- method
+      method_y <- method
 
-    if (length(parameters_y) == 0) {
-      parameters_y <- parameters
+      if (length(parameters_y) == 0) {
+        parameters_y <- parameters
+      }
+
     }
 
-  }
+
+    # Estimate marginal densities
+
+    # Initialize dfs for x and y axes,
+    # in case only x or y are supplied:
+    df_x <- data.frame()
+    df_y <- data.frame()
+
+    if (!is.null(data$x)) {
+
+      rangex <- xlim %||% scales$x$dimension()
+
+      res_x <- get_hdr_1d(method, data$x, probs, n[1], rangex, parameters, HDR_membership = FALSE)
+
+      df_x <- res_to_df_1d(res_x, probs, data$group[1], output = "rug")
+
+      # Needs correct name for ggplot2 internals
+      df_x$axis <- "x"
+      df_x$y <- NA
+
+    }
 
 
-  # Estimate marginal densities
+    if (!is.null(data$y)) {
 
-  # Initialize dfs for x and y axes,
-  # in case only x or y are supplied:
-  df_x <- data.frame()
-  df_y <- data.frame()
+      rangey <- ylim %||% scales$y$dimension()
 
-  if (!is.null(data$x)) {
+      res_y <- get_hdr_1d(method_y, data$y, probs, n[2], rangey, parameters_y, HDR_membership = FALSE)
 
-    rangex <- xlim %||% scales$x$dimension()
+      df_y <- res_to_df_1d(res_y, probs, data$group[1], output = "rug")
 
-    res_x <- get_hdr_1d(method, data$x, probs, n[1], rangex, parameters, HDR_membership = FALSE)
+      # Needs correct name for ggplot2 internals
+      df_y$axis <- "y"
+      df_y$y <- df_y$x
+      df_y$x <- NA
 
-    df_x <- res_to_df_1d(res_x, probs, data$group[1], output = "rug")
+    }
 
-    # Needs correct name for ggplot2 internals
-    df_x$axis <- "x"
-    df_x$y <- NA
+    df <- rbind(df_x, df_y)
 
-  }
+    # Need to remove extra col if only plotting x or y rug
+    if (is.null(data$x)) df$x <- NULL
+    if (is.null(data$y)) df$y <- NULL
 
+    df
 
-  if (!is.null(data$y)) {
+    }
+  )
 
-    rangey <- ylim %||% scales$y$dimension()
+  res_to_df_1d <- function(res, probs, group, output) {
 
-    res_y <- get_hdr_1d(method_y, data$y, probs, n[2], rangey, parameters_y, HDR_membership = FALSE)
+    if (output == "rug") {
 
-    df_y <- res_to_df_1d(res_y, probs, data$group[1], output = "rug")
+      probs_formatted <- scales::percent_format(accuracy = 1)(probs)
 
-    # Needs correct name for ggplot2 internals
-    df_y$axis <- "y"
-    df_y$y <- df_y$x
-    df_y$x <- NA
+      df <- res$df_est
 
-  }
+      # alpha will be mapped to df$probs
+      df$probs <- scales::percent_format(accuracy = 1)(df$HDR)
+      df$probs <- ordered(df$probs, levels = probs_formatted)
+      df$HDR <- NULL
 
-  df <- rbind(df_x, df_y)
+      # Discard 100% HDR if it's not in probs:
+      df <- df[!is.na(df$probs),]
 
-  # Need to remove extra col if only plotting x or y rug
-  if (is.null(data$x)) df$x <- NULL
-  if (is.null(data$y)) df$y <- NULL
+    }
 
-  df
-
-  }
-)
-
-res_to_df_1d <- function(res, probs, group, output) {
-
-  if (output == "rug") {
-
-    probs_formatted <- scales::percent_format(accuracy = 1)(probs)
-
-    df <- res$df_est
-
-    # alpha will be mapped to df$probs
-    df$probs <- scales::percent_format(accuracy = 1)(df$HDR)
-    df$probs <- ordered(df$probs, levels = probs_formatted)
-    df$HDR <- NULL
-
-    # Discard 100% HDR if it's not in probs:
-    df <- df[!is.na(df$probs),]
-
-  }
-
-  df
+    df
 
 }
 

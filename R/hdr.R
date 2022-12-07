@@ -172,15 +172,15 @@ StatHdr <- ggproto("StatHdr", Stat,
                            n = 100, xlim = NULL, ylim = NULL,
                            parameters = list()) {
 
-  rangex <- xlim %||% scales$x$dimension()
-  rangey <- ylim %||% scales$y$dimension()
+    rangex <- xlim %||% scales$x$dimension()
+    rangey <- ylim %||% scales$y$dimension()
 
-  # Only calculate HDR membership if we need to
-  need_membership <- (self$output == "points")
+    # Only calculate HDR membership if we need to
+    need_membership <- (self$output == "points")
 
-  res <- get_hdr(method, data, probs, n, rangex, rangey, parameters, HDR_membership = need_membership)
+    res <- get_hdr(method, data, probs, n, rangex, rangey, parameters, HDR_membership = need_membership)
 
-  res_to_df(res, probs, data$group[1], self$output)
+    res_to_df(res, probs, data$group[1], self$output)
 
   }
 )

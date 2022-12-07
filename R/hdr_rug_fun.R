@@ -88,68 +88,68 @@ StatHdrRugFun <- ggproto("StatHdrRugFun", Stat,
                            probs = c(.99, .95, .8, .5),
                            n = 512, xlim = NULL, ylim = NULL) {
 
-   # Recycle for both x, y
-  if (length(n) == 1) n <- rep(n, 2)
+     # Recycle for both x, y
+    if (length(n) == 1) n <- rep(n, 2)
 
-  # Estimate marginal densities
+    # Estimate marginal densities
 
-  # Initialize dfs for x and y axes,
-  # in case only x or y are supplied:
-  df_x <- data.frame()
-  df_y <- data.frame()
+    # Initialize dfs for x and y axes,
+    # in case only x or y are supplied:
+    df_x <- data.frame()
+    df_y <- data.frame()
 
 
-  if (!is.null(fun_x)) {
+    if (!is.null(fun_x)) {
 
-    if (is.null(xlim) & is.null(scales$x)) {
-      stop("`xlim` must be specified if `x` aesthetic not provided to `StatHdrRugFun`")
+      if (is.null(xlim) & is.null(scales$x)) {
+        stop("`xlim` must be specified if `x` aesthetic not provided to `StatHdrRugFun`")
+      }
+
+      rangex <- xlim %||% scales$x$dimension()
+
+      res_x <- get_hdr_1d(method = "fun", data$x, probs, n[1], rangex, HDR_membership = FALSE, fun = fun_x, args = args_x)
+
+      df_x <- res_to_df_1d(res_x, probs, data$group[1], output = "rug")
+
+      # Needs correct name for ggplot2 internals
+      df_x$axis <- "x"
+      df_x$y <- NA
+
+    } else {
+      # If x aesthetic is provided but no fun_x, need to issue warning (alongside ggplot2's warning)
+      if (! is.null(data$x)) warning("`x` aesthetic provided to `StatHdrRugFun` but not `fun_x`. \n Either provide `fun_x`, remove the `x` mapping, \n or set `inherit.aes = FALSE`")
     }
 
-    rangex <- xlim %||% scales$x$dimension()
 
-    res_x <- get_hdr_1d(method = "fun", data$x, probs, n[1], rangex, HDR_membership = FALSE, fun = fun_x, args = args_x)
+    if (!is.null(fun_y)) {
 
-    df_x <- res_to_df_1d(res_x, probs, data$group[1], output = "rug")
+      if (is.null(ylim) & is.null(scales$y)) {
+        stop("`ylim` must be specified if `y` aesthetic not provided to `StatHdrRugFun`")
+      }
 
-    # Needs correct name for ggplot2 internals
-    df_x$axis <- "x"
-    df_x$y <- NA
+      rangey <- ylim %||% scales$y$dimension()
 
-  } else {
-    # If x aesthetic is provided but no fun_x, need to issue warning (alongside ggplot2's warning)
-    if (! is.null(data$x)) warning("`x` aesthetic provided to `StatHdrRugFun` but not `fun_x`. \n Either provide `fun_x`, remove the `x` mapping, \n or set `inherit.aes = FALSE`")
-  }
+      res_y <- get_hdr_1d(method = "fun", data$y, probs, n[1], rangey, HDR_membership = FALSE, fun = fun_y, args = args_y)
 
+      df_y <- res_to_df_1d(res_y, probs, data$group[1], output = "rug")
 
-  if (!is.null(fun_y)) {
+      # Needs correct name for ggplot2 internals
+      df_y$axis <- "y"
+      df_y$y <- df_y$x
+      df_y$x <- NA
 
-    if (is.null(ylim) & is.null(scales$y)) {
-      stop("`ylim` must be specified if `y` aesthetic not provided to `StatHdrRugFun`")
+    } else {
+      # If y aesthetic is provided but no fun_y, need to issue warning (alongside ggplot2's warning)
+      if (! is.null(data$y)) warning("`y` aesthetic provided to `StatHdrRugFun` but not `fun_y`. \n Either provide `fun_y`, remove the `y` mapping, \n or set `inherit.aes = FALSE`")
     }
 
-    rangey <- ylim %||% scales$y$dimension()
+    df <- rbind(df_x, df_y)
 
-    res_y <- get_hdr_1d(method = "fun", data$y, probs, n[1], rangey, HDR_membership = FALSE, fun = fun_y, args = args_y)
+    # Need to remove extra col if only plotting x or y rug
+    if (is.null(fun_x)) df$x <- NULL
+    if (is.null(fun_y)) df$y <- NULL
 
-    df_y <- res_to_df_1d(res_y, probs, data$group[1], output = "rug")
-
-    # Needs correct name for ggplot2 internals
-    df_y$axis <- "y"
-    df_y$y <- df_y$x
-    df_y$x <- NA
-
-  } else {
-    # If y aesthetic is provided but no fun_y, need to issue warning (alongside ggplot2's warning)
-    if (! is.null(data$y)) warning("`y` aesthetic provided to `StatHdrRugFun` but not `fun_y`. \n Either provide `fun_y`, remove the `y` mapping, \n or set `inherit.aes = FALSE`")
-  }
-
-  df <- rbind(df_x, df_y)
-
-  # Need to remove extra col if only plotting x or y rug
-  if (is.null(fun_x)) df$x <- NULL
-  if (is.null(fun_y)) df$y <- NULL
-
-  df
+    df
 
 
   }

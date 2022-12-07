@@ -161,19 +161,19 @@ StatHdrFun <- ggproto("StatHdrFun", Stat,
                            fun, args = list(), probs = c(.99, .95, .8, .5),
                            n = 100, xlim = NULL, ylim = NULL) {
 
-  if ((is.null(xlim) & is.null(scales$x)) | (is.null(ylim) & is.null(scales$y))) {
-    stop("If no data is provided to StatHdrFun, xlim and ylim must be specified")
-  }
+    if ((is.null(xlim) & is.null(scales$x)) | (is.null(ylim) & is.null(scales$y))) {
+      stop("If no data is provided to StatHdrFun, xlim and ylim must be specified")
+    }
 
-  rangex <- xlim %||% scales$x$dimension()
-  rangey <- ylim %||% scales$y$dimension()
+    rangex <- xlim %||% scales$x$dimension()
+    rangey <- ylim %||% scales$y$dimension()
 
-  # Only calculate HDR membership if we need to
-  need_membership <- (self$output == "points")
+    # Only calculate HDR membership if we need to
+    need_membership <- (self$output == "points")
 
-  res <- get_hdr(method = "fun", data, probs, n, rangex, rangey, HDR_membership = need_membership, fun = fun, args = args)
+    res <- get_hdr(method = "fun", data, probs, n, rangex, rangey, HDR_membership = need_membership, fun = fun, args = args)
 
-  res_to_df(res, probs, data$group[1], self$output)
+    res_to_df(res, probs, data$group[1], self$output)
 
   }
 )
