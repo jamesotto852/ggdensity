@@ -178,7 +178,7 @@ StatHdr <- ggproto("StatHdr", Stat,
     # Only calculate HDR membership if we need to
     need_membership <- (self$output == "points")
 
-    res <- get_hdr(method, data, probs, n, rangex, rangey, HDR_membership = need_membership)
+    res <- get_hdr(data, method, probs, n, rangex, rangey, HDR_membership = need_membership)
 
     res_to_df(res, probs, data$group[1], self$output)
 

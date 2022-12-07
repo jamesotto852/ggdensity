@@ -5,8 +5,8 @@
 \title{Computing the highest density regions of a 2D density}
 \usage{
 get_hdr_1d(
-  method = "kde",
   x,
+  method = "kde",
   probs = c(0.99, 0.95, 0.8, 0.5),
   n = 512,
   range,
@@ -16,9 +16,9 @@ get_hdr_1d(
 )
 }
 \arguments{
-\item{method}{temp}
-
 \item{x}{A vector of data}
+
+\item{method}{temp}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 

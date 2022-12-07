@@ -5,21 +5,21 @@
 \title{Computing the highest density regions of a 2D density}
 \usage{
 get_hdr(
-  method = "kde",
   data,
+  method = "kde",
   probs = c(0.99, 0.95, 0.8, 0.5),
   n = 100,
-  rangex,
-  rangey,
+  rangex = NULL,
+  rangey = NULL,
   HDR_membership = TRUE,
   fun,
   args = list()
 )
 }
 \arguments{
-\item{method}{temp}
-
 \item{data}{A data frame with columns \code{x} and \code{y}}
+
+\item{method}{temp}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 

@@ -21,7 +21,11 @@
 #' @param args Optional, a list of arguments to be provided to `fun`.
 #'
 #' @export
-get_hdr <- function(method = "kde", data, probs = c(.99, .95, .8, .5), n = 100, rangex, rangey, HDR_membership = TRUE, fun, args = list()) {
+get_hdr <- function(data, method = "kde", probs = c(.99, .95, .8, .5), n = 100, rangex = NULL, rangey = NULL, HDR_membership = TRUE, fun, args = list()) {
+
+  # TODO consider expanding rangex/rangey by default
+  rangex <- rangex %||% range(data$x)
+  rangey <- rangey %||% range(data$y)
 
   # TODO default expand rangex and rangey
 
