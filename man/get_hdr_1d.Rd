@@ -9,8 +9,8 @@ get_hdr_1d(
   method = "kde",
   probs = c(0.99, 0.95, 0.8, 0.5),
   n = 512,
-  range,
-  HDR_membership = TRUE,
+  range = NULL,
+  hdr_membership = TRUE,
   fun,
   args = list()
 )
@@ -26,7 +26,7 @@ get_hdr_1d(
 
 \item{range}{Range to compute regions.}
 
-\item{HDR_membership}{Should HDR membership of data points be calculated?
+\item{hdr_membership}{Should HDR membership of data points be calculated?
 Defaults to \code{TRUE}, although it is computationally expensive.}
 
 \item{fun}{Optional, a probability density function, must be vectorized in its first argument.}

@@ -15,13 +15,13 @@
 #' @param probs Probabilities to compute highest density regions for.
 #' @param rangex,rangey Range to compute and draw regions.
 #' @param n Resolution of grid defined by `xlim` and `ylim`.
-#' @param HDR_membership Should HDR membership of data points be calculated?
+#' @param hdr_membership Should HDR membership of data points be calculated?
 #'   Defaults to `TRUE`, although it is computationally expensive.
 #' @param fun Optional, a joint probability density function, must be vectorized in its first two arguments.
 #' @param args Optional, a list of arguments to be provided to `fun`.
 #'
 #' @export
-get_hdr <- function(data, method = "kde", probs = c(.99, .95, .8, .5), n = 100, rangex = NULL, rangey = NULL, HDR_membership = TRUE, fun, args = list()) {
+get_hdr <- function(data, method = "kde", probs = c(.99, .95, .8, .5), n = 100, rangex = NULL, rangey = NULL, hdr_membership = TRUE, fun, args = list()) {
 
   # TODO consider expanding rangex/rangey by default
   rangex <- rangex %||% range(data$x)
@@ -90,11 +90,11 @@ get_hdr <- function(data, method = "kde", probs = c(.99, .95, .8, .5), n = 100, 
   breaks <- c(find_cutoff(df_est, probs), Inf)
 
   # find HDRs for points in the grid
-  df_est$HDR <- vapply(df_est$fhat, get_hdr_val, numeric(1), breaks, probs)
+  df_est$hdr <- vapply(df_est$fhat, get_hdr_val, numeric(1), breaks, probs)
 
   # find hdr membership of points from data
-  if (!is.null(data) & HDR_membership) {
-    data$HDR_membership <- mapply(get_hdr_membership, data$x, data$y, MoreArgs = list(df_est, breaks, probs), SIMPLIFY = TRUE)
+  if (!is.null(data) & hdr_membership) {
+    data$hdr_membership <- mapply(get_hdr_membership, data$x, data$y, MoreArgs = list(df_est, breaks, probs), SIMPLIFY = TRUE)
   }
 
   # transforming df_est$fhat and breaks back to original scale:
@@ -114,9 +114,9 @@ get_hdr <- function(data, method = "kde", probs = c(.99, .95, .8, .5), n = 100, 
 }
 
 get_hdr_val <- function(fhat, breaks, probs) {
-  HDRs <- which(fhat >= breaks)
-  if (length(HDRs) == 0) return(1)
-  probs[max(HDRs)]
+  hdrs <- which(fhat >= breaks)
+  if (length(hdrs) == 0) return(1)
+  probs[max(hdrs)]
 }
 
 get_hdr_membership <- function(x, y, df_est, breaks, probs) {

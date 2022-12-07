@@ -151,7 +151,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
 
       rangex <- xlim %||% scales$x$dimension()
 
-      res_x <- get_hdr_1d(data$x, method, probs, n[1], rangex, HDR_membership = FALSE)
+      res_x <- get_hdr_1d(data$x, method, probs, n[1], rangex, hdr_membership = FALSE)
 
       df_x <- res_to_df_1d(res_x, probs, data$group[1], output = "rug")
 
@@ -166,7 +166,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
 
       rangey <- ylim %||% scales$y$dimension()
 
-      res_y <- get_hdr_1d(data$y, method_y, probs, n[2], rangey,  HDR_membership = FALSE)
+      res_y <- get_hdr_1d(data$y, method_y, probs, n[2], rangey, hdr_membership = FALSE)
 
       df_y <- res_to_df_1d(res_y, probs, data$group[1], output = "rug")
 
@@ -198,9 +198,9 @@ res_to_df_1d <- function(res, probs, group, output) {
     df <- res$df_est
 
     # alpha will be mapped to df$probs
-    df$probs <- scales::percent_format(accuracy = 1)(df$HDR)
+    df$probs <- scales::percent_format(accuracy = 1)(df$hdr)
     df$probs <- ordered(df$probs, levels = probs_formatted)
-    df$HDR <- NULL
+    df$hdr <- NULL
 
     # Discard 100% HDR if it's not in probs:
     df <- df[!is.na(df$probs),]

@@ -11,7 +11,7 @@ get_hdr(
   n = 100,
   rangex = NULL,
   rangey = NULL,
-  HDR_membership = TRUE,
+  hdr_membership = TRUE,
   fun,
   args = list()
 )
@@ -27,7 +27,7 @@ get_hdr(
 
 \item{rangex, rangey}{Range to compute and draw regions.}
 
-\item{HDR_membership}{Should HDR membership of data points be calculated?
+\item{hdr_membership}{Should HDR membership of data points be calculated?
 Defaults to \code{TRUE}, although it is computationally expensive.}
 
 \item{fun}{Optional, a joint probability density function, must be vectorized in its first two arguments.}

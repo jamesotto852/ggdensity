@@ -17,7 +17,7 @@
 #' @param fun Optional, a probability density function, must be vectorized in its first argument.
 #'
 #' @export
-get_hdr_1d <- function(x, method = "kde", probs = c(.99, .95, .8, .5), n = 512, range = NULL, HDR_membership = TRUE, fun, args = list()) {
+get_hdr_1d <- function(x, method = "kde", probs = c(.99, .95, .8, .5), n = 512, range = NULL, hdr_membership = TRUE, fun, args = list()) {
 
   # TODO consider expanding rangex/rangey by default
   range <- range %||% range(x)
@@ -80,19 +80,19 @@ get_hdr_1d <- function(x, method = "kde", probs = c(.99, .95, .8, .5), n = 512, 
   breaks <- c(find_cutoff(df_est, probs), Inf)
 
   # find HDRs for points in the grid
-  df_est$HDR <- vapply(df_est$fhat, get_hdr_val, numeric(1), breaks, probs)
+  df_est$hdr <- vapply(df_est$fhat, get_hdr_val, numeric(1), breaks, probs)
 
   # find hdr membership of points from data
-  if (!is.null(x) & HDR_membership) {
+  if (!is.null(x) & hdr_membership) {
 
     data <- data.frame(x = x)
 
-    if (HDR_membership) {
+    if (hdr_membership) {
 
-      HDR_membership <- vapply(x, get_hdr_membership_1d, numeric(1), df_est, breaks, probs)
+      hdr_membership <- vapply(x, get_hdr_membership_1d, numeric(1), df_est, breaks, probs)
 
       # create data frame w/ input data (x) + HDR membership
-      data$HDR_membership <- HDR_membership
+      data$hdr_membership <- hdr_membership
 
     }
 

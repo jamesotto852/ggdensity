@@ -108,7 +108,7 @@ StatHdrRugFun <- ggproto("StatHdrRugFun", Stat,
 
       rangex <- xlim %||% scales$x$dimension()
 
-      res_x <- get_hdr_1d(data$x, method = "fun", probs, n[1], rangex, HDR_membership = FALSE, fun = fun_x, args = args_x)
+      res_x <- get_hdr_1d(data$x, method = "fun", probs, n[1], rangex, hdr_membership = FALSE, fun = fun_x, args = args_x)
 
       df_x <- res_to_df_1d(res_x, probs, data$group[1], output = "rug")
 
@@ -130,7 +130,7 @@ StatHdrRugFun <- ggproto("StatHdrRugFun", Stat,
 
       rangey <- ylim %||% scales$y$dimension()
 
-      res_y <- get_hdr_1d(data$y, method = "fun", probs, n[1], rangey, HDR_membership = FALSE, fun = fun_y, args = args_y)
+      res_y <- get_hdr_1d(data$y, method = "fun", probs, n[1], rangey, hdr_membership = FALSE, fun = fun_y, args = args_y)
 
       df_y <- res_to_df_1d(res_y, probs, data$group[1], output = "rug")
 

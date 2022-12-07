@@ -178,7 +178,7 @@ StatHdr <- ggproto("StatHdr", Stat,
     # Only calculate HDR membership if we need to
     need_membership <- (self$output == "points")
 
-    res <- get_hdr(data, method, probs, n, rangex, rangey, HDR_membership = need_membership)
+    res <- get_hdr(data, method, probs, n, rangex, rangey, hdr_membership = need_membership)
 
     res_to_df(res, probs, data$group[1], self$output)
 
@@ -209,9 +209,9 @@ res_to_df <- function(res, probs, group, output) {
   } else if (output == "points") {
 
     df <- res$data
-    df$HDR_membership <- scales::percent_format(accuracy = 1)(df$HDR_membership)
-    df$probs <- ordered(df$HDR_membership, levels = scales::percent_format(accuracy = 1)(c(1, probs)))
-    df$HDR_membership <- NULL
+    df$hdr_membership <- scales::percent_format(accuracy = 1)(df$hdr_membership)
+    df$probs <- ordered(df$hdr_membership, levels = scales::percent_format(accuracy = 1)(c(1, probs)))
+    df$hdr_membership <- NULL
 
   }
 
