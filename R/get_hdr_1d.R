@@ -17,31 +17,52 @@
 #' @param fun Optional, a probability density function, must be vectorized in its first argument.
 #'
 #' @export
-get_hdr_1d <- function(method = "kde", x, probs = c(.99, .95, .8, .5), n = 512, range, parameters = list(), HDR_membership = TRUE, fun, args = list()) {
+get_hdr_1d <- function(method = "kde", x, probs = c(.99, .95, .8, .5), n = 512, range, HDR_membership = TRUE, fun, args = list()) {
 
   probs <- sort(probs, decreasing = TRUE)
 
   # Create df_est (estimated density evaluated on a grid) depending on specified method:
   if (is.character(method) && method == "fun") {
 
-    df_est <- f_est_1d(method = NULL, x, n, range, fun = fun, args = args)
+    df_est <- f_est_1d(method = NULL, x = x, n, range = range, fun = fun, args = args)
 
-  } else if (is.character(method)) {
+  } else  {
 
-    df_est <- switch(method,
-      "kde" = kde_est_1d(x, n, range, parameters),
-      "histogram" = histogram_est_1d(x, n, range, parameters),
-      "freqpoly" = freqpoly_est_1d(x, n, range, parameters),
-      "norm" = f_est_1d(method_norm_1d, x, n, range, parameters)
-    )
+    if (is.character(method)) {
 
-    if (!method %in% c("kde", "histogram", "freqpoly", "norm")) stop("Invalid method specified")
+      if (!method %in% c("kde", "norm", "histogram", "freqpoly")) stop("Invalid method specified")
 
-  } else if (is.function(method)) {
+      # If method is provided as a character, re-assign correct function output:
+      method <- switch(method,
+        "kde"       = method_kde_1d(),
+        "histogram" = method_histogram_1d(),
+        "freqpoly"  = method_freqpoly_1d(),
+        "norm"      = method_norm_1d()
+      )
 
-    df_est <- f_est_1d(method, x, n, range, parameters)
+    }
+
+    # TODO: Check that method is "right"
+
+    # parse args of method to determine strategy of `method`
+    method_formals <- names(formals(method))
+
+    # If `data` is the only argument to `method`, we know `method`
+    # is a function factory, returning a closure of pdf in terms of x, y:
+    if (length(method_formals) == 1 && method_formals == "x") {
+
+      df_est <- f_est_1d(method, x, n, range)
+
+    # Otherwise `method` computes a grid for us, shortcutting
+    # representing pdf in terms of x, y:
+    } else {
+
+      df_est <- method(x, n, range)
+
+    }
 
   }
+
 
   # Manipulate df_est to get information about HDRs:
 
@@ -101,168 +122,23 @@ get_hdr_membership_1d <- function(x, df_est, breaks, probs) {
   get_hdr_val(fhat, breaks, probs)
 }
 
-
-kde_est_1d <- function(x, n, range, parameters) {
-
-  nx <- length(x)
-
-  if (is.null(parameters$adjust)) parameters$adjust <- 1
-
-  if (is.null(parameters$bw)) parameters$bw <- "nrd0"
-
-  if (is.null(parameters$w)) {
-    parameters$w <- rep(1 / nx, nx)
-  } else {
-    parameters$w <- normalize(parameters$w)
-  }
-
-  # if less than 2 points return data frame of NAs and issue a warning
-  if (nx < 2) {
-    message("Groups with fewer than two data points have been dropped.")
-    return(data.frame(
-      x = NA_real_,
-      fhat = NA_real_,
-      fhat_discretized = NA_real_
-    ))
-  }
-
-  dens <- stats::density(
-    x,
-    weights = parameters$w,
-    bw = parameters$bw,
-    adjust = parameters$adjust,
-    kernel = parameters$kernel,
-    n = n,
-    from = range[1],
-    to = range[2]
-  )
-
-  data.frame(
-    x = dens$x,
-    fhat = dens$y
-  )
-
-}
-
-histogram_est_1d <- function(x, n, range, parameters) {
-  # the n parameter is ignored here - no gridding
-
-  bins <- parameters$bins
-  nx <- length(x)
-
-  # Default to normal reference rule (Scott p. 59)
-  if (is.null(bins)) {
-    hx <- 3.504 * stats::sd(x) * nx^(-1/3)
-    bins <- round((range[2] - range[1]) / hx)
-  }
-
-  # if less than 2 points return data frame of NAs and a warning
-  if (nx < 2) {
-    message("Groups with fewer than two data points have been dropped.")
-    return(data.frame(
-      x = NA_real_,
-      fhat = NA_real_,
-      fhat_discretized = NA_real_
-    ))
-  }
-
-  sx <- seq(range[1], range[2], length.out = bins + 1)
-  de_x <- sx[2] - sx[1]
-  midpts <- sx[-(bins+1)] + de_x/2
-  n <- as.numeric(table(cut(x, sx)))
-
-  data.frame(
-    x = midpts,
-    fhat = normalize(n)
-  )
-}
-
-freqpoly_est_1d <- function(x, n = 512, range, parameters) {
-
-  df <- histogram_est_1d(x, n, range, parameters)
-
-  hx <- df$x[2] - df$x[1]
-
-  # need to pad df from hist_marginal() w/ bins that have est prob of 0
-  # so that we can interpolate
-  df <- rbind(
-
-    # add initial bin w/ est prob of 0
-    data.frame(
-      x = min(df$x) - hx,
-      fhat = 0
-    ),
-
-    # include original histogram estimator
-    df,
-
-    # add final bin w/ est prob of 0
-    data.frame(
-      x = max(df$x) + hx,
-      fhat = 0
-    )
-
-  )
-
-  sx <- seq(range[1], range[2], length.out = n)
-
-  interpolate_fhat <- function(x) {
-    lower_x <- df$x[max(which(df$x < x))]
-    upper_x <- df$x[min(which(df$x >= x))]
-
-    lower_fhat <- df$fhat[max(which(df$x < x))]
-    upper_fhat <- df$fhat[min(which(df$x >= x))]
-
-    lower_fhat + (x - lower_x) * (upper_fhat - lower_fhat) / (upper_x - lower_x)
-  }
-
-  dens <- vapply(sx, interpolate_fhat, numeric(1))
-
-  data.frame(
-    x = sx,
-    fhat = dens
-  )
-
-}
-
 # method is a function of data vector x
 # fun is a function of vector x -- the grid
 # Might need to be more careful w/ axis transformations here
-f_est_1d <- function(method, x, n, range, parameters = list(), fun = NULL, args = list()) {
+f_est_1d <- function(method, x, n, range, fun = NULL, args = list()) {
 
   # If fun isn't specified, method returns a closure
   # representing closed form of density estimate
-  fun <- fun %||% method(x, parameters)
+  fun <- fun %||% method(x)
 
   # grid to evaluate fun
   df <- data.frame(x = seq(range[1], range[2], length.out = n))
 
   # evaluate method on the grid, f required to be vectorized in x, y:
+  # (args is only non-empty if fun was specified)
   df$fhat <- do.call(fun, c(quote(df$x), args))
 
   df
-
-}
-
-# TODO - document these, along with the *_est functions from above
-
-#' @export
-method_norm_1d <- function(x, parameters) {
-
-  mu_hat <- mean(x)
-  sigma_hat <- sd(x)
-
-  function(x) dnorm(x, mu_hat, sigma_hat)
-
-}
-
-#' @export
-method_exp_1d <- function(x, parameters) {
-
-  lambda_hat <- mean(x)
-  lambda_hat <- 1/lambda_hat
-
-  function(x) dexp(x, lambda_hat)
 
 }
 

@@ -136,16 +136,8 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
     # Recycle for both x, y
     if (length(n) == 1) n <- rep(n, 2)
 
-    # If no alternative method_y/parameters_y specified for y-axis, use method/parameters
-    if (is.null(method_y)){
-
-      method_y <- method
-
-      if (length(parameters_y) == 0) {
-        parameters_y <- parameters
-      }
-
-    }
+    # If no alternative method_y, use method
+    if (is.null(method_y)) method_y <- method
 
 
     # Estimate marginal densities
@@ -159,7 +151,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
 
       rangex <- xlim %||% scales$x$dimension()
 
-      res_x <- get_hdr_1d(method, data$x, probs, n[1], rangex, parameters, HDR_membership = FALSE)
+      res_x <- get_hdr_1d(method, data$x, probs, n[1], rangex, HDR_membership = FALSE)
 
       df_x <- res_to_df_1d(res_x, probs, data$group[1], output = "rug")
 
@@ -174,7 +166,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
 
       rangey <- ylim %||% scales$y$dimension()
 
-      res_y <- get_hdr_1d(method_y, data$y, probs, n[2], rangey, parameters_y, HDR_membership = FALSE)
+      res_y <- get_hdr_1d(method_y, data$y, probs, n[2], rangey,  HDR_membership = FALSE)
 
       df_y <- res_to_df_1d(res_y, probs, data$group[1], output = "rug")
 
@@ -196,25 +188,26 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
     }
   )
 
-  res_to_df_1d <- function(res, probs, group, output) {
 
-    if (output == "rug") {
+res_to_df_1d <- function(res, probs, group, output) {
 
-      probs_formatted <- scales::percent_format(accuracy = 1)(probs)
+  if (output == "rug") {
 
-      df <- res$df_est
+    probs_formatted <- scales::percent_format(accuracy = 1)(probs)
 
-      # alpha will be mapped to df$probs
-      df$probs <- scales::percent_format(accuracy = 1)(df$HDR)
-      df$probs <- ordered(df$probs, levels = probs_formatted)
-      df$HDR <- NULL
+    df <- res$df_est
 
-      # Discard 100% HDR if it's not in probs:
-      df <- df[!is.na(df$probs),]
+    # alpha will be mapped to df$probs
+    df$probs <- scales::percent_format(accuracy = 1)(df$HDR)
+    df$probs <- ordered(df$probs, levels = probs_formatted)
+    df$HDR <- NULL
 
-    }
+    # Discard 100% HDR if it's not in probs:
+    df <- df[!is.na(df$probs),]
 
-    df
+  }
+
+  df
 
 }
 

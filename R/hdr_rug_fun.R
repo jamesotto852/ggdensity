@@ -88,7 +88,8 @@ StatHdrRugFun <- ggproto("StatHdrRugFun", Stat,
                            probs = c(.99, .95, .8, .5),
                            n = 512, xlim = NULL, ylim = NULL) {
 
-     # Recycle for both x, y
+
+    # Recycle for both x, y
     if (length(n) == 1) n <- rep(n, 2)
 
     # Estimate marginal densities

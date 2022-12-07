@@ -10,7 +10,6 @@ get_hdr_1d(
   probs = c(0.99, 0.95, 0.8, 0.5),
   n = 512,
   range,
-  parameters = list(),
   HDR_membership = TRUE,
   fun,
   args = list()
@@ -26,8 +25,6 @@ get_hdr_1d(
 \item{n}{Resolution of grid defined by range}
 
 \item{range}{Range to compute regions.}
-
-\item{parameters}{An optional list of parameters governing the density estimation procedure.}
 
 \item{HDR_membership}{Should HDR membership of data points be calculated?
 Defaults to \code{TRUE}, although it is computationally expensive.}

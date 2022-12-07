@@ -11,7 +11,6 @@ get_hdr(
   n = 100,
   rangex,
   rangey,
-  parameters = list(),
   HDR_membership = TRUE,
   fun,
   args = list()
@@ -27,8 +26,6 @@ get_hdr(
 \item{n}{Resolution of grid defined by \code{xlim} and \code{ylim}.}
 
 \item{rangex, rangey}{Range to compute and draw regions.}
-
-\item{parameters}{An optional list of parameters governing the density estimation procedure.}
 
 \item{HDR_membership}{Should HDR membership of data points be calculated?
 Defaults to \code{TRUE}, although it is computationally expensive.}
