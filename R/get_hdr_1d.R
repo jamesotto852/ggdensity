@@ -60,6 +60,10 @@ get_hdr_1d <- function(x, method = "kde", probs = c(.99, .95, .8, .5), n = 512, 
 
       df_est <- method(x, n, range)
 
+    } else if ("data" %in% method_formals) {
+
+      stop("Invalid `method` argument -- did you forget the `_1d()`?")
+
     } else {
 
       stop("Invalid `method` argument -- did you forget the `()`?")
