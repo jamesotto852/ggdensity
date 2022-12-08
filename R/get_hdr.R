@@ -27,8 +27,6 @@ get_hdr <- function(data, method = "kde", probs = c(.99, .95, .8, .5), n = 100, 
   rangex <- rangex %||% range(data$x)
   rangey <- rangey %||% range(data$y)
 
-  # TODO default expand rangex and rangey
-
   probs <- sort(probs, decreasing = TRUE)
 
   # Create df_est (estimated density evaluated on a grid) depending on specified method:

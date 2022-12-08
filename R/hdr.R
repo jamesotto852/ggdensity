@@ -185,6 +185,8 @@ StatHdr <- ggproto("StatHdr", Stat,
   }
 )
 
+# internal helper function to convert output of `get_hdr[_1d]()` into
+# what `GeomHdr*$draw_group()` methods need
 res_to_df <- function(res, probs, group, output) {
 
   # Need z for xyz_to_isobands/lines()
