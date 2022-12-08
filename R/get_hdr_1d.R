@@ -45,8 +45,6 @@ get_hdr_1d <- function(x, method = "kde", probs = c(.99, .95, .8, .5), n = 512, 
 
     }
 
-    # TODO: Check that method is "right"
-
     # parse args of method to determine strategy of `method`
     method_formals <- names(formals(method))
 
@@ -58,9 +56,13 @@ get_hdr_1d <- function(x, method = "kde", probs = c(.99, .95, .8, .5), n = 512, 
 
     # Otherwise `method` computes a grid for us, shortcutting
     # representing pdf in terms of x, y:
-    } else {
+    } else if (length(method_formals) == 3 && method_formals[1] %in% c("x", "y") & all(method_formals[2:3] == c("n", "range"))) {
 
       df_est <- method(x, n, range)
+
+    } else {
+
+      stop("Invalid `method` argument -- did you forget the `()`?")
 
     }
 
