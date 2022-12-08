@@ -71,7 +71,7 @@ stat_hdr_points <- function(mapping = NULL, data = NULL,
   layer(
     data = data,
     mapping = mapping,
-    stat = StatHdrLines,
+    stat = StatHdrPoints,
     geom = geom,
     position = position,
     show.legend = show.legend,
