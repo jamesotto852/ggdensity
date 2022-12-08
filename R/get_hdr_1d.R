@@ -22,7 +22,7 @@ get_hdr_1d <- function(x, method = "kde", probs = c(.99, .95, .8, .5), n = 512, 
   # TODO consider expanding rangex/rangey by default
   range <- range %||% range(x)
 
-  probs <- sort(probs, decreasing = TRUE)
+  probs <- fix_probs(probs)
 
   # Create df_est (estimated density evaluated on a grid) depending on specified method:
   if (is.character(method) && method == "fun") {

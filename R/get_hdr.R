@@ -27,7 +27,7 @@ get_hdr <- function(data, method = "kde", probs = c(.99, .95, .8, .5), n = 100, 
   rangex <- rangex %||% range(data$x)
   rangey <- rangey %||% range(data$y)
 
-  probs <- sort(probs, decreasing = TRUE)
+  probs <- fix_probs(probs)
 
   # Create df_est (estimated density evaluated on a grid) depending on specified method:
   if (is.character(method) && method == "fun") {
@@ -111,6 +111,12 @@ get_hdr <- function(data, method = "kde", probs = c(.99, .95, .8, .5), n = 100, 
     data = data
   )
 
+}
+
+fix_probs <- function(probs) {
+  stopifnot("Probabilities must be between 0 and 1, exclusive" = all(probs > 0) & all(probs < 1))
+
+  sort(probs, decreasing = TRUE)
 }
 
 get_hdr_val <- function(fhat, breaks, probs) {
