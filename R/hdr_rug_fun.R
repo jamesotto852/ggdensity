@@ -78,6 +78,8 @@ stat_hdr_rug_fun <- function(mapping = NULL, data = NULL,
 StatHdrRugFun <- ggproto("StatHdrRugFun", Stat,
 
   default_aes = aes(order = after_stat(probs), alpha = after_stat(probs)),
+  # if fun_x or fun_y are unspecified data might be dropped
+  dropped_aes = c("x", "y"),
 
   # very similar to StatHdrRug$compute_group(),
   # only difference are the parameters fun + args (vs. method + parameters)
@@ -116,9 +118,6 @@ StatHdrRugFun <- ggproto("StatHdrRugFun", Stat,
       df_x$axis <- "x"
       df_x$y <- NA
 
-    } else {
-      # If x aesthetic is provided but no fun_x, need to issue warning (alongside ggplot2's warning)
-      if (! is.null(data$x)) warning("`x` aesthetic provided to `StatHdrRugFun` but not `fun_x`. \n Either provide `fun_x`, remove the `x` mapping, \n or set `inherit.aes = FALSE`")
     }
 
 
@@ -139,9 +138,6 @@ StatHdrRugFun <- ggproto("StatHdrRugFun", Stat,
       df_y$y <- df_y$x
       df_y$x <- NA
 
-    } else {
-      # If y aesthetic is provided but no fun_y, need to issue warning (alongside ggplot2's warning)
-      if (! is.null(data$y)) warning("`y` aesthetic provided to `StatHdrRugFun` but not `fun_y`. \n Either provide `fun_y`, remove the `y` mapping, \n or set `inherit.aes = FALSE`")
     }
 
     df <- rbind(df_x, df_y)
@@ -196,3 +192,8 @@ geom_hdr_rug_fun <- function(mapping = NULL, data = NULL,
 #' @usage NULL
 #' @export
 GeomHdrRugFun <- ggproto("GeomHdrRugFun", GeomHdrRug)
+
+
+
+
+

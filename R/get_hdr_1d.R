@@ -52,7 +52,7 @@ get_hdr_1d <- function(x, method = "kde", probs = c(.99, .95, .8, .5), n = 512, 
 
     # If `data` is the only argument to `method`, we know `method`
     # is a function factory, returning a closure of pdf in terms of x, y:
-    if (length(method_formals) == 1 && method_formals == "x") {
+    if (length(method_formals) == 1 && method_formals %in% c("x", "y")) {
 
       df_est <- f_est_1d(method, x, n, range)
 
