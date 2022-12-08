@@ -21,9 +21,19 @@
 #' @param args Optional, a list of arguments to be provided to `fun`.
 #'
 #' @export
-get_hdr <- function(data, method = "kde", probs = c(.99, .95, .8, .5), n = 100, rangex = NULL, rangey = NULL, hdr_membership = TRUE, fun, args = list()) {
+get_hdr <- function(data = NULL, method = "kde", probs = c(.99, .95, .8, .5), n = 100, rangex = NULL, rangey = NULL, hdr_membership = TRUE, fun, args = list()) {
 
-  # TODO consider expanding rangex/rangey by default
+  # Deal with missing data argument
+  if (is.null(data)) {
+    if (!is.character(method) | (is.character(method) && method != "fun")) {
+      stop('`data` must be provided unless `method = "fun"`')
+    } else {
+      if (is.null(rangex) | is.null(rangey)) {
+        stop('If `data` is unspecified, `rangex` and `rangey` must be provided when `method = "fun"`')
+      }
+    }
+  }
+
   rangex <- rangex %||% range(data$x)
   rangey <- rangey %||% range(data$y)
 
@@ -32,7 +42,7 @@ get_hdr <- function(data, method = "kde", probs = c(.99, .95, .8, .5), n = 100, 
   # Create df_est (estimated density evaluated on a grid) depending on specified method:
   if (is.character(method) && method == "fun") {
 
-    df_est <- f_est(method = NULL, data = data, n, rangex, rangey, fun = fun, args = args)
+    df_est <- f_est(method = NULL, n = n, rangex = rangex, rangey = rangey, fun = fun, args = args)
 
   } else  {
 

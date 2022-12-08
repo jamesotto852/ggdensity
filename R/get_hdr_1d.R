@@ -17,9 +17,19 @@
 #' @param fun Optional, a probability density function, must be vectorized in its first argument.
 #'
 #' @export
-get_hdr_1d <- function(x, method = "kde", probs = c(.99, .95, .8, .5), n = 512, range = NULL, hdr_membership = TRUE, fun, args = list()) {
+get_hdr_1d <- function(x = NULL, method = "kde", probs = c(.99, .95, .8, .5), n = 512, range = NULL, hdr_membership = TRUE, fun, args = list()) {
 
-  # TODO consider expanding rangex/rangey by default
+  # Deal with missing data argument
+  if (is.null(x)) {
+    if (!is.character(method) | (is.character(method) && method != "fun")) {
+      stop('`x` must be provided unless `method = "fun"`')
+    } else {
+      if (is.null(range)) {
+        stop('If `x` is unspecified, `range` must be provided when `method = "fun"`')
+      }
+    }
+  }
+
   range <- range %||% range(x)
 
   probs <- fix_probs(probs)
