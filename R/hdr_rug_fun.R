@@ -57,7 +57,7 @@ stat_hdr_rug_fun <- function(mapping = NULL, data = NULL,
     params = list(
       fun_x = fun_x,
       fun_y = fun_y,
-      args_x = args,
+      args_x = args_x,
       args_y = args_y,
       probs = probs,
       xlim = xlim,
