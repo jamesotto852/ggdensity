@@ -5,7 +5,7 @@
 \title{Computing the highest density regions of a 2D density}
 \usage{
 get_hdr_1d(
-  x,
+  x = NULL,
   method = "kde",
   probs = c(0.99, 0.95, 0.8, 0.5),
   n = 512,
