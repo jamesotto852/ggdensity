@@ -84,7 +84,7 @@ NULL
 #' @export
 #' @rdname geom_hdr_points_fun
 stat_hdr_points_fun <- function(mapping = NULL, data = NULL,
-                                geom = "hdr_points_fun", position = "identity",
+                                geom = "point", position = "identity",
                                 ...,
                                 fun, args = list(),
                                 probs = c(.99, .95, .8, .5),

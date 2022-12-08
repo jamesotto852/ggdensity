@@ -10,7 +10,7 @@
 stat_hdr_points_fun(
   mapping = NULL,
   data = NULL,
-  geom = "hdr_points_fun",
+  geom = "point",
   position = "identity",
   ...,
   fun,
