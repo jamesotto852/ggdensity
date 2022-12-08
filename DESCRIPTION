@@ -31,3 +31,7 @@ Imports:
     scales
 URL: https://jamesotto852.github.io/ggdensity/, https://github.com/jamesotto852/ggdensity/
 BugReports: https://github.com/jamesotto852/ggdensity/issues/
+Suggests: 
+    vdiffr,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
