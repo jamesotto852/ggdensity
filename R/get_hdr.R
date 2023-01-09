@@ -8,7 +8,6 @@
 #'
 #' TODO - fill in with how to to use `method` as a string, function factory, and how to use `fun`.
 #' Likely will need several sections to describe various uses.
-#' Also need to expand on `parameters` parameter.
 #'
 #' @param method temp
 #' @param data A data frame with columns `x` and `y`
@@ -145,7 +144,6 @@ get_hdr_membership <- function(x, y, df_est, breaks, probs) {
 
 # method is a function of data
 # fun is a function of vectors x, y
-# Might need to be more careful w/ axis transformations here
 f_est <- function(method, data, n, rangex, rangey, fun = NULL, args = list()) {
 
   # If fun isn't specified, method returns a closure

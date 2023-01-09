@@ -1,4 +1,5 @@
 #' @rdname geom_hdr_fun
+#' @usage NULL
 #' @export
 stat_hdr_lines_fun <- function(mapping = NULL, data = NULL,
                                geom = "hdr_lines_fun", position = "identity",
@@ -46,6 +47,7 @@ StatHdrLinesFun <- ggproto("StatHdrLinesFun", StatHdrFun,
 
 
 #' @rdname geom_hdr_fun
+#' @usage NULL
 #' @export
 geom_hdr_lines_fun <- function(mapping = NULL, data = NULL,
                          stat = "hdr_lines_fun", position = "identity",

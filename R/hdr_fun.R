@@ -1,30 +1,17 @@
 #' Highest density regions of a bivariate pdf
 #'
 #' Compute and plot the highest density regions (HDRs) of a bivariate pdf.
-#' `geom_hdr_fun()` draws filled regions, and `geom_hdr_lines_fun()` draws
-#' lines outlining the regions. Note, the plotted objects have the probs mapped
-#' to the `alpha` aesthetic by default.
+#' `geom_hdr_fun()` draws filled regions, and `geom_hdr_lines_fun()` draws lines outlining the regions.
+#' Note, the plotted objects have probabilities mapped to the `alpha` aesthetic by default.
 #'
-#' @section Aesthetics: geom_hdr_fun understands the following aesthetics
-#'   (required aesthetics are in bold):
-#'
-#'   - x
-#'   - y
-#'   - alpha
-#'   - color
-#'   - fill
-#'   - group
-#'   - linetype
-#'   - linewidth
-#'   - subgroup
-#'
-#'   geom_hdr_fun_lines understands the following aesthetics (required
+#' @section Aesthetics: `geom_hdr_fun()` and `geom_hdr_lines_fun()` understand the following aesthetics (required
 #'   aesthetics are in bold):
 #'
 #'   - x
 #'   - y
 #'   - alpha
 #'   - color
+#'   - fill (only `geom_hdr_fun`)
 #'   - group
 #'   - linetype
 #'   - linewidth
@@ -40,8 +27,7 @@
 #' @inheritParams ggplot2::stat_density2d
 #' @param fun A function, the joint probability density function, must be
 #' vectorized in its first two arguments; see examples.
-#' @param args List of additional arguments passed on to the function `fun` as a
-#'   named list.
+#' @param args Named list of additional arguments passed on to `fun`.
 #' @param probs Probabilities to compute highest density regions for.
 #' @param n Resolution of grid `fun` is evaluated on.
 #' @param xlim,ylim Range to compute and draw regions. If `NULL`, defaults to
@@ -54,8 +40,7 @@
 #' @examples
 #'
 #' f <- function(x, y) dexp(x) * dexp(y)
-#' ggplot() +
-#'   geom_hdr_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
+#' ggplot() + geom_hdr_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
 #'
 #'
 #' # the hdr of a custom parametric model
@@ -89,13 +74,13 @@
 #'
 #' ggplot(data, aes(x, y)) +
 #'   geom_hdr_fun(fun = f, args = list(th = th_hat)) +
-#'   geom_point(size = .25, color = "red")
+#'   geom_point(size = .25, color = "red") +
+#'   xlim(0, 30) + ylim(c(0, 30))
 #'
 #' ggplot(data, aes(x, y)) +
-#'   geom_hdr_fun(fun = f, args = list(th = th_hat)) +
+#'   geom_hdr_lines_fun(fun = f, args = list(th = th_hat)) +
 #'   geom_point(size = .25, color = "red") +
-#'   xlim(0, 40) + ylim(c(0, 40))
-#'
+#'   xlim(0, 30) + ylim(c(0, 30))
 #'
 #'
 NULL

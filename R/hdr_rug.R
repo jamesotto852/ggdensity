@@ -1,18 +1,18 @@
 #' Rug plots of marginal highest density region estimates
 #'
 #' Perform 1D density estimation, compute and plot the resulting highest density
-#' regions in a way similar to [ggplot2::geom_rug()]. Note, the plotted objects have the probs mapped to the `alpha`
-#' aesthetic by default.
+#' regions in a way similar to [ggplot2::geom_rug()].
+#' Note, the plotted objects have probabilities mapped to the `alpha` aesthetic by default.
 #'
 #' @section Aesthetics: geom_hdr_rug understands the following aesthetics (required
 #'   aesthetics are in bold):
 #'
+#'   - x
+#'   - y
 #'   - alpha
 #'   - fill
 #'   - group
 #'   - subgroup
-#'   - x
-#'   - y
 #'
 #' @section Computed variables:
 #'
@@ -21,16 +21,19 @@
 #'
 #' @inheritParams ggplot2::geom_rug
 #' @inheritParams stat_hdr
-#' @param method temp
-#' @param method_y temp
-#' @param parameters_y temp
+#' @param method,method_y Density estimator(s) to use.
+#'   By default `method` is used for both x- and y-axis.
+#'   If specified, `method_y` will be used for y-axis.
+#'   Accepts character vector: `"kde"`,`"histogram"`, `"freqpoly"`, or `"norm"`.
+#'   Alternatively accepts functions  which return closures corresponding to density estimates,
+#'   see `?get_hdr_1d` or `vignette("method", "ggdensity")`.
 #' @name geom_hdr_rug
 #' @rdname geom_hdr_rug
 #'
 #' @import ggplot2
 #'
 #' @examples
-#'
+#' set.seed(1)
 #' df <- data.frame(x = rnorm(100), y = rnorm(100))
 #'
 #' # Plot marginal HDRs for bivariate data
@@ -88,8 +91,6 @@ stat_hdr_rug <- function(mapping = NULL, data = NULL,
                          xlim = NULL,
                          ylim = NULL,
                          n = 512,
-                         parameters = list(),
-                         parameters_y = list(),
                          na.rm = FALSE,
                          show.legend = TRUE,
                          inherit.aes = TRUE) {
@@ -108,8 +109,6 @@ stat_hdr_rug <- function(mapping = NULL, data = NULL,
       xlim = xlim,
       ylim = ylim,
       n = n,
-      parameters = parameters,
-      parameters_y = parameters_y,
       na.rm = na.rm,
       ...
     )
@@ -130,8 +129,7 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
   compute_group = function(data, scales, na.rm = FALSE,
                            method = "kde", method_y = NULL,
                            probs = c(.99, .95, .8, .5),
-                           xlim = NULL, ylim = NULL, n = 512,
-                           parameters = list(), parameters_y = list()) {
+                           xlim = NULL, ylim = NULL, n = 512) {
 
     # Recycle for both x, y
     if (length(n) == 1) n <- rep(n, 2)

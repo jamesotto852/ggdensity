@@ -23,7 +23,6 @@ stat_hdr(
   n = 100,
   xlim = NULL,
   ylim = NULL,
-  parameters = list(),
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE
@@ -33,34 +32,6 @@ geom_hdr(
   mapping = NULL,
   data = NULL,
   stat = "hdr",
-  position = "identity",
-  ...,
-  na.rm = FALSE,
-  show.legend = NA,
-  inherit.aes = TRUE
-)
-
-stat_hdr_lines(
-  mapping = NULL,
-  data = NULL,
-  geom = "hdr_lines",
-  position = "identity",
-  ...,
-  method = "kde",
-  probs = c(0.99, 0.95, 0.8, 0.5),
-  n = 100,
-  xlim = NULL,
-  ylim = NULL,
-  parameters = list(),
-  na.rm = FALSE,
-  show.legend = NA,
-  inherit.aes = TRUE
-)
-
-geom_hdr_lines(
-  mapping = NULL,
-  data = NULL,
-  stat = "hdr_lines",
   position = "identity",
   ...,
   na.rm = FALSE,
@@ -103,9 +74,10 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
-\item{method}{Density estimator to use, accepts character vector: \code{"kde"},
-\code{"histogram"}, \code{"freqpoly"}, or \code{"mvnorm"}. Alternatively, accepts functions
-which return closures corresponding to density estimates (see \code{?get_hdr})}
+\item{method}{Density estimator to use, accepts character vector:
+\code{"kde"},\code{"histogram"}, \code{"freqpoly"}, or \code{"mvnorm"}.
+Alternatively accepts functions  which return closures corresponding to density estimates,
+see \code{?get_hdr} or \code{vignette("method", "ggdensity")}.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
@@ -114,9 +86,6 @@ Ignored if \code{method = "histogram"} or \code{method = "freqpoly"}.}
 
 \item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
 range of data.}
-
-\item{parameters}{An optional list of parameters governing the density estimation procedure.
-See \code{?get_hdr} for details.}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -138,33 +107,19 @@ stat stripped of the \code{stat_} prefix (e.g. \code{"count"} rather than
 \code{"stat_count"})}
 }
 \description{
-Perform 2D density estimation, compute and plot the resulting highest density
-regions. \code{geom_hdr()} draws filled regions, and \code{geom_hdr_lines()} draws
-lines outlining the regions. Note, the plotted objects have the probs mapped
-to the \code{alpha} aesthetic by default.
+Perform 2D density estimation, compute and plot the resulting highest density regions.
+\code{geom_hdr()} draws filled regions and \code{geom_hdr_lines()} draws lines outlining the regions.
+Note, the plotted objects have probabilities mapped to the \code{alpha} aesthetic by default.
 }
 \section{Aesthetics}{
- geom_hdr understands the following aesthetics (required
+ \code{geom_hdr()} and \code{geom_hdr_lines()} understand the following aesthetics (required
 aesthetics are in bold):
 \itemize{
 \item \strong{x}
 \item \strong{y}
 \item alpha
 \item color
-\item fill
-\item group
-\item linetype
-\item linewidth
-\item subgroup
-}
-
-geom_hdr_lines understands the following aesthetics (required aesthetics
-are in bold):
-\itemize{
-\item \strong{x}
-\item \strong{y}
-\item alpha
-\item color
+\item fill (only \code{geom_hdr})
 \item group
 \item linetype
 \item linewidth
@@ -176,28 +131,34 @@ are in bold):
 
 
 \describe{ \item{probs}{The probability associated with the highest density region, specified
-by \code{probs}.} }
+by \code{probs} argument.} }
 }
 
 \examples{
-
 # basic simulated data with bivariate normal data and various methods
-# (note: code is commented out in this file to save cran check time)
 df <- data.frame(x = rnorm(1000), y = rnorm(1000))
 p <- ggplot(df, aes(x, y)) + coord_equal()
+
 p + geom_hdr()
 p + geom_hdr(method = "mvnorm")
 p + geom_hdr(method = "freqpoly")
 # p + geom_hdr(method = "histogram")
 
-
 # adding point layers on top to visually assess region estimates
 pts <- geom_point(size = .2, color = "red")
+
 p + geom_hdr() + pts
 p + geom_hdr(method = "mvnorm") + pts
 p + geom_hdr(method = "freqpoly") + pts
 # p + geom_hdr(method = "histogram") + pts
 
+# highest density region boundary lines
+p + geom_hdr_lines()
+p + geom_hdr_lines(method = "mvnorm")
+p + geom_hdr_lines(method = "freqpoly")
+# p + geom_hdr_lines(method = "histogram")
+
+\dontrun{
 
 # 2+ groups - mapping other aesthetics in the geom
 rdata <- function(n, n_groups = 3, radius = 3) {
@@ -211,33 +172,28 @@ rdata <- function(n, n_groups = 3, radius = 3) {
 
 dfc <- rdata(1000, n_groups = 5)
 pf <- ggplot(dfc, aes(x, y, fill = c)) + coord_equal()
+
 pf + geom_hdr()
-if (FALSE) {
-  pf + geom_hdr(method = "mvnorm")
-  pf + geom_hdr(method = "mvnorm", probs = .90, alpha = .5)
-  pf + geom_hdr(method = "histogram")
-  pf + geom_hdr(method = "freqpoly")
-}
+pf + geom_hdr(method = "mvnorm")
+pf + geom_hdr(method = "mvnorm", probs = .90, alpha = .5)
+pf + geom_hdr(method = "histogram")
+pf + geom_hdr(method = "freqpoly")
 
+pc <- ggplot(dfc, aes(x, y, color = c)) +
+ coord_equal() +
+ theme_minimal() +
+ theme(panel.grid.minor = element_blank())
 
-# highest density region boundary lines
-p + geom_hdr_lines()
-p + geom_hdr_lines(method = "mvnorm")
-if (FALSE) {
-  pc <- ggplot(dfc, aes(x, y, color = c)) + coord_equal() + theme_minimal() +
-    theme(panel.grid.minor = element_blank())
-  pc + geom_hdr_lines()
-  pc + geom_hdr_lines(method = "mvnorm")
-}
+pc + geom_hdr_lines()
+pc + geom_hdr_lines(method = "mvnorm")
 
 
 # data with boundaries
-if (FALSE) {
-  ggplot(df, aes(x^2)) + geom_histogram(bins = 30)
-  ggplot(df, aes(x^2)) + geom_histogram(bins = 30, boundary = 0)
-  ggplot(df, aes(x^2, y^2)) + geom_hdr(method = "histogram")
-}
+ggplot(df, aes(x^2)) + geom_histogram(bins = 30)
+ggplot(df, aes(x^2)) + geom_histogram(bins = 30, boundary = 0)
+ggplot(df, aes(x^2, y^2)) + geom_hdr(method = "histogram")
 
+}
 
 }
 \references{

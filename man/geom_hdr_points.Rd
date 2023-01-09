@@ -18,7 +18,6 @@ stat_hdr_points(
   n = 100,
   xlim = NULL,
   ylim = NULL,
-  parameters = list(),
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE
@@ -70,9 +69,10 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
-\item{method}{Density estimator to use, accepts character vector: \code{"kde"},
-\code{"histogram"}, \code{"freqpoly"}, or \code{"mvnorm"}. Alternatively, accepts functions
-which return closures corresponding to density estimates (see \code{?get_hdr})}
+\item{method}{Density estimator to use, accepts character vector:
+\code{"kde"},\code{"histogram"}, \code{"freqpoly"}, or \code{"mvnorm"}.
+Alternatively accepts functions  which return closures corresponding to density estimates,
+see \code{?get_hdr} or \code{vignette("method", "ggdensity")}.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
@@ -80,9 +80,6 @@ which return closures corresponding to density estimates (see \code{?get_hdr})}
 
 \item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
 range of data.}
-
-\item{parameters}{An optional list of parameters governing the density estimation procedure.
-See \code{?get_hdr} for details.}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -106,7 +103,7 @@ stat stripped of the \code{stat_} prefix (e.g. \code{"count"} rather than
 \description{
 Perform 2D density estimation, compute the resulting highest density regions (HDRs),
 and plot the provided data as a scatterplot with points colored according to
-their corresponding HDR
+their corresponding HDR.
 }
 \section{Aesthetics}{
  geom_hdr_points understands the following aesthetics (required
@@ -132,23 +129,27 @@ by \code{probs}.} }
 }
 
 \examples{
-
-# basic simulated data with bivariate normal data and various methods
-# (note: code is commented out in this file to save cran check time)
+set.seed(1)
 df <- data.frame(x = rnorm(500), y = rnorm(500))
-p <- ggplot(df, aes(x, y)) + coord_equal()
+p <- ggplot(df, aes(x, y)) +
+ coord_equal()
+
 p + geom_hdr_points()
-p + geom_hdr_points(method = "mvnorm")
-p + geom_hdr_points(method = "freqpoly")
-# p + geom_hdr_points(method = "histogram")
 
 # setting aes(fill = after_stat(probs)), color = "black", and
 # shape = 21 helps alleviate overplotting:
 p + geom_hdr_points(aes(fill = after_stat(probs)), color = "black", shape = 21, size = 2)
 
 # also works well with geom_hdr_lines():
-p + geom_hdr_lines(aes(color = after_stat(probs)), alpha = 1) +
- geom_hdr_points(aes(fill = after_stat(probs)), color = "black", shape = 21, size = 2)
+p +
+ geom_hdr_lines(
+   aes(color = after_stat(probs)), alpha = 1,
+   xlim = c(-5, 5), ylim = c(-5, 5)
+ ) +
+ geom_hdr_points(
+   aes(fill = after_stat(probs)), color = "black", shape = 21, size = 2,
+   xlim = c(-5, 5), ylim = c(-5, 5)
+ )
 
 }
 \keyword{datasets}

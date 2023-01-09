@@ -73,8 +73,7 @@ to the paired geom/stat.}
 \item{fun}{A function, the joint probability density function, must be
 vectorized in its first two arguments; see examples.}
 
-\item{args}{List of additional arguments passed on to the function \code{fun} as a
-named list.}
+\item{args}{Named list of additional arguments passed on to \code{fun}.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
@@ -130,10 +129,10 @@ by \code{probs}.} }
 }
 
 \examples{
-
 # can plot points colored according to known pdf:
-f <- function(x, y) dexp(x) * dexp(y)
+set.seed(1)
 df <- data.frame(x = rexp(1000), y = rexp(1000))
+f <- function(x, y) dexp(x) * dexp(y)
 
 ggplot(df, aes(x, y)) +
   geom_hdr_points_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))

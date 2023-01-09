@@ -1,16 +1,17 @@
 #' Rug plots of highest density region estimates of univariate pdfs
 #'
-#' TODO
+#' Compute and plot the highest density regions (HDRs) of a univariate pdf.
+#' Note, the plotted objects have probabilities mapped to the `alpha` aesthetic by default.
 #'
-#' @section Aesthetics: geom_hdr_rug understands the following aesthetics (required
+#' @section Aesthetics: `geom_hdr_rug_fun()` understands the following aesthetics (required
 #'   aesthetics are in bold):
 #'
+#'   - x
+#'   - y
 #'   - alpha
 #'   - fill
 #'   - group
 #'   - subgroup
-#'   - x
-#'   - y
 #'
 #' @section Computed variables:
 #'
@@ -19,8 +20,9 @@
 #'
 #' @inheritParams ggplot2::geom_rug
 #' @inheritParams stat_hdr_rug
-#' @param fun_x,fun_y temp
-#' @param args_x,args_y temp
+#' @param fun_x,fun_y Functions, the univariate probability density function for the x- and/or y-axis.
+#'   Must be vectorized in its first argument; see examples.
+#' @param args_x,args_y Named list of additional arguments passed on to `fun_x` and/or `fun_y`.
 #' @name geom_hdr_rug_fun
 #' @rdname geom_hdr_rug_fun
 #'

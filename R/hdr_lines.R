@@ -1,4 +1,5 @@
 #' @rdname geom_hdr
+#' @usage NULL
 #' @export
 stat_hdr_lines <- function(mapping = NULL, data = NULL,
                            geom = "hdr_lines", position = "identity",
@@ -8,7 +9,6 @@ stat_hdr_lines <- function(mapping = NULL, data = NULL,
                            n = 100,
                            xlim = NULL,
                            ylim = NULL,
-                           parameters = list(),
                            na.rm = FALSE,
                            show.legend = NA,
                            inherit.aes = TRUE) {
@@ -26,7 +26,6 @@ stat_hdr_lines <- function(mapping = NULL, data = NULL,
       n = n,
       xlim = xlim,
       ylim = ylim,
-      parameters = parameters,
       na.rm = na.rm,
       ...
     )
@@ -45,6 +44,7 @@ StatHdrLines <- ggproto("StatHdrLines", StatHdr,
 
 
 #' @rdname geom_hdr
+#' @usage NULL
 #' @export
 geom_hdr_lines <- function(mapping = NULL, data = NULL,
                            stat = "hdr_lines", position = "identity",

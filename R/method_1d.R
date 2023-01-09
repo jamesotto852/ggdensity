@@ -1,8 +1,12 @@
-# TODO - document these
-
-
 # methods that return est pdf as closure  ---------------------------------
 
+#' Univariate parametric normal HDR estimator
+#'
+#' temp
+#'
+#' For more details on the use and implementation of the `method_*_1d()` functions,
+#' see `vignette("method", "ggdensity")`.
+#'
 #' @export
 method_norm_1d <- function() {
 
@@ -18,6 +22,15 @@ method_norm_1d <- function() {
 
 # methods that return closures that compute a grid ------------------------
 
+#' Univariate kernel density HDR estimator
+#'
+#' temp
+#'
+#' For more details on the use and implementation of the `method_*_1d()` functions,
+#' see `vignette("method", "ggdensity")`.
+#'
+#' @inheritParams stats::density
+#'
 #' @export
 method_kde_1d <- function(bw = "nrd0", adjust = 1, kernel = "gaussian", weights = NULL) {
 
@@ -50,6 +63,17 @@ method_kde_1d <- function(bw = "nrd0", adjust = 1, kernel = "gaussian", weights 
   }
 }
 
+#' Univariate histogram HDR estimator
+#'
+#' temp
+#'
+#' For more details on the use and implementation of the `method_*_1d()` functions,
+#' see `vignette("method", "ggdensity")`.
+#'
+#' @param bins Number of bins. Defaults to normal reference rule (Scott, pg 59).
+#'
+#' @references Scott, David W. Multivariate Density Estimation (2e), Wiley.
+#'
 #' @export
 method_histogram_1d <- function(bins = NULL) {
 
@@ -78,7 +102,17 @@ method_histogram_1d <- function(bins = NULL) {
   }
 }
 
-
+#' Univariate frequency polygon HDR estimator
+#'
+#' temp
+#'
+#' For more details on the use and implementation of the `method_*_1d()` functions,
+#' see `vignette("method", "ggdensity")`.
+#'
+#' @inheritParams method_histogram_1d
+#'
+#' @references Scott, David W. Multivariate Density Estimation (2e), Wiley.
+#'
 #' @export
 method_freqpoly_1d <- function(bins = NULL) {
 

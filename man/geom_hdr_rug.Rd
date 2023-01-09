@@ -20,8 +20,6 @@ stat_hdr_rug(
   xlim = NULL,
   ylim = NULL,
   n = 512,
-  parameters = list(),
-  parameters_y = list(),
   na.rm = FALSE,
   show.legend = TRUE,
   inherit.aes = TRUE
@@ -76,9 +74,12 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
-\item{method}{temp}
-
-\item{method_y}{temp}
+\item{method, method_y}{Density estimator(s) to use.
+By default \code{method} is used for both x- and y-axis.
+If specified, \code{method_y} will be used for y-axis.
+Accepts character vector: \code{"kde"},\code{"histogram"}, \code{"freqpoly"}, or \code{"norm"}.
+Alternatively accepts functions  which return closures corresponding to density estimates,
+see \code{?get_hdr_1d} or \code{vignette("method", "ggdensity")}.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
@@ -87,11 +88,6 @@ range of data.}
 
 \item{n}{Resolution of grid defined by \code{xlim} and \code{ylim}.
 Ignored if \code{method = "histogram"} or \code{method = "freqpoly"}.}
-
-\item{parameters}{An optional list of parameters governing the density estimation procedure.
-See \code{?get_hdr} for details.}
-
-\item{parameters_y}{temp}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -122,19 +118,19 @@ bottom, and left.}
 }
 \description{
 Perform 1D density estimation, compute and plot the resulting highest density
-regions in a way similar to \code{\link[ggplot2:geom_rug]{ggplot2::geom_rug()}}. Note, the plotted objects have the probs mapped to the \code{alpha}
-aesthetic by default.
+regions in a way similar to \code{\link[ggplot2:geom_rug]{ggplot2::geom_rug()}}.
+Note, the plotted objects have probabilities mapped to the \code{alpha} aesthetic by default.
 }
 \section{Aesthetics}{
  geom_hdr_rug understands the following aesthetics (required
 aesthetics are in bold):
 \itemize{
+\item x
+\item y
 \item alpha
 \item fill
 \item group
 \item subgroup
-\item x
-\item y
 }
 }
 
@@ -146,7 +142,7 @@ by \code{probs}, corresponding to each point.} }
 }
 
 \examples{
-
+set.seed(1)
 df <- data.frame(x = rnorm(100), y = rnorm(100))
 
 # Plot marginal HDRs for bivariate data

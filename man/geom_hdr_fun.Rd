@@ -39,34 +39,6 @@ geom_hdr_fun(
   show.legend = NA,
   inherit.aes = TRUE
 )
-
-stat_hdr_lines_fun(
-  mapping = NULL,
-  data = NULL,
-  geom = "hdr_lines_fun",
-  position = "identity",
-  ...,
-  fun,
-  args = list(),
-  probs = c(0.99, 0.95, 0.8, 0.5),
-  xlim = NULL,
-  ylim = NULL,
-  n = 100,
-  na.rm = FALSE,
-  show.legend = NA,
-  inherit.aes = TRUE
-)
-
-geom_hdr_lines_fun(
-  mapping = NULL,
-  data = NULL,
-  stat = "hdr_lines_fun",
-  position = "identity",
-  ...,
-  na.rm = FALSE,
-  show.legend = NA,
-  inherit.aes = TRUE
-)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}}. If specified and
@@ -106,8 +78,7 @@ to the paired geom/stat.}
 \item{fun}{A function, the joint probability density function, must be
 vectorized in its first two arguments; see examples.}
 
-\item{args}{List of additional arguments passed on to the function \code{fun} as a
-named list.}
+\item{args}{Named list of additional arguments passed on to \code{fun}.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
@@ -137,32 +108,18 @@ stat stripped of the \code{stat_} prefix (e.g. \code{"count"} rather than
 }
 \description{
 Compute and plot the highest density regions (HDRs) of a bivariate pdf.
-\code{geom_hdr_fun()} draws filled regions, and \code{geom_hdr_lines_fun()} draws
-lines outlining the regions. Note, the plotted objects have the probs mapped
-to the \code{alpha} aesthetic by default.
+\code{geom_hdr_fun()} draws filled regions, and \code{geom_hdr_lines_fun()} draws lines outlining the regions.
+Note, the plotted objects have probabilities mapped to the \code{alpha} aesthetic by default.
 }
 \section{Aesthetics}{
- geom_hdr_fun understands the following aesthetics
-(required aesthetics are in bold):
-\itemize{
-\item x
-\item y
-\item alpha
-\item color
-\item fill
-\item group
-\item linetype
-\item linewidth
-\item subgroup
-}
-
-geom_hdr_fun_lines understands the following aesthetics (required
+ \code{geom_hdr_fun()} and \code{geom_hdr_lines_fun()} understand the following aesthetics (required
 aesthetics are in bold):
 \itemize{
 \item x
 \item y
 \item alpha
 \item color
+\item fill (only \code{geom_hdr_fun})
 \item group
 \item linetype
 \item linewidth
@@ -180,8 +137,7 @@ by \code{probs}.} }
 \examples{
 
 f <- function(x, y) dexp(x) * dexp(y)
-ggplot() +
-  geom_hdr_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
+ggplot() + geom_hdr_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
 
 
 # the hdr of a custom parametric model
@@ -215,13 +171,13 @@ f <- function(x, y, th) dchisq(x, df = th[1]) * dchisq(y, df = th[2])
 
 ggplot(data, aes(x, y)) +
   geom_hdr_fun(fun = f, args = list(th = th_hat)) +
-  geom_point(size = .25, color = "red")
+  geom_point(size = .25, color = "red") +
+  xlim(0, 30) + ylim(c(0, 30))
 
 ggplot(data, aes(x, y)) +
-  geom_hdr_fun(fun = f, args = list(th = th_hat)) +
+  geom_hdr_lines_fun(fun = f, args = list(th = th_hat)) +
   geom_point(size = .25, color = "red") +
-  xlim(0, 40) + ylim(c(0, 40))
-
+  xlim(0, 30) + ylim(c(0, 30))
 
 
 }

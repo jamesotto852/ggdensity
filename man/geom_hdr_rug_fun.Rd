@@ -76,9 +76,10 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
-\item{fun_x, fun_y}{temp}
+\item{fun_x, fun_y}{Functions, the univariate probability density function for the x- and/or y-axis.
+Must be vectorized in its first argument; see examples.}
 
-\item{args_x, args_y}{temp}
+\item{args_x, args_y}{Named list of additional arguments passed on to \code{fun_x} or \code{fun_y}.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
@@ -116,18 +117,19 @@ bottom, and left.}
 \item{length}{A \code{\link[grid:unit]{grid::unit()}} object that sets the length of the rug lines. Use scale expansion to avoid overplotting of data.}
 }
 \description{
-TODO
+Compute and plot the highest density regions (HDRs) of a univariate pdf.
+Note, the plotted objects have probabilities mapped to the \code{alpha} aesthetic by default.
 }
 \section{Aesthetics}{
- geom_hdr_rug understands the following aesthetics (required
+ \code{geom_hdr_rug_fun()} understands the following aesthetics (required
 aesthetics are in bold):
 \itemize{
+\item x
+\item y
 \item alpha
 \item fill
 \item group
 \item subgroup
-\item x
-\item y
 }
 }
 

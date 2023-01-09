@@ -37,5 +37,4 @@ Defaults to \code{TRUE}, although it is computationally expensive.}
 \description{
 TODO - fill in with how to to use \code{method} as a string, function factory, and how to use \code{fun}.
 Likely will need several sections to describe various uses.
-Also need to expand on \code{parameters} parameter.
 }

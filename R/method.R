@@ -1,7 +1,25 @@
-# TODO - document these
-
 # methods that return est pdf as closure  ---------------------------------
 
+#' Bivariate parametric normal HDR estimator
+#'
+#' temp
+#'
+#' For more details on the use and implementation of the `method_*()` functions,
+#' see `vignette("method", "ggdensity")`.
+#'
+#' @examples
+#' # Normal estimator is useful when an assumption of normality is appropriate
+#' set.seed(1)
+#' df <- data.frame(x = rnorm(1e3), y = rnorm(1e3))
+#'
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr(method = method_mvnorm(), xlim = c(-4, 4), ylim = c(-4, 4)) +
+#'   geom_point(size = 1)
+#'
+#' # Can also be used with `get_hdr()` for numerical summary of HDRs
+#' get_hdr(df, method = method_mvnorm())
+#'
+#'
 #' @export
 method_mvnorm <- function() {
 
@@ -24,24 +42,45 @@ method_mvnorm <- function() {
 
 }
 
-#' @export
-method_mvexp <- function() {
-
-  function(data) {
-
-    lambda_hat <- c(mean(data$x), mean(data$y))
-    lambda_hat <- 1/lambda_hat
-
-    function(x, y) {
-      dexp(x, lambda_hat[1]) * dexp(y, lambda_hat[2])
-    }
-
-  }
-
-}
 
 # methods that return closures that compute a grid ------------------------
 
+#' Bivariate kernel density HDR estimator
+#'
+#' temp
+#'
+#' For more details on the use and implementation of the `method_*()` functions,
+#' see `vignette("method", "ggdensity")`.
+#'
+#' @inheritParams ggplot2::stat_density2d
+#'
+#' @examples
+#' set.seed(1)
+#' df <- data.frame(x = rnorm(1e3, sd = 3), y = rnorm(1e3, sd = 3))
+#'
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr(method = method_kde()) +
+#'   geom_point(size = 1)
+#'
+#' # The defaults of `method_kde()` are the same as the estimator for `ggplot2::geom_density_2d()`
+#' ggplot(df, aes(x, y)) +
+#'   geom_density_2d_filled() +
+#'   geom_hdr_lines(method = method_kde(), probs = seq(.1, .9, by = .1)) +
+#'   theme(legend.position = "none")
+#'
+#' # The bandwidth of the estimator can be set directly with `h` or scaled with `adjust`
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr(method = method_kde(h = 1)) +
+#'   geom_point(size = 1)
+#'
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr(method = method_kde(adjust = 1/2)) +
+#'   geom_point(size = 1)
+#'
+#' # Can also be used with `get_hdr()` for numerical summary of HDRs
+#' get_hdr(df, method = method_kde())
+#'
+#'
 #' @export
 method_kde <- function(h = NULL, adjust = c(1, 1)) {
 
@@ -66,8 +105,52 @@ method_kde <- function(h = NULL, adjust = c(1, 1)) {
   }
 }
 
+#' Bivariate histogram HDR estimator
+#'
+#' temp
+#'
+#' For more details on the use and implementation of the `method_*()` functions,
+#' see `vignette("method", "ggdensity")`.
+#'
+#' @param bins Number of bins along each axis.
+#'   Either a vector of length 2 or a scalar value which is recycled for both dimensions.
+#'   Defaults to normal reference rule (Scott, pg 87).
+#' @param smooth If `TRUE`, HDRs are smoothed by the marching squares algorithm.
+#' @param nudgex,nudgey Horizontal and vertical rules for choosing witness points when `smooth == TRUE`.
+#'   Accepts character vector: `"left"`, `"none"`, `"right"` (`nudgex`) or  `"down"`, `"none"`, `"up"` (`nudgey`).
+#'
+#' @references Scott, David W. Multivariate Density Estimation (2e), Wiley.
+#'
+#' @examples
+#' # Histogram estimators can be useful when data has boundary constraints
+#' set.seed(1)
+#' df <- data.frame(x = rexp(1e3), y = rexp(1e3))
+#'
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr(method = method_histogram()) +
+#'   geom_point(size = 1)
+#'
+#' # The resolution of the histogram estimator can be set via `bins`
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr(method = method_histogram(bins = c(8, 25))) +
+#'   geom_point(size = 1)
+#'
+#' # By setting `smooth = TRUE`, we can graphically smooth the "blocky" HDRs
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr(method = method_histogram(smooth = TRUE)) +
+#'   geom_point(size = 1)
+#'
+#' # However, we need to set `nudgex` and `nudgey` to align the HDRs correctly
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr(method = method_histogram(smooth = TRUE, nudgex = "left", nudgey = "down")) +
+#'   geom_point(size = 1)
+#'
+#' # Can also be used with `get_hdr()` for numerical summary of HDRs
+#' get_hdr(df, method = method_histogram())
+#'
+#'
 #' @export
-method_histogram <- function(bins = NULL, smooth = "false", nudgex = "none", nudgey = "none") {
+method_histogram <- function(bins = NULL, smooth = FALSE, nudgex = "none", nudgey = "none") {
 
   # n is an argument, but it is not used
   function(data, n, rangex, rangey) {
@@ -157,9 +240,6 @@ method_histogram <- function(bins = NULL, smooth = "false", nudgex = "none", nud
       # k*k points per histogram footprint
       # Higher values of k -> better visuals, more computationally expensive
 
-      # Sensible default for n near 1e4:
-      # k <- 50
-
       # Currently determining k heuristically - not based on any theoretical results
       # The necessary value of k seems to be O((bins[1]*bins[2])^(-1/3))
       # found constant which yields k = 50 for bins[1]*bins[2] = 10^2
@@ -182,10 +262,8 @@ method_histogram <- function(bins = NULL, smooth = "false", nudgex = "none", nud
       #                3, 3, 4, 4,
       #                3, 3, 4, 4
 
-
       # m <- matrix(df$fhat, nrow = bins[2], byrow = TRUE)
       # ddf$fhat <- as.vector(kronecker(m, matrix(1, k, k)))
-
 
       fhat <- split(df$fhat, factor(rep(1:bins[2], each = bins[1]))) # split into rows
       fhat <- lapply(fhat, function(x) rep(x, each = k)) # repeat within rows (horizontal)
@@ -201,6 +279,34 @@ method_histogram <- function(bins = NULL, smooth = "false", nudgex = "none", nud
   }
 }
 
+#' Bivariate frequency polygon HDR estimator
+#'
+#' temp
+#'
+#' For more details on the use and implementation of the `method_*()` functions,
+#' see `vignette("method", "ggdensity")`.
+#'
+#' @inheritParams method_histogram
+#'
+#' @references Scott, David W. Multivariate Density Estimation (2e), Wiley.
+#'
+#' @examples
+#' set.seed(1)
+#' df <- data.frame(x = rnorm(1e3), y = rnorm(1e3))
+#'
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr(method = method_freqpoly()) +
+#'   geom_point(size = 1)
+#'
+#' # The resolution of the frequency polygon estimator can be set via `bins`
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr(method = method_freqpoly(bins = c(8, 25))) +
+#'   geom_point(size = 1)
+#'
+#' # Can also be used with `get_hdr()` for numerical summary of HDRs
+#' get_hdr(df, method = method_freqpoly())
+#'
+#'
 #' @export
 method_freqpoly <- function(bins = NULL) {
 
