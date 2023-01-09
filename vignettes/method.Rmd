@@ -31,7 +31,7 @@ Almost every function in **ggdensity** accepts a `method` argument---this is tru
 as well as `get_hdr()` and `get_hdr_1d()`.
 This vignette summarizes the many ways in which the `method` argument can be specified; 
 first looking at it from a more basic perspective,
-then from the perspective of a developer wanting to implement their own custom estimators.
+then from the perspective of a developer wanting to implement additional estimators.
 
 ## Using **ggdensity**'s `method_*()` functions
 
@@ -43,7 +43,7 @@ library("ggdensity")
 
 theme_set(theme_minimal(8))
 theme_update(
-  # Suppressing legend for readability
+  # Suppressing legends for readability
   legend.position = "none"
 )
 ```
@@ -182,8 +182,8 @@ Again, for details on the above output of `get_hdr_1d()`, see `?get_hdr_1d`.
 
 ## A detailed look at `method_*()` functions
 
-Now that we understand the ways in which `method` can be specified,
-let's look at what the `method_*()` functions are doing.
+Now that we understand the ways in which `method` can be specified
+let's look at the internals of the `method_*()` functions.
 Note: the implementations discussed in this section depend heavily on topics in functional programming,
 especially 
 [closures](https://adv-r.hadley.nz/environments.html?q=closures#function-environments) and
@@ -193,8 +193,10 @@ linked chapters from Hadley Wickham's *Advanced R* are a great place to start.
 
 Looking at the definition of `method_kde()`, we see that it is a function of `h` and `adjust`,
 returning a closure with arguments `data`, `n`, `rangex`, and `rangey`.
-The closure estimates the density by passing the `x` and `y` columns of `data` to `MASS::kde2d()`, returning the estimated density evaluated on the grid defined by the other parameters.
-This closure is what `geom_hdr()` expects as its `method` argument.
+The closure estimates passes the `x` and `y` columns of `data` to `MASS::kde2d()`, 
+returning the estimated density evaluated on a grid with columns `x`, `y`, and `fhat`.
+This closure is what `geom_hdr()` expects as its `method` argument,
+and is how the HDRs are estimated (via `get_hdr()`).
 
 ```{r, collapse = TRUE, comment = ""}
 method_kde
@@ -220,10 +222,10 @@ method_mvnorm
 ```
 
 To summarize each of the above cases:
-in the first, the `method_*()` function returns a closure with arguments 
-`data`, `n`, `rangex`, and `rangey` which itself returns the estimated density evaluated on a grid;
-in the second, the `method_*()` function returns a closure with a single argument, `data`, 
-which itself returns a closure with arguments `x` and `y`, representing the estimated density.
+in the first example, the `method_*()` function returned a closure with arguments 
+`data`, `n`, `rangex`, and `rangey` which itself returned the estimated density evaluated on a grid;
+in the second, the `method_*()` function returned a closure with a single argument, `data`, 
+which itself returned a closure with arguments `x` and `y`, representing the estimated density explicitly.
 In both cases, the `method_*()` function can have any number of parameters governing the density estimation procedure.
 
 These are the two ways the `method` argument may be specified.
@@ -267,7 +269,7 @@ ggplot(df, aes(x, y)) +
 
 If we transform our data to have non-zero covariance
 we still see the major and minor axes of the contours coincide exactly with the plot axes---exactly
-what we would expect with this incorrectly specified constrained model.
+what we would expect with this (incorrectly) constrained model.
 
 ```{r}
 A <- matrix(c(
@@ -340,20 +342,71 @@ ggplot(df_rot, aes(x, y)) +
 Notice, neither of these approaches involve arguments to `method_mvnorm_ind()`.
 Internally, the closure returned by `method_mvnorm_ind()` is used by `get_hdr()`,
 along with information from the `scales` associated with the `ggplot` object.
+It is the `scales` that need adjusting, not anything related to the `method` argument.
 
 
-### Implementing `method_grid_random()`
+### Implementing `method_random()`
 
-TODO
+To illustrate the other case, in which the object returned by the closure is the estimated density evaluated on a grid, we implement `method_random()`.
+This "estimates" a density on a grid with random numbers from `runif()`
+(this toy "density estimator" is useless; notice the `data` argument is not being used to determine `df_grid$fhat`).
 
+```{r}
+method_random <- function() {
+  
+  function(data, n, rangex, rangey) {
+    
+    df_grid <- expand.grid(
+      x = seq(rangex[1], rangex[2], length.out = n),
+      y = seq(rangey[1], rangey[2], length.out = n)
+    )
+    
+    df_grid$fhat <- runif(n^2)
+    
+    df_grid
+    
+  }  
+  
+}
+
+```
+
+This simple example shows the general structure of `method_*()` functions which deal with gridded density estimates.
+The returned closure has additional arguments `n`, `rangex`, and `rangey` which define the grid;
+and the closure returns the grid as a `data.frame` with columns `x`, `y`, and `fhat`, where `fhat` is the (potentially unnormalized) density estimate.
+
+As expected, the HDRs resulting from this method are just random noise.
+
+```{r}
+ggplot(df, aes(x, y)) +
+  geom_hdr(method = method_random())
+```
 
 ## The `method_*_1d()` functions
 
-TODO
+We saw before that **ggdensity** uses `method_*_1d()` functions for the estimation of 1-dimensional densities.
+The internals of these functions are very similar to the `method_*()` functions,
+the only differences are slight changes to the arguments and return values of the returned closures.
 
+Looking at the definition of `method_kde_1d()`, we see the returned closure has arguments `x`, `n`, and `range`.
+This is very similar to `method_kde()`, the only difference is we are now dealing with univariate data:
+the vector argument `x` is used instead of `data`, and we have a single `range` parameter instead of `rangex` and `rangey`.
+Similarly, the closure now returns the estimated density evaluated on a univariate grid, with columns `x` and `fhat` instead of the bivariate grid with columns `x`, `y`, and `fhat`.
+Finally, see that `method_kde_1d()` accepts several arguments governing the density estimation procedure just like `method_kde()`.
 
+```{r, collapse = TRUE, comment = ""}
+method_kde_1d
+```
 
+Estimated univariate densities can also be represented explicitly, as illustrated by `method_norm_1d()`.
+Comparing this to the previously discussed `method_mvnorm()` we see that little has changed:
+the closure is now a function of a vector `x` instead of `data` and returns a function of one variable (`x`) instead of two (`x` and `y`).
+```{r, collapse = TRUE, comment = ""}
+method_norm_1d
+```
 
+Additional `method_*_1d()` functions can be implemented in the same way as the 2-dimensional `method_*()` functions,
+so long as the returned closure is structured in one of the two ways we have seen here.
 
 
 
