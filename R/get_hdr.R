@@ -1,15 +1,9 @@
-# parameters:
-  # kde: h, adjust
-  # histogram: bins, nudgex, nudgey, smooth
-  # freqpoly: bins
-  # mvnorm:
-
 #' Computing the highest density regions of a 2D density
 #'
-#' TODO - fill in with how to to use `method` as a string, function factory, and how to use `fun`.
-#' Likely will need several sections to describe various uses.
+#' temp
 #'
-#' @param method temp
+#' @param method Either a character (`"kde"`, `"mvnorm"`, `"histogram"`, `"freqpoly"`, or `"fun"`) or `method_*()` function.
+#'   See the "The `method` argument" section below for details.
 #' @param data A data frame with columns `x` and `y`
 #' @param probs Probabilities to compute highest density regions for.
 #' @param rangex,rangey Range to compute and draw regions.
@@ -17,7 +11,79 @@
 #' @param hdr_membership Should HDR membership of data points be calculated?
 #'   Defaults to `TRUE`, although it is computationally expensive.
 #' @param fun Optional, a joint probability density function, must be vectorized in its first two arguments.
+#'   See the "The `fun` argument" section below for details.
 #' @param args Optional, a list of arguments to be provided to `fun`.
+#'
+#' @section The `method` argument:
+#' The density estimator used to estimate the HDRs is specified with the `method` argument.
+#' The simplest way to specify an estimator is to provide a character value to `method`,
+#' for example `method = "kde"` specifies a kernel density estimator.
+#' However, this specification is limited to the default behavior of the estimator.
+#'
+#' Instead, it is possible to provide a function call, for example: `method = method_kde()`.
+#' In many cases, these functions accept parameters governing the density estimation procedure.
+#' Here, `method_kde()` accepts parameters `h` and `adjust`, both related to the kernel's bandwidth.
+#' For details, see `?method_kde`.
+#' Every method of bivariate density estimation implemented has such corresponding `method_*()` function,
+#' each with an associated help page.
+#'
+#' Note: `geom_hdr()` and other layer functions also have `method` arguments which behave in the same way.
+#' For more details on the use and implementation of the `method_*()` functions,
+#' see `vignette("method", "ggdensity")`.
+#'
+#' @section The `fun` argument:
+#' If `method` is set to `"fun"`, `get_hdr()` expects a bivariate probability
+#' density function to be specified with the `fun` argument.
+#' It is required that `fun` be a function of at least two arguments (`x` and `y`).
+#' Beyond these first two arguments, `fun` can have arbitrarily many arguments;
+#' these can be set in `get_hdr()` as a named list with `args`.
+#'
+#' Note: `get_hdr()` requires that `fun` be vectorized in `x` and `y`.
+#' For an example of an appropriate choice of `fun`, see the final example below.
+#'
+#' @returns
+#'
+#' `get_hdr` returns a list with elements `df_est` (`data.frame`), `breaks` (named `numeric`), and `data` (`data.frame`).
+#'
+#' * `df_est`: the estimated HDRs and density evaluated on the grid defined by `rangex`, `rangey`, and `n`.
+#' The column of estimated HDRs (`$hdr`) is a numeric vector with values from `probs`.
+#' The columns `$fhat` and `$fhat_discretized` correspond to the estimated density
+#' on the original scale and normalized to sum to 1, respectively.
+#'
+#' * `breaks`: the heights of the estimated density (`$fhat`) corresponding to the HDRs specified by `probs`.
+#' Will always have additional element `Inf` representing the cutoff for the 100% HDR.
+#'
+#' * `data`: the original data provided in the `data` argument.
+#' If `hdr_membership` is set to `TRUE`, this includes a column (`$hdr_membership`)
+#' with the HDR corresponding to each data point.
+#'
+#' @examples
+#' df <- data.frame(x = rnorm(1e3), y = rnorm(1e3))
+#'
+#' # two ways to specify `method`
+#' get_hdr(df, method = "kde")
+#' get_hdr(df, method = method_kde())
+#'
+#' \dontrun{
+#'
+#' # if parenthesis are omitted, `get_hdr()` errors
+#' get_hdr(df, method = method_kde)
+#' }
+#'
+#' # estimate different HDRs with `probs`
+#' get_hdr(df, method = method_kde(), probs = c(.975, .6, .2))
+#'
+#' # adjust estimator parameters with arguments to `method_kde()`
+#' get_hdr(df, method = method_kde(h = 1))
+#'
+#' # parametric normal estimator of density
+#' get_hdr(df, method = "mvnorm")
+#' get_hdr(df, method = method_mvnorm())
+#'
+#' # "population" HDRs of specified bivariate pdf with `method = "fun"`
+#' f <- function(x, y, sd_x = 1, sd_y = 1) dnorm(x, sd = sd_x) * dnorm(y, sd = sd_y)
+#' get_hdr(method = "fun", fun = f, rangex = c(-5, 5), rangey = c(-5, 5))
+#' get_hdr(method = "fun", fun = f, args = list(sd_x = .5, sd_y = .5), rangex = c(-5, 5), rangey = c(-5, 5))
 #'
 #' @export
 get_hdr <- function(data = NULL, method = "kde", probs = c(.99, .95, .8, .5), n = 100, rangex = NULL, rangey = NULL, hdr_membership = TRUE, fun, args = list()) {

@@ -38,12 +38,12 @@
 #' @import ggplot2
 #'
 #' @examples
-#'
+#' # hdrs of the bivariate exponential
 #' f <- function(x, y) dexp(x) * dexp(y)
 #' ggplot() + geom_hdr_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
 #'
 #'
-#' # the hdr of a custom parametric model
+#' # hdrs of a custom parametric model
 #'
 #' # generate example data
 #' n <- 1000

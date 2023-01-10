@@ -19,7 +19,8 @@ get_hdr(
 \arguments{
 \item{data}{A data frame with columns \code{x} and \code{y}}
 
-\item{method}{temp}
+\item{method}{Either a character (\code{"kde"}, \code{"mvnorm"}, \code{"histogram"}, \code{"freqpoly"}, or \code{"fun"}) or \verb{method_*()} function.
+See the "The \code{method} argument" section below for details.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
@@ -30,11 +31,85 @@ get_hdr(
 \item{hdr_membership}{Should HDR membership of data points be calculated?
 Defaults to \code{TRUE}, although it is computationally expensive.}
 
-\item{fun}{Optional, a joint probability density function, must be vectorized in its first two arguments.}
+\item{fun}{Optional, a joint probability density function, must be vectorized in its first two arguments.
+See the "The \code{fun} argument" section below for details.}
 
 \item{args}{Optional, a list of arguments to be provided to \code{fun}.}
 }
+\value{
+\code{get_hdr} returns a list with elements \code{df_est} (\code{data.frame}), \code{breaks} (named \code{numeric}), and \code{data} (\code{data.frame}).
+\itemize{
+\item \code{df_est}: the estimated HDRs and density evaluated on the grid defined by \code{rangex}, \code{rangey}, and \code{n}.
+The column of estimated HDRs (\verb{$hdr}) is a numeric vector with values from \code{probs}.
+The columns \verb{$fhat} and \verb{$fhat_discretized} correspond to the estimated density
+on the original scale and normalized to sum to 1, respectively.
+\item \code{breaks}: the heights of the estimated density (\verb{$fhat}) corresponding to the HDRs specified by \code{probs}.
+Will always have additional element \code{Inf} representing the cutoff for the 100\% HDR.
+\item \code{data}: the original data provided in the \code{data} argument.
+If \code{hdr_membership} is set to \code{TRUE}, this includes a column (\verb{$hdr_membership})
+with the HDR corresponding to each data point.
+}
+}
 \description{
-TODO - fill in with how to to use \code{method} as a string, function factory, and how to use \code{fun}.
-Likely will need several sections to describe various uses.
+temp
+}
+\section{The \code{method} argument}{
+
+The density estimator used to estimate the HDRs is specified with the \code{method} argument.
+The simplest way to specify an estimator is to provide a character value to \code{method},
+for example \code{method = "kde"} specifies a kernel density estimator.
+However, this specification is limited to the default behavior of the estimator.
+
+Instead, it is possible to provide a function call, for example: \code{method = method_kde()}.
+In many cases, these functions accept parameters governing the density estimation procedure.
+Here, \code{method_kde()} accepts parameters \code{h} and \code{adjust}, both related to the kernel's bandwidth.
+For details, see \code{?method_kde}.
+Every method of bivariate density estimation implemented has such corresponding \verb{method_*()} function,
+each with an associated help page.
+
+Note: \code{geom_hdr()} and other layer functions also have \code{method} arguments which behave in the same way.
+For more details on the use and implementation of the \verb{method_*()} functions,
+see \code{vignette("method", "ggdensity")}.
+}
+
+\section{The \code{fun} argument}{
+
+If \code{method} is set to \code{"fun"}, \code{get_hdr()} expects a bivariate probability
+density function to be specified with the \code{fun} argument.
+It is required that \code{fun} be a function of at least two arguments (\code{x} and \code{y}).
+Beyond these first two arguments, \code{fun} can have arbitrarily many arguments;
+these can be set in \code{get_hdr()} as a named list with \code{args}.
+
+Note: \code{get_hdr()} requires that \code{fun} be vectorized in \code{x} and \code{y}.
+For an example of an appropriate choice of \code{fun}, see the final example below.
+}
+
+\examples{
+df <- data.frame(x = rnorm(1e3), y = rnorm(1e3))
+
+# two ways to specify `method`
+get_hdr(df, method = "kde")
+get_hdr(df, method = method_kde())
+
+\dontrun{
+
+# if parenthesis are omitted, `get_hdr()` errors
+get_hdr(df, method = method_kde)
+}
+
+# estimate different HDRs with `probs`
+get_hdr(df, method = method_kde(), probs = c(.975, .6, .2))
+
+# adjust estimator parameters with arguments to `method_kde()`
+get_hdr(df, method = method_kde(h = 1))
+
+# parametric normal estimator of density
+get_hdr(df, method = "mvnorm")
+get_hdr(df, method = method_mvnorm())
+
+# "population" HDRs of specified bivariate pdf with `method = "fun"`
+f <- function(x, y, sd_x = 1, sd_y = 1) dnorm(x, sd = sd_x) * dnorm(y, sd = sd_y)
+get_hdr(method = "fun", fun = f, rangex = c(-5, 5), rangey = c(-5, 5))
+get_hdr(method = "fun", fun = f, args = list(sd_x = .5, sd_y = .5), rangex = c(-5, 5), rangey = c(-5, 5))
+
 }

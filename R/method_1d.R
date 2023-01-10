@@ -32,7 +32,7 @@ method_norm_1d <- function() {
 #' @inheritParams stats::density
 #'
 #' @export
-method_kde_1d <- function(bw = "nrd0", adjust = 1, kernel = "gaussian", weights = NULL) {
+method_kde_1d <- function(bw = "nrd0", adjust = 1, kernel = "gaussian", weights = NULL, window = kernel) {
 
   function(x, n, range) {
 
@@ -46,10 +46,11 @@ method_kde_1d <- function(bw = "nrd0", adjust = 1, kernel = "gaussian", weights 
 
     dens <- stats::density(
       x,
-      weights = weights,
       bw = bw,
       adjust = adjust,
       kernel = kernel,
+      weights = weights,
+      window = window,
       n = n,
       from = range[1],
       to = range[2]

@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_hdr_1d.R
 \name{get_hdr_1d}
 \alias{get_hdr_1d}
-\title{Computing the highest density regions of a 2D density}
+\title{Computing the highest density regions of a 1D density}
 \usage{
 get_hdr_1d(
   x = NULL,
@@ -18,7 +18,8 @@ get_hdr_1d(
 \arguments{
 \item{x}{A vector of data}
 
-\item{method}{temp}
+\item{method}{Either a character (\code{"kde"}, \code{"norm"}, \code{"histogram"}, \code{"freqpoly"}, or \code{"fun"}) or \verb{method_*_1d()} function.
+See the "The \code{method} argument" section below for details.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
@@ -29,12 +30,86 @@ get_hdr_1d(
 \item{hdr_membership}{Should HDR membership of data points be calculated?
 Defaults to \code{TRUE}, although it is computationally expensive.}
 
-\item{fun}{Optional, a probability density function, must be vectorized in its first argument.}
+\item{fun}{Optional, a probability density function, must be vectorized in its first argument.
+See the "The \code{fun} argument" section below for details.}
 
 \item{args}{Optional, a list of arguments to be provided to \code{fun}.}
 }
+\value{
+\code{get_hdr_1d} returns a list with elements \code{df_est} (\code{data.frame}), \code{breaks} (named \code{numeric}), and \code{data} (\code{data.frame}).
+\itemize{
+\item \code{df_est}: the estimated HDRs and density evaluated on the grid defined by \code{range} and \code{n}.
+The column of estimated HDRs (\verb{$hdr}) is a numeric vector with values from \code{probs}.
+The columns \verb{$fhat} and \verb{$fhat_discretized} correspond to the estimated density
+on the original scale and normalized to sum to 1, respectively.
+\item \code{breaks}: the heights of the estimated density (\verb{$fhat}) corresponding to the HDRs specified by \code{probs}.
+Will always have additional element \code{Inf} representing the cutoff for the 100\% HDR.
+\item \code{data}: the original data provided in the \code{data} argument.
+If \code{hdr_membership} is set to \code{TRUE}, this includes a column (\verb{$hdr_membership})
+with the HDR corresponding to each data point.
+}
+}
 \description{
-TODO - fill in with how to to use \code{method} as a string, function factory, and how to use \code{fun}.
-Likely will need several sections to describe various uses.
-Also need to expand on \code{parameters} parameter.
+temp
+}
+\section{The \code{method} argument}{
+
+The density estimator used to estimate the HDRs is specified with the \code{method} argument.
+The simplest way to specify an estimator is to provide a character value to \code{method},
+for example \code{method = "kde"} specifies a kernel density estimator.
+However, this specification is limited to the default behavior of the estimator.
+
+Instead, it is possible to provide a function call, for example: \code{method = method_kde_1d()}.
+This is slightly different from the function calls provided in \code{get_hdr()}, note the \verb{_1d} suffix.
+In many cases, these functions accept parameters governing the density estimation procedure.
+Here, \code{method_kde_1d()} accepts several parameters related to the choice of kernel.
+For details, see \code{?method_kde_1d}.
+Every method of univariate density estimation implemented has such corresponding \verb{method_*_1d()} function,
+each with an associated help page.
+
+Note: \code{geom_hdr_rug()} and other layer functions also have \code{method} arguments which behave in the same way.
+For more details on the use and implementation of the \verb{method_*_1d()} functions,
+see \code{vignette("method", "ggdensity")}.
+}
+
+\section{The \code{fun} argument}{
+
+If \code{method} is set to \code{"fun"}, \code{get_hdr_1d()} expects a bivariate probability
+density function to be specified with the \code{fun} argument.
+It is required that \code{fun} be a function of at least one arguments (\code{x}).
+Beyond this first argument, \code{fun} can have arbitrarily many arguments;
+these can be set in \code{get_hdr_1d()} as a named list with \code{args}.
+
+Note: \code{get_hdr_1d()} requires that \code{fun} be vectorized in \code{x}.
+For an example of an appropriate choice of \code{fun}, see the final example below.
+}
+
+\examples{
+x <- rnorm(1e3)
+
+# two ways to specify `method`
+get_hdr_1d(x, method = "kde")
+get_hdr_1d(x, method = method_kde_1d())
+
+\dontrun{
+
+# if parenthesis are omitted, `get_hdr_1d()` errors
+get_hdr_1d(df, method = method_kde_1d)
+
+# if the `_1d` suffix is omitted, `get_hdr_1d()` errors
+get_hdr_1d(x, method = method_kde())
+}
+
+# adjust estimator parameters with arguments to `method_kde_1d()`
+get_hdr_1d(x, method = method_kde_1d(kernel = "triangular"))
+
+# estimate different HDRs with `probs`
+get_hdr_1d(x, method = method_kde_1d(), probs = c(.975, .6, .2))
+
+# "population" HDRs of specified univariate pdf with `method = "fun"`
+f <- function(x, sd = 1) dnorm(x, sd = sd)
+get_hdr_1d(method = "fun", fun = f, range = c(-5, 5))
+get_hdr_1d(method = "fun", fun = f, range = c(-5, 5), args = list(sd = .5))
+
+
 }

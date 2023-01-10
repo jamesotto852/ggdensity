@@ -4,7 +4,13 @@
 \alias{method_kde_1d}
 \title{Univariate kernel density HDR estimator}
 \usage{
-method_kde_1d(bw = "nrd0", adjust = 1, kernel = "gaussian", weights = NULL)
+method_kde_1d(
+  bw = "nrd0",
+  adjust = 1,
+  kernel = "gaussian",
+  weights = NULL,
+  window = kernel
+)
 }
 \arguments{
 \item{bw}{the smoothing bandwidth to be used.  The kernels are scaled
@@ -25,6 +31,18 @@ method_kde_1d(bw = "nrd0", adjust = 1, kernel = "gaussian", weights = NULL)
 \item{adjust}{the bandwidth used is actually \code{adjust*bw}.
     This makes it easy to specify values like \sQuote{half the default}
     bandwidth.}
+
+\item{kernel, window}{a character string giving the smoothing kernel
+    to be used. This must partially match one of \code{"gaussian"},
+    \code{"rectangular"}, \code{"triangular"}, \code{"epanechnikov"},
+    \code{"biweight"}, \code{"cosine"} or \code{"optcosine"}, with default
+    \code{"gaussian"}, and may be abbreviated to a unique prefix (single
+    letter).
+
+    \code{"cosine"} is smoother than \code{"optcosine"}, which is the
+    usual \sQuote{cosine} kernel in the literature and almost MSE-efficient.
+    However, \code{"cosine"} is the version used by S.
+  }
 
 \item{weights}{numeric vector of non-negative observation weights,
     hence of same length as \code{x}. The default \code{NULL} is

@@ -1,6 +1,6 @@
 #' Rug plots of highest density region estimates of univariate pdfs
 #'
-#' Compute and plot the highest density regions (HDRs) of a univariate pdf.
+#' Compute and plot the highest density regions (HDRs) of specified univariate pdf(s).
 #' Note, the plotted objects have probabilities mapped to the `alpha` aesthetic by default.
 #'
 #' @section Aesthetics: `geom_hdr_rug_fun()` understands the following aesthetics (required
@@ -21,15 +21,41 @@
 #' @inheritParams ggplot2::geom_rug
 #' @inheritParams stat_hdr_rug
 #' @param fun_x,fun_y Functions, the univariate probability density function for the x- and/or y-axis.
-#'   Must be vectorized in its first argument; see examples.
+#'   First argument must be vectorized.
 #' @param args_x,args_y Named list of additional arguments passed on to `fun_x` and/or `fun_y`.
 #' @name geom_hdr_rug_fun
 #' @rdname geom_hdr_rug_fun
 #'
 #' @examples
+#' # plotting data with exponential marginals
+#' df <- data.frame(x = rexp(1e3), y = rexp(1e3))
 #'
-#' # TODO
+#' ggplot(df, aes(x, y)) +
+#'   geom_hdr_rug_fun(fun_x = dexp, fun_y = dexp) +
+#'   geom_point(size = .5) +
+#'   coord_fixed()
 #'
+#' # without data/aesthetic mappings
+#' ggplot() +
+#'   geom_hdr_rug_fun(fun_x = dexp, fun_y = dexp, xlim = c(0, 7), ylim = c(0, 7)) +
+#'   coord_fixed()
+#'
+#'
+#' # plotting univariate normal data, estimating mean and sd
+#' df <- data.frame(x = rnorm(1e4, mean = 1, sd = 3))
+#'
+#' # estimating parameters
+#' mu_hat <- mean(df$x)
+#' sd_hat <- sd(df$x)
+#'
+#' ggplot(df, aes(x)) +
+#'   geom_hdr_rug_fun(fun_x = dnorm, args_x = list(mean = mu_hat, sd = sd_hat)) +
+#'   geom_density()
+#'
+#' # equivalent to `method_norm_1d()` with `geom_hdr_rug()`
+#' ggplot(df, aes(x)) +
+#'   geom_hdr_rug(method = method_norm_1d()) +
+#'   geom_density()
 NULL
 
 
