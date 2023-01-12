@@ -156,7 +156,7 @@ ggplot(df, aes(x, y)) +
   geom_hdr_rug() +
   coord_fixed()
 
-# Or, plot marginal HDR for univariate data
+# Plot HDR for univariate data
 ggplot(df, aes(x)) +
   geom_density() +
   geom_hdr_rug()
@@ -165,7 +165,7 @@ ggplot(df, aes(y = y)) +
   geom_density() +
   geom_hdr_rug()
 
-# Can specify location of marginal HDRs as in ggplot2::geom_rug(),
+# Specify location of marginal HDRs as in ggplot2::geom_rug()
 ggplot(df, aes(x, y)) +
   geom_hdr() +
   geom_hdr_rug(sides = "tr", outside = TRUE) +

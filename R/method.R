@@ -2,7 +2,8 @@
 
 #' Bivariate parametric normal HDR estimator
 #'
-#' temp
+#' Function used to specify bivariate normal density estimator
+#' for `get_hdr()` and layer functions (e.g. `geom_hdr()`).
 #'
 #' For more details on the use and implementation of the `method_*()` functions,
 #' see `vignette("method", "ggdensity")`.
@@ -18,7 +19,6 @@
 #'
 #' # Can also be used with `get_hdr()` for numerical summary of HDRs
 #' get_hdr(df, method = method_mvnorm())
-#'
 #'
 #' @export
 method_mvnorm <- function() {
@@ -47,7 +47,8 @@ method_mvnorm <- function() {
 
 #' Bivariate kernel density HDR estimator
 #'
-#' temp
+#' Function used to specify bivariate kernel density estimator
+#' for `get_hdr()` and layer functions (e.g. `geom_hdr()`).
 #'
 #' For more details on the use and implementation of the `method_*()` functions,
 #' see `vignette("method", "ggdensity")`.
@@ -107,7 +108,8 @@ method_kde <- function(h = NULL, adjust = c(1, 1)) {
 
 #' Bivariate histogram HDR estimator
 #'
-#' temp
+#' Function used to specify bivariate histogram density estimator
+#' for `get_hdr()` and layer functions (e.g. `geom_hdr()`).
 #'
 #' For more details on the use and implementation of the `method_*()` functions,
 #' see `vignette("method", "ggdensity")`.
@@ -122,6 +124,8 @@ method_kde <- function(h = NULL, adjust = c(1, 1)) {
 #' @references Scott, David W. Multivariate Density Estimation (2e), Wiley.
 #'
 #' @examples
+#' \dontrun{
+#'
 #' # Histogram estimators can be useful when data has boundary constraints
 #' set.seed(1)
 #' df <- data.frame(x = rexp(1e3), y = rexp(1e3))
@@ -147,7 +151,7 @@ method_kde <- function(h = NULL, adjust = c(1, 1)) {
 #'
 #' # Can also be used with `get_hdr()` for numerical summary of HDRs
 #' get_hdr(df, method = method_histogram())
-#'
+#' }
 #'
 #' @export
 method_histogram <- function(bins = NULL, smooth = FALSE, nudgex = "none", nudgey = "none") {
@@ -281,7 +285,8 @@ method_histogram <- function(bins = NULL, smooth = FALSE, nudgex = "none", nudge
 
 #' Bivariate frequency polygon HDR estimator
 #'
-#' temp
+#' Function used to specify bivariate frequency polygon density estimator
+#' for `get_hdr()` and layer functions (e.g. `geom_hdr()`).
 #'
 #' For more details on the use and implementation of the `method_*()` functions,
 #' see `vignette("method", "ggdensity")`.

@@ -141,7 +141,7 @@ by \code{probs}, corresponding to each point.} }
 }
 
 \examples{
-# plotting data with exponential marginals
+# Plotting data with exponential marginals
 df <- data.frame(x = rexp(1e3), y = rexp(1e3))
 
 ggplot(df, aes(x, y)) +
@@ -155,7 +155,7 @@ ggplot() +
   coord_fixed()
 
 
-# plotting univariate normal data, estimating mean and sd
+# Plotting univariate normal data, estimating mean and sd
 df <- data.frame(x = rnorm(1e4, mean = 1, sd = 3))
 
 # estimating parameters
@@ -166,7 +166,7 @@ ggplot(df, aes(x)) +
   geom_hdr_rug_fun(fun_x = dnorm, args_x = list(mean = mu_hat, sd = sd_hat)) +
   geom_density()
 
-# equivalent to `method_norm_1d()` with `geom_hdr_rug()`
+# Equivalent to `method_norm_1d()` with `geom_hdr_rug()`
 ggplot(df, aes(x)) +
   geom_hdr_rug(method = method_norm_1d()) +
   geom_density()

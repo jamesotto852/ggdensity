@@ -31,7 +31,7 @@
 #' @import ggplot2
 #'
 #' @examples
-#' # can plot points colored according to known pdf:
+#' # Can plot points colored according to known pdf:
 #' set.seed(1)
 #' df <- data.frame(x = rexp(1000), y = rexp(1000))
 #' f <- function(x, y) dexp(x) * dexp(y)
@@ -40,7 +40,7 @@
 #'   geom_hdr_points_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
 #'
 #'
-#' # also allows for hdrs of a custom parametric model
+#' # Also allows for hdrs of a custom parametric model
 #'
 #' # generate example data
 #' n <- 1000

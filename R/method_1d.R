@@ -2,10 +2,22 @@
 
 #' Univariate parametric normal HDR estimator
 #'
-#' temp
+#' Function used to specify univariate normal density estimator
+#' for `get_hdr_1d()` and layer functions (e.g. `geom_hdr_rug()`).
 #'
 #' For more details on the use and implementation of the `method_*_1d()` functions,
 #' see `vignette("method", "ggdensity")`.
+#'
+#' @examples
+#' # Normal estimators are useful when an assumption of normality is appropriate
+#' df <- data.frame(x = rnorm(1e3))
+#'
+#' ggplot(df, aes(x)) +
+#'   geom_hdr_rug(method = method_norm_1d()) +
+#'   geom_density()
+#'
+#' # Can also be used with `get_hdr_1d()` for numerical summary of HDRs
+#' get_hdr_1d(df$x, method = method_norm_1d())
 #'
 #' @export
 method_norm_1d <- function() {
@@ -24,12 +36,32 @@ method_norm_1d <- function() {
 
 #' Univariate kernel density HDR estimator
 #'
-#' temp
+#' Function used to specify univariate kernel density estimator
+#' for `get_hdr_1d()` and layer functions (e.g. `geom_hdr_rug()`).
 #'
 #' For more details on the use and implementation of the `method_*_1d()` functions,
 #' see `vignette("method", "ggdensity")`.
 #'
 #' @inheritParams stats::density
+#'
+#' @examples
+#' df <- data.frame(x = rnorm(1e3, sd = 3))
+#'
+#' ggplot(df, aes(x)) +
+#'   geom_hdr_rug(method = method_kde_1d()) +
+#'   geom_density()
+#'
+#' # Details of the KDE can be adjusted with arguments to `method_kde_1d()`
+#' ggplot(df, aes(x)) +
+#'   geom_hdr_rug(method = method_kde_1d(adjust = 1/5)) +
+#'   geom_density(adjust = 1/5)
+#'
+#' ggplot(df, aes(x)) +
+#'   geom_hdr_rug(method = method_kde_1d(kernel = "triangular")) +
+#'   geom_density(kernel = "triangular")
+#'
+#' # Can also be used with `get_hdr_1d()` for numerical summary of HDRs
+#' get_hdr_1d(df$x, method = method_kde_1d())
 #'
 #' @export
 method_kde_1d <- function(bw = "nrd0", adjust = 1, kernel = "gaussian", weights = NULL, window = kernel) {
@@ -66,7 +98,8 @@ method_kde_1d <- function(bw = "nrd0", adjust = 1, kernel = "gaussian", weights 
 
 #' Univariate histogram HDR estimator
 #'
-#' temp
+#' Function used to specify univariate histogram density estimator
+#' for `get_hdr_1d()` and layer functions (e.g. `geom_hdr_rug()`).
 #'
 #' For more details on the use and implementation of the `method_*_1d()` functions,
 #' see `vignette("method", "ggdensity")`.
@@ -75,10 +108,28 @@ method_kde_1d <- function(bw = "nrd0", adjust = 1, kernel = "gaussian", weights 
 #'
 #' @references Scott, David W. Multivariate Density Estimation (2e), Wiley.
 #'
+#' @examples
+#' # Histogram estimators can be useful when data has boundary constraints
+#' df <- data.frame(x = rexp(1e3))
+#'
+#' # Strip chart to visualize 1-d data
+#' p <- ggplot(df, aes(x)) +
+#'   geom_jitter(aes(y = 0), width = 0, height = 2) +
+#'   scale_y_continuous(name = NULL, breaks = NULL) +
+#'   coord_cartesian(ylim = c(-3, 3))
+#'
+#' p
+#'
+#' p + geom_hdr_rug(method = method_histogram_1d())
+#'
+#' # The resolution of the histogram estimator can be set via `bins`
+#' p + geom_hdr_rug(method = method_histogram_1d(bins = 5))
+#'
+#' # Can also be used with `get_hdr_1d()` for numerical summary of HDRs
+#' get_hdr_1d(df$x, method = method_histogram_1d())
+#'
 #' @export
 method_histogram_1d <- function(bins = NULL) {
-
-  parameters <- list(bins = bins)
 
   function(x, n, range) {
 
@@ -105,7 +156,8 @@ method_histogram_1d <- function(bins = NULL) {
 
 #' Univariate frequency polygon HDR estimator
 #'
-#' temp
+#' Function used to specify univariate frequency polygon density estimator
+#' for `get_hdr_1d()` and layer functions (e.g. `geom_hdr_rug()`).
 #'
 #' For more details on the use and implementation of the `method_*_1d()` functions,
 #' see `vignette("method", "ggdensity")`.
@@ -114,10 +166,27 @@ method_histogram_1d <- function(bins = NULL) {
 #'
 #' @references Scott, David W. Multivariate Density Estimation (2e), Wiley.
 #'
+#' @examples
+#' df <- data.frame(x = rnorm(1e3))
+#'
+#' # Strip chart to visualize 1-d data
+#' p <- ggplot(df, aes(x)) +
+#'   geom_jitter(aes(y = 0), width = 0, height = 2) +
+#'   scale_y_continuous(name = NULL, breaks = NULL) +
+#'   coord_cartesian(ylim = c(-3, 3))
+#'
+#' p
+#'
+#' p + geom_hdr_rug(method = method_freqpoly_1d())
+#'
+#' # The resolution of the frequency polygon estimator can be set via `bins`
+#' p + geom_hdr_rug(method = method_freqpoly_1d(bins = 100))
+#'
+#' # Can also be used with `get_hdr_1d()` for numerical summary of HDRs
+#' get_hdr_1d(df$x, method = method_freqpoly_1d())
+#'
 #' @export
 method_freqpoly_1d <- function(bins = NULL) {
-
-  parameters <- list(bins = bins)
 
   function(x, n, range) {
 

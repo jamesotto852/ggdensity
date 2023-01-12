@@ -16,7 +16,8 @@ using the a bandwidth estimator. For example, \code{adjust = 1/2} means
 use half of the default bandwidth.}
 }
 \description{
-temp
+Function used to specify bivariate kernel density estimator
+for \code{get_hdr()} and layer functions (e.g. \code{geom_hdr()}).
 }
 \details{
 For more details on the use and implementation of the \verb{method_*()} functions,

@@ -54,9 +54,30 @@ method_kde_1d(
     keep doing so.}
 }
 \description{
-temp
+Function used to specify univariate kernel density estimator
+for \code{get_hdr_1d()} and layer functions (e.g. \code{geom_hdr_rug()}).
 }
 \details{
 For more details on the use and implementation of the \verb{method_*_1d()} functions,
 see \code{vignette("method", "ggdensity")}.
+}
+\examples{
+df <- data.frame(x = rnorm(1e3, sd = 3))
+
+ggplot(df, aes(x)) +
+  geom_hdr_rug(method = method_kde_1d()) +
+  geom_density()
+
+# Details of the KDE can be adjusted with arguments to `method_kde_1d()`
+ggplot(df, aes(x)) +
+  geom_hdr_rug(method = method_kde_1d(adjust = 1/5)) +
+  geom_density(adjust = 1/5)
+
+ggplot(df, aes(x)) +
+  geom_hdr_rug(method = method_kde_1d(kernel = "triangular")) +
+  geom_density(kernel = "triangular")
+
+# Can also be used with `get_hdr_1d()` for numerical summary of HDRs
+get_hdr_1d(df$x, method = method_kde_1d())
+
 }

@@ -41,7 +41,7 @@
 #' @import ggplot2
 #'
 #' @examples
-#' # basic simulated data with bivariate normal data and various methods
+#' # Basic simulated data with bivariate normal data and various methods
 #' df <- data.frame(x = rnorm(1000), y = rnorm(1000))
 #' p <- ggplot(df, aes(x, y)) + coord_equal()
 #'
@@ -50,7 +50,7 @@
 #' p + geom_hdr(method = "freqpoly")
 #' # p + geom_hdr(method = "histogram")
 #'
-#' # adding point layers on top to visually assess region estimates
+#' # Adding point layers on top to visually assess region estimates
 #' pts <- geom_point(size = .2, color = "red")
 #'
 #' p + geom_hdr() + pts
@@ -58,7 +58,7 @@
 #' p + geom_hdr(method = "freqpoly") + pts
 #' # p + geom_hdr(method = "histogram") + pts
 #'
-#' # highest density region boundary lines
+#' # Highest density region boundary lines
 #' p + geom_hdr_lines()
 #' p + geom_hdr_lines(method = "mvnorm")
 #' p + geom_hdr_lines(method = "freqpoly")
@@ -94,7 +94,7 @@
 #' pc + geom_hdr_lines(method = "mvnorm")
 #'
 #'
-#' # data with boundaries
+#' # Data with boundaries
 #' ggplot(df, aes(x^2)) + geom_histogram(bins = 30)
 #' ggplot(df, aes(x^2)) + geom_histogram(bins = 30, boundary = 0)
 #' ggplot(df, aes(x^2, y^2)) + geom_hdr(method = "histogram")

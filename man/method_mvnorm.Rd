@@ -7,7 +7,8 @@
 method_mvnorm()
 }
 \description{
-temp
+Function used to specify bivariate normal density estimator
+for \code{get_hdr()} and layer functions (e.g. \code{geom_hdr()}).
 }
 \details{
 For more details on the use and implementation of the \verb{method_*()} functions,
@@ -24,6 +25,5 @@ ggplot(df, aes(x, y)) +
 
 # Can also be used with `get_hdr()` for numerical summary of HDRs
 get_hdr(df, method = method_mvnorm())
-
 
 }

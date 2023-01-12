@@ -17,13 +17,16 @@ Defaults to normal reference rule (Scott, pg 87).}
 Accepts character vector: \code{"left"}, \code{"none"}, \code{"right"} (\code{nudgex}) or  \code{"down"}, \code{"none"}, \code{"up"} (\code{nudgey}).}
 }
 \description{
-temp
+Function used to specify bivariate histogram density estimator
+for \code{get_hdr()} and layer functions (e.g. \code{geom_hdr()}).
 }
 \details{
 For more details on the use and implementation of the \verb{method_*()} functions,
 see \code{vignette("method", "ggdensity")}.
 }
 \examples{
+\dontrun{
+
 # Histogram estimators can be useful when data has boundary constraints
 set.seed(1)
 df <- data.frame(x = rexp(1e3), y = rexp(1e3))
@@ -49,7 +52,7 @@ ggplot(df, aes(x, y)) +
 
 # Can also be used with `get_hdr()` for numerical summary of HDRs
 get_hdr(df, method = method_histogram())
-
+}
 
 }
 \references{

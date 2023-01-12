@@ -62,30 +62,39 @@
 #' @examples
 #' df <- data.frame(x = rnorm(1e3), y = rnorm(1e3))
 #'
-#' # two ways to specify `method`
+#' # Two ways to specify `method`
 #' get_hdr(df, method = "kde")
 #' get_hdr(df, method = method_kde())
 #'
 #' \dontrun{
 #'
-#' # if parenthesis are omitted, `get_hdr()` errors
+#' # If parenthesis are omitted, `get_hdr()` errors
 #' get_hdr(df, method = method_kde)
 #' }
 #'
-#' # estimate different HDRs with `probs`
+#' # Estimate different HDRs with `probs`
 #' get_hdr(df, method = method_kde(), probs = c(.975, .6, .2))
 #'
-#' # adjust estimator parameters with arguments to `method_kde()`
+#' # Adjust estimator parameters with arguments to `method_kde()`
 #' get_hdr(df, method = method_kde(h = 1))
 #'
-#' # parametric normal estimator of density
+#' # Parametric normal estimator of density
 #' get_hdr(df, method = "mvnorm")
 #' get_hdr(df, method = method_mvnorm())
 #'
-#' # "population" HDRs of specified bivariate pdf with `method = "fun"`
+#' # Compute "population" HDRs of specified bivariate pdf with `method = "fun"`
 #' f <- function(x, y, sd_x = 1, sd_y = 1) dnorm(x, sd = sd_x) * dnorm(y, sd = sd_y)
-#' get_hdr(method = "fun", fun = f, rangex = c(-5, 5), rangey = c(-5, 5))
-#' get_hdr(method = "fun", fun = f, args = list(sd_x = .5, sd_y = .5), rangex = c(-5, 5), rangey = c(-5, 5))
+#'
+#' get_hdr(
+#'   method = "fun", fun = f,
+#'   rangex = c(-5, 5), rangey = c(-5, 5)
+#'  )
+#'
+#' get_hdr(
+#'   method = "fun", fun = f,
+#'   rangex = c(-5, 5), rangey = c(-5, 5),
+#'   args = list(sd_x = .5, sd_y = .5) # specify additional arguments w/ `args`
+#' )
 #'
 #' @export
 get_hdr <- function(data = NULL, method = "kde", probs = c(.99, .95, .8, .5), n = 100, rangex = NULL, rangey = NULL, hdr_membership = TRUE, fun, args = list()) {

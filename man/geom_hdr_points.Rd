@@ -136,11 +136,11 @@ p <- ggplot(df, aes(x, y)) +
 
 p + geom_hdr_points()
 
-# setting aes(fill = after_stat(probs)), color = "black", and
+# Setting aes(fill = after_stat(probs)), color = "black", and
 # shape = 21 helps alleviate overplotting:
 p + geom_hdr_points(aes(fill = after_stat(probs)), color = "black", shape = 21, size = 2)
 
-# also works well with geom_hdr_lines():
+# Also works well with geom_hdr_lines()
 p +
  geom_hdr_lines(
    aes(color = after_stat(probs)), alpha = 1,

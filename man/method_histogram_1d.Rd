@@ -10,11 +10,33 @@ method_histogram_1d(bins = NULL)
 \item{bins}{Number of bins. Defaults to normal reference rule (Scott, pg 59).}
 }
 \description{
-temp
+Function used to specify univariate histogram density estimator
+for \code{get_hdr_1d()} and layer functions (e.g. \code{geom_hdr_rug()}).
 }
 \details{
 For more details on the use and implementation of the \verb{method_*_1d()} functions,
 see \code{vignette("method", "ggdensity")}.
+}
+\examples{
+# Histogram estimators can be useful when data has boundary constraints
+df <- data.frame(x = rexp(1e3))
+
+# Strip chart to visualize 1-d data
+p <- ggplot(df, aes(x)) +
+  geom_jitter(aes(y = 0), width = 0, height = 2) +
+  scale_y_continuous(name = NULL, breaks = NULL) +
+  coord_cartesian(ylim = c(-3, 3))
+
+p
+
+p + geom_hdr_rug(method = method_histogram_1d())
+
+# The resolution of the histogram estimator can be set via `bins`
+p + geom_hdr_rug(method = method_histogram_1d(bins = 5))
+
+# Can also be used with `get_hdr_1d()` for numerical summary of HDRs
+get_hdr_1d(df$x, method = method_histogram_1d())
+
 }
 \references{
 Scott, David W. Multivariate Density Estimation (2e), Wiley.

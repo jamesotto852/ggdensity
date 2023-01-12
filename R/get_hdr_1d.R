@@ -61,26 +61,26 @@
 #' @examples
 #' x <- rnorm(1e3)
 #'
-#' # two ways to specify `method`
+#' # Two ways to specify `method`
 #' get_hdr_1d(x, method = "kde")
 #' get_hdr_1d(x, method = method_kde_1d())
 #'
 #' \dontrun{
 #'
-#' # if parenthesis are omitted, `get_hdr_1d()` errors
+#' # If parenthesis are omitted, `get_hdr_1d()` errors
 #' get_hdr_1d(df, method = method_kde_1d)
 #'
-#' # if the `_1d` suffix is omitted, `get_hdr_1d()` errors
+#' # If the `_1d` suffix is omitted, `get_hdr_1d()` errors
 #' get_hdr_1d(x, method = method_kde())
 #' }
 #'
-#' # adjust estimator parameters with arguments to `method_kde_1d()`
+#' # Adjust estimator parameters with arguments to `method_kde_1d()`
 #' get_hdr_1d(x, method = method_kde_1d(kernel = "triangular"))
 #'
-#' # estimate different HDRs with `probs`
+#' # Estimate different HDRs with `probs`
 #' get_hdr_1d(x, method = method_kde_1d(), probs = c(.975, .6, .2))
 #'
-#' # "population" HDRs of specified univariate pdf with `method = "fun"`
+#' # Compute "population" HDRs of specified univariate pdf with `method = "fun"`
 #' f <- function(x, sd = 1) dnorm(x, sd = sd)
 #' get_hdr_1d(method = "fun", fun = f, range = c(-5, 5))
 #' get_hdr_1d(method = "fun", fun = f, range = c(-5, 5), args = list(sd = .5))

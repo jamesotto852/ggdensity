@@ -12,7 +12,8 @@ Either a vector of length 2 or a scalar value which is recycled for both dimensi
 Defaults to normal reference rule (Scott, pg 87).}
 }
 \description{
-temp
+Function used to specify bivariate frequency polygon density estimator
+for \code{get_hdr()} and layer functions (e.g. \code{geom_hdr()}).
 }
 \details{
 For more details on the use and implementation of the \verb{method_*()} functions,
