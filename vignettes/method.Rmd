@@ -38,67 +38,46 @@ then from the perspective of a developer wanting to implement additional estimat
 First, let's load the necessary packages and generate some sample data.
 
 ```{r setup}
-library("ggplot2"); theme_set(theme_minimal())
-library("ggdensity")
-
-theme_set(theme_minimal(8))
-theme_update(
-  # Suppressing legends for readability
-  legend.position = "none"
-)
+library("ggdensity"); theme_set(theme_minimal(8))
+theme_update(legend.position = "none") # Suppressing legends for readability
 ```
 
 ```{r}
 set.seed(1) 
-
-df <- 
-  data.frame(
-    x = rnorm(500),
-    y = rnorm(500)
-  )
-
-ggplot(df, aes(x, y)) +
-  geom_point()
+df <- data.frame(x = rnorm(500), y = rnorm(500))
+p <- ggplot(df, aes(x, y))
+p + geom_point()
 ```
 
 The easiest way to plot HDRs with `geom_hdr()` (or any other layer function from **ggdensity**) with a specified density estimator 
 is to provide a character object to the `method` argument:
 ```{r, fig.show="hold", out.width="45%", fig.align = "default"}
-ggplot(df, aes(x, y)) +
-  geom_hdr(method = "kde")
+p + geom_hdr(method = "kde")
 
-ggplot(df, aes(x, y)) +
-  geom_hdr(method = "mvnorm")
+p + geom_hdr(method = "mvnorm")
 
-ggplot(df, aes(x, y)) +
-  geom_hdr(method = "histogram")
+p + geom_hdr(method = "histogram")
 
-ggplot(df, aes(x, y)) +
-  geom_hdr(method = "freqpoly")
+p + geom_hdr(method = "freqpoly")
 ```
 
 However, as of **ggdensity** v1.0.0 there is an alternative approach---providing a `method_*()` function call:
 ```{r, fig.show="hold", out.width="45%", fig.align = "default"}
-ggplot(df, aes(x, y)) +
-  geom_hdr(method = method_kde())
+p + geom_hdr(method = method_kde())
 
-ggplot(df, aes(x, y)) +
-  geom_hdr(method = method_mvnorm())
+p + geom_hdr(method = method_mvnorm())
 
-ggplot(df, aes(x, y)) +
-  geom_hdr(method = method_histogram())
+p + geom_hdr(method = method_histogram())
 
-ggplot(df, aes(x, y)) +
-  geom_hdr(method = method_freqpoly())
+p + geom_hdr(method = method_freqpoly())
 ```
 
 The default behaviors of these two approaches are the same and always will be---in this way, they are completely interchangeable. 
 However, the `method_*()` function call is required to estimate HDRs with non-default estimator parameters. 
-For example, we can set the `adjust` parameter to apply a multiplicative adjustment to the heuristically determined bandwidth in `method_kde()`:
+For example, we can set the `adjust` parameter to apply a multiplicative adjustment to the heuristically determined bandwidth in `method_kde()` (which itself uses the one computed by `MASS::bandwidth.nrd()`):
 
 ```{r}
-ggplot(df, aes(x, y)) +
-  geom_hdr(method = method_kde(adjust = 1/2))
+p + geom_hdr(method = method_kde(adjust = 1/2))
 ```
 
 The relevant parameters for each method are documented in their respective `?method_*` help pages.
@@ -123,19 +102,19 @@ These functions also accept a `method` argument, but they do not accept the prev
 Instead they accept the 1-dimensional analogues: `method_*_1d()`.
 
 ```{r, fig.show="hold", out.width="45%", fig.align = "default"}
-ggplot(df, aes(x, y)) +
+p + 
   geom_point() +
   geom_hdr_rug(method = method_kde_1d())
 
-ggplot(df, aes(x, y)) +
+p + 
   geom_point() +
   geom_hdr_rug(method = method_norm_1d())
 
-ggplot(df, aes(x, y)) +
+p + 
   geom_point() +
   geom_hdr_rug(method = method_histogram_1d())
 
-ggplot(df, aes(x, y)) +
+p + 
   geom_point() +
   geom_hdr_rug(method = method_freqpoly_1d())
 ```
@@ -143,19 +122,19 @@ ggplot(df, aes(x, y)) +
 Just like we saw with `geom_hdr()`, `geom_hdr_rug()` also accepts character values for `method`:
 
 ```{r, fig.show="hold", out.width="45%", fig.align = "default"}
-ggplot(df, aes(x, y)) +
+p + 
   geom_point() +
   geom_hdr_rug(method = "kde")
 
-ggplot(df, aes(x, y)) +
+p + 
   geom_point() +
   geom_hdr_rug(method = "norm")
 
-ggplot(df, aes(x, y)) +
+p + 
   geom_point() +
   geom_hdr_rug(method = "histogram")
 
-ggplot(df, aes(x, y)) +
+p + 
   geom_point() +
   geom_hdr_rug(method = "freqpoly")
 ```
@@ -164,7 +143,7 @@ Because the return values of the `method_*()` functions are incompatible with th
 HDR estimation procedure, if a 2-dimensional method is specified the following error message is issued:
 
 ```{r, fig.show = "hide"}
-ggplot(df, aes(x, y)) +
+p + 
   geom_point() +
   geom_hdr_rug(method = method_kde()) 
 ```
@@ -193,7 +172,7 @@ linked chapters from Hadley Wickham's *Advanced R* are a great place to start.
 
 Looking at the definition of `method_kde()`, we see that it is a function of `h` and `adjust`,
 returning a closure with arguments `data`, `n`, `rangex`, and `rangey`.
-The closure estimates passes the `x` and `y` columns of `data` to `MASS::kde2d()`, 
+The closure passes the `x` and `y` columns of `data` to `MASS::kde2d()`, 
 returning the estimated density evaluated on a grid with columns `x`, `y`, and `fhat`.
 This closure is what `geom_hdr()` expects as its `method` argument,
 and is how the HDRs are estimated (via `get_hdr()`).
@@ -237,7 +216,7 @@ The second is an easier option for the cases in which a closed form of the estim
 Let's look at how we might define our own `method_*()` functions in each case,
 beginning with a simple parametric estimator.
 
-### Implementing `method_mvnorm_ind()`
+### Implementing a method returning a PDF
 
 In **ggdensity**, `method_mvnorm()` estimates HDRs based on the parametric multivariate normal model.
 If we wanted to fit a simpler model in which the data is further assumed to be independent,
@@ -345,7 +324,7 @@ along with information from the `scales` associated with the `ggplot` object.
 It is the `scales` that need adjusting, not anything related to the `method` argument.
 
 
-### Implementing `method_random()`
+### Implementing a method returning an evaluated PDF
 
 To illustrate the other case, in which the object returned by the closure is the estimated density evaluated on a grid, we implement `method_random()`.
 This "estimates" a density on a grid with random numbers from `runif()`
