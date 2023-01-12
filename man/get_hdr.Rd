@@ -17,19 +17,19 @@ get_hdr(
 )
 }
 \arguments{
-\item{data}{A data frame with columns \code{x} and \code{y}}
+\item{data}{A data frame with columns \code{x} and \code{y}.}
 
 \item{method}{Either a character (\code{"kde"}, \code{"mvnorm"}, \code{"histogram"}, \code{"freqpoly"}, or \code{"fun"}) or \verb{method_*()} function.
 See the "The \code{method} argument" section below for details.}
 
-\item{probs}{Probabilities to compute highest density regions for.}
+\item{probs}{Probabilities to compute HDRs for.}
 
-\item{n}{Resolution of grid defined by \code{xlim} and \code{ylim}.}
+\item{n}{Resolution of grid representing estimated density and HDRs.}
 
-\item{rangex, rangey}{Range to compute and draw regions.}
+\item{rangex, rangey}{Range of grid representing estimated density and HDRs, along the x- and y-axes.}
 
-\item{hdr_membership}{Should HDR membership of data points be calculated?
-Defaults to \code{TRUE}, although it is computationally expensive.}
+\item{hdr_membership}{Should HDR membership of data points (\code{data}) be computed?
+Defaults to \code{TRUE}, although it is computationally expensive for large data sets.}
 
 \item{fun}{Optional, a joint probability density function, must be vectorized in its first two arguments.
 See the "The \code{fun} argument" section below for details.}
@@ -40,18 +40,20 @@ See the "The \code{fun} argument" section below for details.}
 \code{get_hdr} returns a list with elements \code{df_est} (\code{data.frame}), \code{breaks} (named \code{numeric}), and \code{data} (\code{data.frame}).
 \itemize{
 \item \code{df_est}: the estimated HDRs and density evaluated on the grid defined by \code{rangex}, \code{rangey}, and \code{n}.
-The column of estimated HDRs (\verb{$hdr}) is a numeric vector with values from \code{probs}.
-The columns \verb{$fhat} and \verb{$fhat_discretized} correspond to the estimated density
-on the original scale and normalized to sum to 1, respectively.
-\item \code{breaks}: the heights of the estimated density (\verb{$fhat}) corresponding to the HDRs specified by \code{probs}.
+The column of estimated HDRs (\code{df_est$hdr}) is a numeric vector with values from \code{probs}.
+The columns \code{df_est$fhat} and \code{df_est$fhat_discretized} correspond to the estimated density
+on the original scale and rescaled to sum to 1, respectively.
+\item \code{breaks}: the heights of the estimated density (\code{df_est$fhat}) corresponding to the HDRs specified by \code{probs}.
 Will always have additional element \code{Inf} representing the cutoff for the 100\% HDR.
 \item \code{data}: the original data provided in the \code{data} argument.
-If \code{hdr_membership} is set to \code{TRUE}, this includes a column (\verb{$hdr_membership})
+If \code{hdr_membership} is set to \code{TRUE}, this includes a column (\code{data$hdr_membership})
 with the HDR corresponding to each data point.
 }
 }
 \description{
-temp
+\code{get_hdr} is used to estimate a 2-dimensional density and compute corresponding HDRs.
+The estimated density and HDRs are represented in a discrete form as a grid, defined by arguments \code{rangex}, \code{rangey}, and \code{n}.
+\code{get_hdr} is used internally by layer functions \code{stat_hdr()}, \code{stat_hdr_points()}, \code{stat_hdr_fun()}, etc.
 }
 \section{The \code{method} argument}{
 
@@ -78,7 +80,7 @@ If \code{method} is set to \code{"fun"}, \code{get_hdr()} expects a bivariate pr
 density function to be specified with the \code{fun} argument.
 It is required that \code{fun} be a function of at least two arguments (\code{x} and \code{y}).
 Beyond these first two arguments, \code{fun} can have arbitrarily many arguments;
-these can be set in \code{get_hdr()} as a named list with \code{args}.
+these can be set in \code{get_hdr()} as a named list via the \code{args} parameter.
 
 Note: \code{get_hdr()} requires that \code{fun} be vectorized in \code{x} and \code{y}.
 For an example of an appropriate choice of \code{fun}, see the final example below.

@@ -1,13 +1,16 @@
 #' Computing the highest density regions of a 1D density
 #'
-#' temp
+#' `get_hdr_1d` is used to estimate a 1-dimensional density and compute corresponding HDRs.
+#' The estimated density and HDRs are represented in a discrete form as a grid, defined by arguments `range` and `n`.
+#' `get_hdr_1d` is used internally by layer functions `stat_hdr_rug()` and `stat_hdr_rug_fun()`.
 #'
 #' @inheritParams get_hdr
 #' @param method Either a character (`"kde"`, `"norm"`, `"histogram"`, `"freqpoly"`, or `"fun"`) or `method_*_1d()` function.
 #'   See the "The `method` argument" section below for details.
 #' @param x A vector of data
-#' @param range Range to compute regions.
-#' @param n Resolution of grid defined by range
+#' @param hdr_membership Should HDR membership of data points (`x`) be computed?
+#' @param range Range of grid representing estimated density and HDRs.
+#' @param n Resolution of grid representing estimated density and HDRs.
 #' @param fun Optional, a probability density function, must be vectorized in its first argument.
 #'   See the "The `fun` argument" section below for details.
 #'
@@ -30,11 +33,11 @@
 #' see `vignette("method", "ggdensity")`.
 #'
 #' @section The `fun` argument:
-#' If `method` is set to `"fun"`, `get_hdr_1d()` expects a bivariate probability
+#' If `method` is set to `"fun"`, `get_hdr_1d()` expects a univariate probability
 #' density function to be specified with the `fun` argument.
-#' It is required that `fun` be a function of at least one arguments (`x`).
+#' It is required that `fun` be a function of at least one argument (`x`).
 #' Beyond this first argument, `fun` can have arbitrarily many arguments;
-#' these can be set in `get_hdr_1d()` as a named list with `args`.
+#' these can be set in `get_hdr_1d()` as a named list via the `args` parameter.
 #'
 #' Note: `get_hdr_1d()` requires that `fun` be vectorized in `x`.
 #' For an example of an appropriate choice of `fun`, see the final example below.
@@ -44,15 +47,15 @@
 #' `get_hdr_1d` returns a list with elements `df_est` (`data.frame`), `breaks` (named `numeric`), and `data` (`data.frame`).
 #'
 #' * `df_est`: the estimated HDRs and density evaluated on the grid defined by `range` and `n`.
-#' The column of estimated HDRs (`$hdr`) is a numeric vector with values from `probs`.
-#' The columns `$fhat` and `$fhat_discretized` correspond to the estimated density
-#' on the original scale and normalized to sum to 1, respectively.
+#' The column of estimated HDRs (`df_est$hdr`) is a numeric vector with values from `probs`.
+#' The columns `df_est$fhat` and `df_est$fhat_discretized` correspond to the estimated density
+#' on the original scale and rescaled to sum to 1, respectively.
 #'
-#' * `breaks`: the heights of the estimated density (`$fhat`) corresponding to the HDRs specified by `probs`.
+#' * `breaks`: the heights of the estimated density (`df_est$fhat`) corresponding to the HDRs specified by `probs`.
 #' Will always have additional element `Inf` representing the cutoff for the 100% HDR.
 #'
 #' * `data`: the original data provided in the `data` argument.
-#' If `hdr_membership` is set to `TRUE`, this includes a column (`$hdr_membership`)
+#' If `hdr_membership` is set to `TRUE`, this includes a column (`data$hdr_membership`)
 #' with the HDR corresponding to each data point.
 #'
 #' @examples
