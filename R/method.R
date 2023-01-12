@@ -28,20 +28,20 @@ method_mvnorm <- function() {
     data_matrix <- with(data, cbind(x, y))
     mu_hat <- colMeans(data_matrix)
     S <- cov(data_matrix)
-    SInv <- solve(S)
+    R <- chol(S) # R'R = crossprod(R) = S
+    p <- 2       # = dim of bivariate normal
 
-    # TODO - I think something's off here, statistically:
-    dmvnorm <- function(x, y) {
-      Mdist <- t(c(x, y) - mu_hat) %*% SInv %*% (c(x, y) - mu_hat)
-      dchisq(Mdist, 2)
+    function(x, y) {
+      X <- cbind(x, y)
+      tmp <- backsolve(R, t(X) - mu_hat, transpose = TRUE)
+      rss <- colSums(tmp^2)
+      logretval <- -sum(log(diag(R))) - 0.5 * p * log(2 * pi) - 0.5 * rss
+      exp( logretval )
     }
-
-    function(x, y) mapply(dmvnorm, x, y)
 
   }
 
 }
-
 
 # methods that return closures that compute a grid ------------------------
 
