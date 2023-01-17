@@ -41,24 +41,25 @@ Also included are the functions `geom_hdr_fun()` and `geom_hdr_lines_fun()` for 
 
 ## Installation
 
-**ggdensity** is available on CRAN and can be installed with `install.packages("ggdensity")`.
-You can also install its development version from [GitHub](https://github.com/) with:
+**ggdensity** is available on CRAN and can be installed with:
+
+``` r 
+install.packages("ggdensity")
+```
+
+Alternatively, you can install the latest development version from [GitHub](https://github.com/) with:
 
 ``` r
 if (!requireNamespace("remotes")) install.packages("remotes")
 remotes::install_github("jamesotto852/ggdensity")
 ```
 
-
-
-
-
 ## `geom_density_2d_filled()`{.R} vs. `geom_hdr()`{.R}
 
 The standard way to visualize the joint distribution of two continuous variables in **ggplot2** is to use `ggplot2::geom_density_2d()`{.R} or `geom_density_2d_filled()`{.R}. Here's an example:
 
 ```{r ex0, message=FALSE}
-library("tidyverse"); theme_set(theme_minimal())
+library("ggplot2"); theme_set(theme_minimal())
 theme_update(panel.grid.minor = element_blank())
 library("ggdensity")
 library("patchwork")
@@ -421,6 +422,7 @@ den <- with(faithful,
   MASS::kde2d(eruptions, waiting, n = 100, lims = c(0,6,30,105))
 )
 
+if (!requireNamespace("hdrcde")) install.packages("hdrcde")
 library("hdrcde")
 p_den <- ~ with(faithful,
   plot(

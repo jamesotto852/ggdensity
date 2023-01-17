@@ -27,9 +27,14 @@ probability density functions.
 
 ## Installation
 
-**ggdensity** is available on CRAN and can be installed with
-`install.packages("ggdensity")`. You can also install its development
-version from [GitHub](https://github.com/) with:
+**ggdensity** is available on CRAN and can be installed with:
+
+``` r
+install.packages("ggdensity")
+```
+
+Alternatively, you can install the latest development version from
+[GitHub](https://github.com/) with:
 
 ``` r
 if (!requireNamespace("remotes")) install.packages("remotes")
@@ -43,7 +48,7 @@ variables in **ggplot2** is to use `ggplot2::geom_density_2d()` or
 `geom_density_2d_filled()`. Here’s an example:
 
 ``` r
-library("tidyverse"); theme_set(theme_minimal())
+library("ggplot2"); theme_set(theme_minimal())
 theme_update(panel.grid.minor = element_blank())
 library("ggdensity")
 library("patchwork")
@@ -79,16 +84,11 @@ p + geom_hdr()
 `probs` here tells us the probability bounded by the corresponding
 region, and the regions are computed to be the smallest such regions
 that bound that level of probability; these are called highest density
-regions or HDRs. By default, the plotted regions show the
-![50\\%](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;50%5C%25 "50\%"),
-![80\\%](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;80%5C%25 "80\%"),
-![95\\%](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;95%5C%25 "95\%"),
-and
-![99\\%](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;99%5C%25 "99\%")
-HDRs of the estimated density, but this can be changed with the `probs`
-argument to `geom_hdr()`. Notice that your take-away from the plot made
-with `geom_density_2d_filled()` is subtlely yet significantly different
-than that of the plot made by `geom_hdr()`.
+regions or HDRs. By default, the plotted regions show the $50\%$,
+$80\%$, $95\%$, and $99\%$ HDRs of the estimated density, but this can
+be changed with the `probs` argument to `geom_hdr()`. Notice that your
+take-away from the plot made with `geom_density_2d_filled()` is subtlely
+yet significantly different than that of the plot made by `geom_hdr()`.
 
 ## Visualizing subpopulations and `geom_hdr_lines()`
 
@@ -459,8 +459,8 @@ den <- with(faithful,
   MASS::kde2d(eruptions, waiting, n = 100, lims = c(0,6,30,105))
 )
 
+if (!requireNamespace("hdrcde")) install.packages("hdrcde")
 library("hdrcde")
-#> This is hdrcde 3.4
 p_den <- ~ with(faithful,
   plot(
     hdr.2d(eruptions, waiting, prob = c(50, 80, 95, 99), den = den),
