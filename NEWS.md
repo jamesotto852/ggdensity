@@ -1,3 +1,25 @@
+# ggdensity 1.0.0
+
+## Features
+
+* Added `get_hdr()` and `get_hdr_1d()` functions, 
+exporting implementation of HDR computations (Suggested by @eliocamp #28)
+
+* Reworked `method` argument, allowing for either character or function call specification.
+Implemented related `method_*()` and `method_*_1d()` functions (e.g. `method_kde()` and `method_kde_1d()`).
+See `?get_hdr` or `vignette("method", "ggdensity")` for details (Suggested by @eliocamp #29)
+
+* Added unit tests (Suggested by @eliocamp, #30)
+
+## Breaking Changes
+
+* Removed arguments governing density estimators from `stat_hdr()` and other layer functions--these
+are now specified with `method_*()` and `method_*_1d()` functions
+
+## Fixes
+
+* [Added support](https://www.tidyverse.org/blog/2022/08/ggplot2-3-4-0-size-to-linewidth/) for the new `linewidth` aesthetic (Reported by @eliocamp, #23)
+
 # ggdensity 0.1.1
 
 ## Fixes
