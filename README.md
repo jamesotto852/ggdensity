@@ -216,6 +216,13 @@ and removing important features of how the variables (co-)vary.
 
 <img src="man/figures/README-ex_methods-1.png" width="100%" />
 
+The `method` argument may be specified either as a character vector
+(`method = "kde"`) or as a function call (`method = method_kde()`). When
+a function call is used, it may be possible to specify parameters
+governing the density estimation procedure. Here, `method_kde()` accepts
+parameters `h` and `adjust`, both related to the kernel’s bandwidth. For
+details, see `?method_kde` or `vignette("method", "ggdensity")`.
+
 ## If you know your PDF
 
 The above discussion has focused around densities that are estimated
@@ -365,6 +372,54 @@ solve it by adding `guides(alpha = "none")`. Note also the use of
 `length = unit(.2, "cm")`, this allows us to make the thickness the same
 on both axes and reasonable on the plot. (Compare those rug plots to
 those on the previous graphic.)
+
+### Numerical summaries of HDRs
+
+It is possible to access numerical summaries of the estimated densities
+and HDRs computed by **ggdensity** with `get_hdr()`:
+
+``` r
+df <- data.frame(x = rnorm(1e3), y = rnorm(1e3))
+
+res <- get_hdr(df, method = "kde")
+str(res)
+#> List of 3
+#>  $ df_est:'data.frame':  10000 obs. of  5 variables:
+#>   ..$ x               : num [1:10000] -3.05 -2.99 -2.93 -2.86 -2.8 ...
+#>   ..$ y               : num [1:10000] -3.13 -3.13 -3.13 -3.13 -3.13 ...
+#>   ..$ fhat            : num [1:10000] 1.58e-09 4.49e-09 1.30e-08 3.66e-08 9.83e-08 ...
+#>   ..$ fhat_discretized: num [1:10000] 6.43e-12 1.83e-11 5.29e-11 1.49e-10 4.00e-10 ...
+#>   ..$ hdr             : num [1:10000] 1 1 1 1 1 1 1 1 1 1 ...
+#>  $ breaks: Named num [1:5] 0.00257 0.00887 0.02929 0.07574 Inf
+#>   ..- attr(*, "names")= chr [1:5] "99%" "95%" "80%" "50%" ...
+#>  $ data  :'data.frame':  1000 obs. of  3 variables:
+#>   ..$ x             : num [1:1000] -0.817 -2.463 -1.343 0.136 0.883 ...
+#>   ..$ y             : num [1:1000] -0.5277 -1.4411 -1.9568 0.0287 1.5382 ...
+#>   ..$ hdr_membership: num [1:1000] 0.5 0.99 0.95 0.5 0.8 0.99 0.8 0.95 0.5 0.5 ...
+```
+
+Similarly, there is `get_hdr_1d()` for univariate data:
+
+``` r
+x <- rnorm(1e3)
+
+res <- get_hdr_1d(x, method = "kde")
+str(res)
+#> List of 3
+#>  $ df_est:'data.frame':  512 obs. of  4 variables:
+#>   ..$ x               : num [1:512] -2.89 -2.88 -2.86 -2.85 -2.84 ...
+#>   ..$ fhat            : num [1:512] 0.00441 0.0046 0.00479 0.00499 0.0052 ...
+#>   ..$ fhat_discretized: num [1:512] 5.46e-05 5.70e-05 5.94e-05 6.19e-05 6.45e-05 ...
+#>   ..$ hdr             : num [1:512] 1 1 1 1 1 1 1 1 1 1 ...
+#>  $ breaks: Named num [1:5] 0.0141 0.0563 0.1757 0.317 Inf
+#>   ..- attr(*, "names")= chr [1:5] "99%" "95%" "80%" "50%" ...
+#>  $ data  :'data.frame':  1000 obs. of  2 variables:
+#>   ..$ x             : num [1:1000] -0.4301 -1.5792 0.1929 -0.4973 -0.0859 ...
+#>   ..$ hdr_membership: num [1:1000] 0.5 0.95 0.5 0.5 0.5 0.5 0.8 0.5 0.5 0.99 ...
+```
+
+For details on the objects returned by these functions, see `?get_hdr`
+and `?get_hdr_1d`.
 
 ## A caveat and recommendation for cropped HDRs
 

@@ -232,7 +232,10 @@ map2(geoms, titles, p_row) |>
 
 ```
 
-
+The `method` argument may be specified either as a character vector (`method = "kde"`) or as a function call (`method = method_kde()`).
+When a function call is used, it may be possible to specify parameters governing the density estimation procedure.
+Here, `method_kde()` accepts parameters `h` and `adjust`, both related to the kernel's bandwidth.
+For details, see `?method_kde` or `vignette("method", "ggdensity")`.
 
 
 ## If you know your PDF
@@ -359,6 +362,28 @@ ggplot(cars, aes(speed, dist)) +
 The second `probs` guide is currently a bug. As a work around, you can solve it by adding `guides(alpha = "none")`{.R}. Note also the use of `length = unit(.2, "cm")`, this allows us to make the thickness the same on both axes and reasonable on the plot. (Compare those rug plots to those on the previous graphic.)
 
 
+### Numerical summaries of HDRs
+
+It is possible to access numerical summaries of the estimated densities and HDRs computed by **ggdensity** with `get_hdr()`:
+
+```{r get-hdr}
+df <- data.frame(x = rnorm(1e3), y = rnorm(1e3))
+
+res <- get_hdr(df, method = "kde")
+str(res)
+```
+
+Similarly, there is `get_hdr_1d()` for univariate data:
+
+```{r get-hdr-1d}
+x <- rnorm(1e3)
+
+res <- get_hdr_1d(x, method = "kde")
+str(res)
+```
+
+For details on the objects returned by these functions, see `?get_hdr` and `?get_hdr_1d`.
+
 ## A caveat and recommendation for cropped HDRs
 
 `geom_hdr()`{.R} and related functions were written with the intent of playing nicely with **ggplot2**, so that what the typical **ggplot2** user would expect from the rest of the **ggplot2** ecosystem would work in the same way with **ggdensity**. 
@@ -394,8 +419,6 @@ p3 <- ggplot(cars, aes(speed, dist)) +
 
 (p1 / p2 / p3) & theme(title = element_text(size = 9))
 ```
-
-
 
 
 ## Related projects
