@@ -1,6 +1,6 @@
 Package: ggdensity
 Title: Interpretable Bivariate Density Visualization with 'ggplot2'
-Version: 0.1.1.900
+Version: 1.0.0
 Authors@R: 
     c(person(given = "James",
            family = "Otto",
@@ -19,7 +19,7 @@ Description: The 'ggplot2' package provides simple functions for visualizing con
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 Depends:
     ggplot2
 Imports:
