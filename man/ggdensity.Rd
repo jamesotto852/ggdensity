@@ -9,3 +9,10 @@
 A package that allows more flexible computations for visualization of density
 estimates with ggplot2.
 }
+\seealso{
+Useful links:
+\itemize{
+\item \url{https://jamesotto852.github.io/ggdensity}
+\item \url{https://github.com/jamesotto852/ggdensity}
+}
+}
