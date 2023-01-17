@@ -1,63 +1,74 @@
 #' Computing the highest density regions of a 2D density
 #'
-#' `get_hdr` is used to estimate a 2-dimensional density and compute corresponding HDRs.
-#' The estimated density and HDRs are represented in a discrete form as a grid, defined by arguments `rangex`, `rangey`, and `n`.
-#' `get_hdr` is used internally by layer functions `stat_hdr()`, `stat_hdr_points()`, `stat_hdr_fun()`, etc.
+#' `get_hdr` is used to estimate a 2-dimensional density and compute
+#' corresponding HDRs. The estimated density and HDRs are represented in a
+#' discrete form as a grid, defined by arguments `rangex`, `rangey`, and `n`.
+#' `get_hdr` is used internally by layer functions `stat_hdr()`,
+#' `stat_hdr_points()`, `stat_hdr_fun()`, etc.
 #'
-#' @param method Either a character (`"kde"`, `"mvnorm"`, `"histogram"`, `"freqpoly"`, or `"fun"`) or `method_*()` function.
-#'   See the "The `method` argument" section below for details.
+#' @param method Either a character (`"kde"`, `"mvnorm"`, `"histogram"`,
+#'   `"freqpoly"`, or `"fun"`) or `method_*()` function. See the "The `method`
+#'   argument" section below for details.
 #' @param data A data frame with columns `x` and `y`.
 #' @param probs Probabilities to compute HDRs for.
-#' @param rangex,rangey Range of grid representing estimated density and HDRs, along the x- and y-axes.
+#' @param rangex,rangey Range of grid representing estimated density and HDRs,
+#'   along the x- and y-axes.
 #' @param n Resolution of grid representing estimated density and HDRs.
-#' @param hdr_membership Should HDR membership of data points (`data`) be computed?
-#'   Defaults to `TRUE`, although it is computationally expensive for large data sets.
-#' @param fun Optional, a joint probability density function, must be vectorized in its first two arguments.
-#'   See the "The `fun` argument" section below for details.
+#' @param hdr_membership Should HDR membership of data points (`data`) be
+#'   computed? Defaults to `TRUE`, although it is computationally expensive for
+#'   large data sets.
+#' @param fun Optional, a joint probability density function, must be vectorized
+#'   in its first two arguments. See the "The `fun` argument" section below for
+#'   details.
 #' @param args Optional, a list of arguments to be provided to `fun`.
 #'
-#' @section The `method` argument:
-#' The density estimator used to estimate the HDRs is specified with the `method` argument.
-#' The simplest way to specify an estimator is to provide a character value to `method`,
-#' for example `method = "kde"` specifies a kernel density estimator.
-#' However, this specification is limited to the default behavior of the estimator.
+#' @section The `method` argument: The density estimator used to estimate the
+#'   HDRs is specified with the `method` argument. The simplest way to specify
+#'   an estimator is to provide a character value to `method`, for example
+#'   `method = "kde"` specifies a kernel density estimator. However, this
+#'   specification is limited to the default behavior of the estimator.
 #'
-#' Instead, it is possible to provide a function call, for example: `method = method_kde()`.
-#' In many cases, these functions accept parameters governing the density estimation procedure.
-#' Here, `method_kde()` accepts parameters `h` and `adjust`, both related to the kernel's bandwidth.
-#' For details, see `?method_kde`.
-#' Every method of bivariate density estimation implemented has such corresponding `method_*()` function,
-#' each with an associated help page.
+#'   Instead, it is possible to provide a function call, for example: `method =
+#'   method_kde()`. In many cases, these functions accept parameters governing
+#'   the density estimation procedure. Here, `method_kde()` accepts parameters
+#'   `h` and `adjust`, both related to the kernel's bandwidth. For details, see
+#'   `?method_kde`. Every method of bivariate density estimation implemented has
+#'   such corresponding `method_*()` function, each with an associated help
+#'   page.
 #'
-#' Note: `geom_hdr()` and other layer functions also have `method` arguments which behave in the same way.
-#' For more details on the use and implementation of the `method_*()` functions,
-#' see `vignette("method", "ggdensity")`.
+#'   Note: `geom_hdr()` and other layer functions also have `method` arguments
+#'   which behave in the same way. For more details on the use and
+#'   implementation of the `method_*()` functions, see `vignette("method",
+#'   "ggdensity")`.
 #'
-#' @section The `fun` argument:
-#' If `method` is set to `"fun"`, `get_hdr()` expects a bivariate probability
-#' density function to be specified with the `fun` argument.
-#' It is required that `fun` be a function of at least two arguments (`x` and `y`).
-#' Beyond these first two arguments, `fun` can have arbitrarily many arguments;
-#' these can be set in `get_hdr()` as a named list via the `args` parameter.
+#' @section The `fun` argument: If `method` is set to `"fun"`, `get_hdr()`
+#'   expects a bivariate probability density function to be specified with the
+#'   `fun` argument. It is required that `fun` be a function of at least two
+#'   arguments (`x` and `y`). Beyond these first two arguments, `fun` can have
+#'   arbitrarily many arguments; these can be set in `get_hdr()` as a named list
+#'   via the `args` parameter.
 #'
-#' Note: `get_hdr()` requires that `fun` be vectorized in `x` and `y`.
-#' For an example of an appropriate choice of `fun`, see the final example below.
+#'   Note: `get_hdr()` requires that `fun` be vectorized in `x` and `y`. For an
+#'   example of an appropriate choice of `fun`, see the final example below.
 #'
 #' @returns
 #'
-#' `get_hdr` returns a list with elements `df_est` (`data.frame`), `breaks` (named `numeric`), and `data` (`data.frame`).
+#' `get_hdr` returns a list with elements `df_est` (`data.frame`), `breaks`
+#' (named `numeric`), and `data` (`data.frame`).
 #'
 #' * `df_est`: the estimated HDRs and density evaluated on the grid defined by `rangex`, `rangey`, and `n`.
-#' The column of estimated HDRs (`df_est$hdr`) is a numeric vector with values from `probs`.
-#' The columns `df_est$fhat` and `df_est$fhat_discretized` correspond to the estimated density
-#' on the original scale and rescaled to sum to 1, respectively.
+#' The column of estimated HDRs (`df_est$hdr`) is a numeric vector with values
+#' from `probs`. The columns `df_est$fhat` and `df_est$fhat_discretized`
+#' correspond to the estimated density on the original scale and rescaled to sum
+#' to 1, respectively.
 #'
 #' * `breaks`: the heights of the estimated density (`df_est$fhat`) corresponding to the HDRs specified by `probs`.
-#' Will always have additional element `Inf` representing the cutoff for the 100% HDR.
+#' Will always have additional element `Inf` representing the cutoff for the
+#' 100% HDR.
 #'
 #' * `data`: the original data provided in the `data` argument.
-#' If `hdr_membership` is set to `TRUE`, this includes a column (`data$hdr_membership`)
-#' with the HDR corresponding to each data point.
+#' If `hdr_membership` is set to `TRUE`, this includes a column
+#' (`data$hdr_membership`) with the HDR corresponding to each data point.
 #'
 #' @examples
 #' df <- data.frame(x = rnorm(1e3), y = rnorm(1e3))
@@ -223,7 +234,7 @@ get_hdr_membership <- function(x, y, df_est, breaks, probs) {
 # fun is a function of vectors x, y
 f_est <- function(method, data, n, rangex, rangey, fun = NULL, args = list()) {
 
-  # If fun isn't specified, method returns a closure
+  # If `fun` isn't specified, method returns a closure
   # representing closed form of density estimate
   fun <- fun %||% method(data)
 

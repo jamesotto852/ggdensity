@@ -19,71 +19,80 @@ get_hdr(
 \arguments{
 \item{data}{A data frame with columns \code{x} and \code{y}.}
 
-\item{method}{Either a character (\code{"kde"}, \code{"mvnorm"}, \code{"histogram"}, \code{"freqpoly"}, or \code{"fun"}) or \verb{method_*()} function.
-See the "The \code{method} argument" section below for details.}
+\item{method}{Either a character (\code{"kde"}, \code{"mvnorm"}, \code{"histogram"},
+\code{"freqpoly"}, or \code{"fun"}) or \verb{method_*()} function. See the "The \code{method}
+argument" section below for details.}
 
 \item{probs}{Probabilities to compute HDRs for.}
 
 \item{n}{Resolution of grid representing estimated density and HDRs.}
 
-\item{rangex, rangey}{Range of grid representing estimated density and HDRs, along the x- and y-axes.}
+\item{rangex, rangey}{Range of grid representing estimated density and HDRs,
+along the x- and y-axes.}
 
-\item{hdr_membership}{Should HDR membership of data points (\code{data}) be computed?
-Defaults to \code{TRUE}, although it is computationally expensive for large data sets.}
+\item{hdr_membership}{Should HDR membership of data points (\code{data}) be
+computed? Defaults to \code{TRUE}, although it is computationally expensive for
+large data sets.}
 
-\item{fun}{Optional, a joint probability density function, must be vectorized in its first two arguments.
-See the "The \code{fun} argument" section below for details.}
+\item{fun}{Optional, a joint probability density function, must be vectorized
+in its first two arguments. See the "The \code{fun} argument" section below for
+details.}
 
 \item{args}{Optional, a list of arguments to be provided to \code{fun}.}
 }
 \value{
-\code{get_hdr} returns a list with elements \code{df_est} (\code{data.frame}), \code{breaks} (named \code{numeric}), and \code{data} (\code{data.frame}).
+\code{get_hdr} returns a list with elements \code{df_est} (\code{data.frame}), \code{breaks}
+(named \code{numeric}), and \code{data} (\code{data.frame}).
 \itemize{
 \item \code{df_est}: the estimated HDRs and density evaluated on the grid defined by \code{rangex}, \code{rangey}, and \code{n}.
-The column of estimated HDRs (\code{df_est$hdr}) is a numeric vector with values from \code{probs}.
-The columns \code{df_est$fhat} and \code{df_est$fhat_discretized} correspond to the estimated density
-on the original scale and rescaled to sum to 1, respectively.
+The column of estimated HDRs (\code{df_est$hdr}) is a numeric vector with values
+from \code{probs}. The columns \code{df_est$fhat} and \code{df_est$fhat_discretized}
+correspond to the estimated density on the original scale and rescaled to sum
+to 1, respectively.
 \item \code{breaks}: the heights of the estimated density (\code{df_est$fhat}) corresponding to the HDRs specified by \code{probs}.
-Will always have additional element \code{Inf} representing the cutoff for the 100\% HDR.
+Will always have additional element \code{Inf} representing the cutoff for the
+100\% HDR.
 \item \code{data}: the original data provided in the \code{data} argument.
-If \code{hdr_membership} is set to \code{TRUE}, this includes a column (\code{data$hdr_membership})
-with the HDR corresponding to each data point.
+If \code{hdr_membership} is set to \code{TRUE}, this includes a column
+(\code{data$hdr_membership}) with the HDR corresponding to each data point.
 }
 }
 \description{
-\code{get_hdr} is used to estimate a 2-dimensional density and compute corresponding HDRs.
-The estimated density and HDRs are represented in a discrete form as a grid, defined by arguments \code{rangex}, \code{rangey}, and \code{n}.
-\code{get_hdr} is used internally by layer functions \code{stat_hdr()}, \code{stat_hdr_points()}, \code{stat_hdr_fun()}, etc.
+\code{get_hdr} is used to estimate a 2-dimensional density and compute
+corresponding HDRs. The estimated density and HDRs are represented in a
+discrete form as a grid, defined by arguments \code{rangex}, \code{rangey}, and \code{n}.
+\code{get_hdr} is used internally by layer functions \code{stat_hdr()},
+\code{stat_hdr_points()}, \code{stat_hdr_fun()}, etc.
 }
 \section{The \code{method} argument}{
+ The density estimator used to estimate the
+HDRs is specified with the \code{method} argument. The simplest way to specify
+an estimator is to provide a character value to \code{method}, for example
+\code{method = "kde"} specifies a kernel density estimator. However, this
+specification is limited to the default behavior of the estimator.
 
-The density estimator used to estimate the HDRs is specified with the \code{method} argument.
-The simplest way to specify an estimator is to provide a character value to \code{method},
-for example \code{method = "kde"} specifies a kernel density estimator.
-However, this specification is limited to the default behavior of the estimator.
+Instead, it is possible to provide a function call, for example: \code{method = method_kde()}. In many cases, these functions accept parameters governing
+the density estimation procedure. Here, \code{method_kde()} accepts parameters
+\code{h} and \code{adjust}, both related to the kernel's bandwidth. For details, see
+\code{?method_kde}. Every method of bivariate density estimation implemented has
+such corresponding \verb{method_*()} function, each with an associated help
+page.
 
-Instead, it is possible to provide a function call, for example: \code{method = method_kde()}.
-In many cases, these functions accept parameters governing the density estimation procedure.
-Here, \code{method_kde()} accepts parameters \code{h} and \code{adjust}, both related to the kernel's bandwidth.
-For details, see \code{?method_kde}.
-Every method of bivariate density estimation implemented has such corresponding \verb{method_*()} function,
-each with an associated help page.
-
-Note: \code{geom_hdr()} and other layer functions also have \code{method} arguments which behave in the same way.
-For more details on the use and implementation of the \verb{method_*()} functions,
-see \code{vignette("method", "ggdensity")}.
+Note: \code{geom_hdr()} and other layer functions also have \code{method} arguments
+which behave in the same way. For more details on the use and
+implementation of the \verb{method_*()} functions, see \code{vignette("method", "ggdensity")}.
 }
 
 \section{The \code{fun} argument}{
+ If \code{method} is set to \code{"fun"}, \code{get_hdr()}
+expects a bivariate probability density function to be specified with the
+\code{fun} argument. It is required that \code{fun} be a function of at least two
+arguments (\code{x} and \code{y}). Beyond these first two arguments, \code{fun} can have
+arbitrarily many arguments; these can be set in \code{get_hdr()} as a named list
+via the \code{args} parameter.
 
-If \code{method} is set to \code{"fun"}, \code{get_hdr()} expects a bivariate probability
-density function to be specified with the \code{fun} argument.
-It is required that \code{fun} be a function of at least two arguments (\code{x} and \code{y}).
-Beyond these first two arguments, \code{fun} can have arbitrarily many arguments;
-these can be set in \code{get_hdr()} as a named list via the \code{args} parameter.
-
-Note: \code{get_hdr()} requires that \code{fun} be vectorized in \code{x} and \code{y}.
-For an example of an appropriate choice of \code{fun}, see the final example below.
+Note: \code{get_hdr()} requires that \code{fun} be vectorized in \code{x} and \code{y}. For an
+example of an appropriate choice of \code{fun}, see the final example below.
 }
 
 \examples{

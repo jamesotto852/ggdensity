@@ -27,15 +27,12 @@ method_mvnorm <- function() {
 
     data_matrix <- with(data, cbind(x, y))
     mu_hat <- colMeans(data_matrix)
-    S <- cov(data_matrix)
-    R <- chol(S) # R'R = crossprod(R) = S
-    p <- 2       # = dim of bivariate normal
+    R <- chol(cov(data_matrix)) # R'R = crossprod(R) = S
 
     function(x, y) {
       X <- cbind(x, y)
       tmp <- backsolve(R, t(X) - mu_hat, transpose = TRUE)
-      rss <- colSums(tmp^2)
-      logretval <- -sum(log(diag(R))) - 0.5 * p * log(2 * pi) - 0.5 * rss
+      logretval <- -sum(log(diag(R))) - log(2 * pi) - 0.5 * colSums(tmp^2)
       exp( logretval )
     }
 
