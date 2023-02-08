@@ -18,7 +18,8 @@
 #'   geom_point(size = 1)
 #'
 #' # Can also be used with `get_hdr()` for numerical summary of HDRs
-#' get_hdr(df, method = method_mvnorm())
+#' res <- get_hdr(df, method = method_mvnorm())
+#' str(res)
 #'
 #' @export
 method_mvnorm <- function() {
@@ -76,8 +77,8 @@ method_mvnorm <- function() {
 #'   geom_point(size = 1)
 #'
 #' # Can also be used with `get_hdr()` for numerical summary of HDRs
-#' get_hdr(df, method = method_kde())
-#'
+#' res <- get_hdr(df, method = method_kde())
+#' str(res)
 #'
 #' @export
 method_kde <- function(h = NULL, adjust = c(1, 1)) {
@@ -147,7 +148,8 @@ method_kde <- function(h = NULL, adjust = c(1, 1)) {
 #'   geom_point(size = 1)
 #'
 #' # Can also be used with `get_hdr()` for numerical summary of HDRs
-#' get_hdr(df, method = method_histogram())
+#' res <- get_hdr(df, method = method_histogram())
+#' str(res)
 #' }
 #'
 #' @export
@@ -306,8 +308,8 @@ method_histogram <- function(bins = NULL, smooth = FALSE, nudgex = "none", nudge
 #'   geom_point(size = 1)
 #'
 #' # Can also be used with `get_hdr()` for numerical summary of HDRs
-#' get_hdr(df, method = method_freqpoly())
-#'
+#' res <- get_hdr(df, method = method_freqpoly())
+#' str(res)
 #'
 #' @export
 method_freqpoly <- function(bins = NULL) {

@@ -17,7 +17,8 @@
 #'   geom_density()
 #'
 #' # Can also be used with `get_hdr_1d()` for numerical summary of HDRs
-#' get_hdr_1d(df$x, method = method_norm_1d())
+#' res <- get_hdr_1d(df$x, method = method_norm_1d())
+#' str(res)
 #'
 #' @export
 method_norm_1d <- function() {
@@ -61,7 +62,8 @@ method_norm_1d <- function() {
 #'   geom_density(kernel = "triangular")
 #'
 #' # Can also be used with `get_hdr_1d()` for numerical summary of HDRs
-#' get_hdr_1d(df$x, method = method_kde_1d())
+#' res <- get_hdr_1d(df$x, method = method_kde_1d())
+#' str(res)
 #'
 #' @export
 method_kde_1d <- function(bw = "nrd0", adjust = 1, kernel = "gaussian", weights = NULL, window = kernel) {
@@ -126,7 +128,8 @@ method_kde_1d <- function(bw = "nrd0", adjust = 1, kernel = "gaussian", weights 
 #' p + geom_hdr_rug(method = method_histogram_1d(bins = 5))
 #'
 #' # Can also be used with `get_hdr_1d()` for numerical summary of HDRs
-#' get_hdr_1d(df$x, method = method_histogram_1d())
+#' res <- get_hdr_1d(df$x, method = method_histogram_1d())
+#' str(res)
 #'
 #' @export
 method_histogram_1d <- function(bins = NULL) {
@@ -183,7 +186,8 @@ method_histogram_1d <- function(bins = NULL) {
 #' p + geom_hdr_rug(method = method_freqpoly_1d(bins = 100))
 #'
 #' # Can also be used with `get_hdr_1d()` for numerical summary of HDRs
-#' get_hdr_1d(df$x, method = method_freqpoly_1d())
+#' res <- get_hdr_1d(df$x, method = method_freqpoly_1d())
+#' str(res)
 #'
 #' @export
 method_freqpoly_1d <- function(bins = NULL) {

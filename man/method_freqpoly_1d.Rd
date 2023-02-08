@@ -34,7 +34,8 @@ p + geom_hdr_rug(method = method_freqpoly_1d())
 p + geom_hdr_rug(method = method_freqpoly_1d(bins = 100))
 
 # Can also be used with `get_hdr_1d()` for numerical summary of HDRs
-get_hdr_1d(df$x, method = method_freqpoly_1d())
+res <- get_hdr_1d(df$x, method = method_freqpoly_1d())
+str(res)
 
 }
 \references{

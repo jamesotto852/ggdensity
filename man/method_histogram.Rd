@@ -51,7 +51,8 @@ ggplot(df, aes(x, y)) +
   geom_point(size = 1)
 
 # Can also be used with `get_hdr()` for numerical summary of HDRs
-get_hdr(df, method = method_histogram())
+res <- get_hdr(df, method = method_histogram())
+str(res)
 }
 
 }

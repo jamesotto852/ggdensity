@@ -78,6 +78,7 @@ ggplot(df, aes(x)) +
   geom_density(kernel = "triangular")
 
 # Can also be used with `get_hdr_1d()` for numerical summary of HDRs
-get_hdr_1d(df$x, method = method_kde_1d())
+res <- get_hdr_1d(df$x, method = method_kde_1d())
+str(res)
 
 }
