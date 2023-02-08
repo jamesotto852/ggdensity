@@ -219,9 +219,10 @@ and removing important features of how the variables (co-)vary.
 The `method` argument may be specified either as a character vector
 (`method = "kde"`) or as a function call (`method = method_kde()`). When
 a function call is used, it may be possible to specify parameters
-governing the density estimation procedure. Here, `method_kde()` accepts
-parameters `h` and `adjust`, both related to the kernel’s bandwidth. For
-details, see `?method_kde` or `vignette("method", "ggdensity")`.
+governing the density estimation procedure. For example, `method_kde()`
+accepts parameters `h` and `adjust`, both related to the kernel’s
+bandwidth. For details see `?method_kde` or
+`vignette("method", "ggdensity")`.
 
 ## If you know your PDF
 
