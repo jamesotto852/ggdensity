@@ -24,7 +24,7 @@ set.seed(1)
 
 <!-- badges: start -->
 [![check-release](https://github.com/jamesotto852/ggdensity/actions/workflows/check-release.yaml/badge.svg)](https://github.com/jamesotto852/ggdensity/actions/workflows/check-release.yaml)
-[![test-coverage](https://github.com/jamesotto852/ggdensity/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/jamesotto852/ggdensity/actions/workflows/test-coverage.yaml)
+[![test-coverage](https://codecov.io/gh/jamesotto852/ggdensity/branch/main/graph/badge.svg)](https://app.codecov.io/gh/jamesotto852/ggdensity?branch=main)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version-ago/ggdensity)](https://cran.r-project.org/package=ggdensity)
 [![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/ggdensity)](https://cran.r-project.org/package=ggdensity)
 <!-- badges: end -->
