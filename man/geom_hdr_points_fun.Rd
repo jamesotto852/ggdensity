@@ -10,16 +10,15 @@
 stat_hdr_points_fun(
   mapping = NULL,
   data = NULL,
-  geom = "hdr_points_fun",
+  geom = "point",
   position = "identity",
   ...,
   fun,
   args = list(),
-  normalized = TRUE,
   probs = c(0.99, 0.95, 0.8, 0.5),
   xlim = NULL,
   ylim = NULL,
-  res = 100,
+  n = 100,
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE
@@ -37,10 +36,10 @@ geom_hdr_points_fun(
 )
 }
 \arguments{
-\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}} or
-\code{\link[ggplot2:aes_]{aes_()}}. If specified and \code{inherit.aes = TRUE} (the
-default), it is combined with the default mapping at the top level of the
-plot. You must supply \code{mapping} if there is no plot mapping.}
+\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}}. If specified and
+\code{inherit.aes = TRUE} (the default), it is combined with the default mapping
+at the top level of the plot. You must supply \code{mapping} if there is no plot
+mapping.}
 
 \item{data}{The data to be displayed in this layer. There are three
 options:
@@ -57,10 +56,14 @@ the plot data. The return value must be a \code{data.frame}, and
 will be used as the layer data. A \code{function} can be created
 from a \code{formula} (e.g. \code{~ head(.x, 10)}).}
 
-\item{geom}{The geometric object to use display the data}
+\item{geom}{The geometric object to use to display the data, either as a
+\code{ggproto} \code{Geom} subclass or as a string naming the geom stripped of the
+\code{geom_} prefix (e.g. \code{"point"} rather than \code{"geom_point"})}
 
-\item{position}{Position adjustment, either as a string, or the result of
-a call to a position adjustment function.}
+\item{position}{Position adjustment, either as a string naming the adjustment
+(e.g. \code{"jitter"} to use \code{position_jitter}), or the result of a call to a
+position adjustment function. Use the latter if you need to change the
+settings of the adjustment.}
 
 \item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
@@ -70,18 +73,14 @@ to the paired geom/stat.}
 \item{fun}{A function, the joint probability density function, must be
 vectorized in its first two arguments; see examples.}
 
-\item{args}{List of additional arguments passed on to the function \code{fun} as a
-named list.}
-
-\item{normalized}{Is the function normalized (a proper PDF)? If no, set to
-\code{FALSE}.}
+\item{args}{Named list of additional arguments passed on to \code{fun}.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
-\item{xlim, ylim}{Optionally, restrict the support of the pdf (\code{fun}) to this
-range.}
+\item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
+range of data if present.}
 
-\item{res}{Resolution of grid \code{fun} is evaluated on.}
+\item{n}{Number of grid points in each direction.}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -98,7 +97,9 @@ that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 
 \item{stat}{The statistical transformation to use on the data for this
-layer, as a string.}
+layer, either as a \code{ggproto} \code{Geom} subclass or as a string naming the
+stat stripped of the \code{stat_} prefix (e.g. \code{"count"} rather than
+\code{"stat_count"})}
 }
 \description{
 Compute the highest density regions (HDRs) of a bivariate pdf and plot the provided
@@ -128,16 +129,16 @@ by \code{probs}.} }
 }
 
 \examples{
-
-# can plot points colored according to known pdf:
-f <- function(x, y) dexp(x) * dexp(y)
+# Can plot points colored according to known pdf:
+set.seed(1)
 df <- data.frame(x = rexp(1000), y = rexp(1000))
+f <- function(x, y) dexp(x) * dexp(y)
 
 ggplot(df, aes(x, y)) +
   geom_hdr_points_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
 
 
-# also allows for hdrs of a custom parametric model
+# Also allows for hdrs of a custom parametric model
 
 # generate example data
 n <- 1000

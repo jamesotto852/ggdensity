@@ -1,18 +1,18 @@
 #' Rug plots of marginal highest density region estimates
 #'
 #' Perform 1D density estimation, compute and plot the resulting highest density
-#' regions in a way similar to [ggplot2::geom_rug()]. Note, the plotted objects have the probs mapped to the `alpha`
-#' aesthetic by default.
+#' regions in a way similar to [ggplot2::geom_rug()].
+#' Note, the plotted objects have probabilities mapped to the `alpha` aesthetic by default.
 #'
 #' @section Aesthetics: geom_hdr_rug understands the following aesthetics (required
 #'   aesthetics are in bold):
 #'
+#'   - x
+#'   - y
 #'   - alpha
 #'   - fill
 #'   - group
 #'   - subgroup
-#'   - x
-#'   - y
 #'
 #' @section Computed variables:
 #'
@@ -20,25 +20,20 @@
 #'   by `probs`, corresponding to each point.} }
 #'
 #' @inheritParams ggplot2::geom_rug
-#' @inheritParams ggplot2::stat_density
 #' @inheritParams stat_hdr
-#' @param bins Number of bins along each axis for histogram and frequency polygon estimators.
-#'   Either a vector of length 2 or a scalar value which is recycled for both dimensions.
-#'   Defaults to normal reference rule (Scott, pg 87).
-#' @param n Resolution of grid used in discrete approximations for kernel
-#'   density and parametric estimators.
-#' @param h The smoothing bandwidth to be used.
-#'   If numeric, the standard deviation of the smoothing kernel.
-#'   If character, a rule to choose the bandwidth, as listed in
-#'   [stats::bw.nrd()].
+#' @param method,method_y Density estimator(s) to use.
+#'   By default `method` is used for both x- and y-axis.
+#'   If specified, `method_y` will be used for y-axis.
+#'   Accepts character vector: `"kde"`,`"histogram"`, `"freqpoly"`, or `"norm"`.
+#'   Alternatively accepts functions  which return closures corresponding to density estimates,
+#'   see `?get_hdr_1d` or `vignette("method", "ggdensity")`.
 #' @name geom_hdr_rug
 #' @rdname geom_hdr_rug
-#' @references Scott, David W. Multivariate Density Estimation (2e), Wiley.
 #'
 #' @import ggplot2
 #'
 #' @examples
-#'
+#' set.seed(1)
 #' df <- data.frame(x = rnorm(100), y = rnorm(100))
 #'
 #' # Plot marginal HDRs for bivariate data
@@ -52,7 +47,7 @@
 #'   geom_hdr_rug() +
 #'   coord_fixed()
 #'
-#' # Or, plot marginal HDR for univariate data
+#' # Plot HDR for univariate data
 #' ggplot(df, aes(x)) +
 #'   geom_density() +
 #'   geom_hdr_rug()
@@ -61,7 +56,7 @@
 #'   geom_density() +
 #'   geom_hdr_rug()
 #'
-#' # Can specify location of marginal HDRs as in ggplot2::geom_rug(),
+#' # Specify location of marginal HDRs as in ggplot2::geom_rug()
 #' ggplot(df, aes(x, y)) +
 #'   geom_hdr() +
 #'   geom_hdr_rug(sides = "tr", outside = TRUE) +
@@ -88,20 +83,17 @@ NULL
 #' @rdname geom_hdr_rug
 #' @export
 stat_hdr_rug <- function(mapping = NULL, data = NULL,
-                                      geom = "hdr_rug", position = "identity",
-                                      ...,
-                                      method = "kde",
-                                      probs = c(.99, .95, .8, .5),
-                                      xlim = NULL,
-                                      ylim = NULL,
-                                      h = "nrd0",
-                                      adjust = 1,
-                                      kernel = "gaussian",
-                                      bins = NULL,
-                                      n = 512,
-                                      na.rm = FALSE,
-                                      show.legend = TRUE,
-                                      inherit.aes = TRUE) {
+                         geom = "hdr_rug", position = "identity",
+                         ...,
+                         method = "kde",
+                         method_y = "kde",
+                         probs = c(.99, .95, .8, .5),
+                         xlim = NULL,
+                         ylim = NULL,
+                         n = 512,
+                         na.rm = FALSE,
+                         show.legend = TRUE,
+                         inherit.aes = TRUE) {
   layer(
     data = data,
     mapping = mapping,
@@ -112,13 +104,10 @@ stat_hdr_rug <- function(mapping = NULL, data = NULL,
     inherit.aes = inherit.aes,
     params = list(
       method = method,
+      method_y = method_y,
       probs = probs,
       xlim = xlim,
       ylim = ylim,
-      h = h,
-      adjust = adjust,
-      kernel = kernel,
-      bins = bins,
       n = n,
       na.rm = na.rm,
       ...
@@ -138,94 +127,88 @@ StatHdrRug <- ggproto("StatHdrRug", Stat,
   default_aes = aes(alpha = after_stat(probs)),
 
   compute_group = function(data, scales, na.rm = FALSE,
-                           method = "kde", probs = c(.99, .95, .8, .5),
-                           xlim = NULL, ylim = NULL,
-                           h = "nrd0",
-                           adjust = 1,
-                           kernel = "gaussian",
-                           bins = NULL,
-                           n = 512) {
+                           method = "kde", method_y = NULL,
+                           probs = c(.99, .95, .8, .5),
+                           xlim = NULL, ylim = NULL, n = 512) {
 
-  probs <- probs[order(probs, decreasing = TRUE)]
+    # Recycle for both x, y
+    if (length(n) == 1) n <- rep(n, 2)
 
-  # Recycle vectors of length 1 for both x, y
-  h <- rep(h, 2)
-  adjust <- rep(adjust, 2)
-  kernel <- rep(kernel, 2)
-  bins <- rep(bins, 2)
-  n <- rep(n, 2)
+    # If no alternative method_y, use method
+    if (is.null(method_y)) method_y <- method
 
-  # Estimate marginal densities
 
-  # Initialize dfs for x and y axes,
-  # in case only x or y are supplied:
-  df_x <- data.frame()
-  df_y <- data.frame()
+    # Estimate marginal densities
 
-  if (!is.null(data$x)) {
+    # Initialize dfs for x and y axes,
+    # in case only x or y are supplied:
+    df_x <- data.frame()
+    df_y <- data.frame()
 
-    rangex <- xlim %||% scales$x$dimension()
+    if (!is.null(data$x)) {
 
-    df_x <- switch(method,
-      "kde" = kde_marginal(data$x, data$weight, rangex[1], rangex[2], h[1], adjust[1], kernel[1], n[1]),
-      "histogram" = hist_marginal(data$x, rangex[1], rangex[2], bins[1]),
-      "freqpoly" = freqpoly_marginal(data$x, rangex[1], rangex[2], bins[1], n[1]),
-      "norm" = norm_marginal(data$x, rangex[1], rangex[2], n[1])
-    )
-    if (!(method %in% c("kde", "norm", "histogram", "freqpoly"))) stop("Invalid method specified")
+      rangex <- xlim %||% scales$x$dimension()
 
-    # Find vals. of f_hat for different HDRs
-    cutoffs_x <- find_cutoff(df_x, probs)
-    find_hdr_x <- assign_cutoff(probs, cutoffs_x)
+      res_x <- get_hdr_1d(data$x, method, probs, n[1], rangex, hdr_membership = FALSE)
 
-    # Assign each point along axes to an HDR
-    df_x$probs <- find_hdr_x(df_x$fhat)
-    df_x <- df_x[!is.na(df_x$probs),]
-    df_x$probs <- scales::percent_format(accuracy = 1)(df_x$probs)
-    df_x$probs <- ordered(df_x$probs, scales::percent_format(accuracy = 1)(probs))
+      df_x <- res_to_df_1d(res_x, probs, data$group[1], output = "rug")
 
-    df_x$axis <- "x"
-    df_x$y <- NA
+      # Needs correct name for ggplot2 internals
+      df_x$axis <- "x"
+      df_x$y <- NA
+
+    }
+
+
+    if (!is.null(data$y)) {
+
+      rangey <- ylim %||% scales$y$dimension()
+
+      res_y <- get_hdr_1d(data$y, method_y, probs, n[2], rangey, hdr_membership = FALSE)
+
+      df_y <- res_to_df_1d(res_y, probs, data$group[1], output = "rug")
+
+      # Needs correct name for ggplot2 internals
+      df_y$axis <- "y"
+      df_y$y <- df_y$x
+      df_y$x <- NA
+
+    }
+
+    df <- rbind(df_x, df_y)
+
+    # Need to remove extra col if only plotting x or y rug
+    if (is.null(data$x)) df$x <- NULL
+    if (is.null(data$y)) df$y <- NULL
+
+    df
+
+    }
+  )
+
+
+res_to_df_1d <- function(res, probs, group, output) {
+
+  if (output == "rug") {
+
+    probs_formatted <- scales::percent_format(accuracy = 1)(probs)
+
+    df <- res$df_est
+
+    # alpha will be mapped to df$probs
+    df$probs <- scales::percent_format(accuracy = 1)(df$hdr)
+    df$probs <- ordered(df$probs, levels = probs_formatted)
+    df$hdr <- NULL
+
+    # Discard 100% HDR if it's not in probs:
+    df <- df[!is.na(df$probs),]
 
   }
-
-
-  if (!is.null(data$y)) {
-
-    rangey <- ylim %||% scales$y$dimension()
-
-    df_y <- switch(method,
-      "kde" = kde_marginal(data$y, data$weight, rangey[1], rangey[2], h[1], adjust[1], kernel[1], n[1]),
-      "histogram" = hist_marginal(data$y, rangey[1], rangey[2], bins[1]),
-      "freqpoly" = freqpoly_marginal(data$y, rangey[1], rangey[2], bins[2], n[2]),
-      "norm" = norm_marginal(data$y, rangey[1], rangey[2], n[2])
-    )
-    if (!(method %in% c("kde", "norm", "histogram", "freqpoly"))) stop("Invalid method specified")
-
-    cutoffs_y <- find_cutoff(df_y, probs)
-    find_hdr_y <- assign_cutoff(probs, cutoffs_y)
-
-    df_y$probs <- find_hdr_y(df_y$fhat)
-    df_y <- df_y[!is.na(df_y$probs),]
-    df_y$probs <- scales::percent_format(accuracy = 1)(df_y$probs)
-    df_y$probs <- ordered(df_y$probs, scales::percent_format(accuracy = 1)(probs))
-
-    df_y$axis <- "y"
-    # Needs correct name for ggplot2 internals
-    df_y$y <- df_y$x
-    df_y$x <- NA
-
-  }
-
-  df <- rbind(df_x, df_y)
-
-  # Need to remove extra col if only plotting x or y rug
-  if (is.null(data$x)) df$x <- NULL
-  if (is.null(data$y)) df$y <- NULL
 
   df
-  }
-)
+
+}
+
 
 
 #' @rdname geom_hdr_rug

@@ -23,9 +23,10 @@ set.seed(1)
 # ggdensity <img src="man/figures/logo.png"  align="right"  width="120" style="padding-left:10px;background-color:white;" />
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/jamesotto852/ggdensity/workflows/R-CMD-check/badge.svg)](https://github.com/jamesotto852/ggdensity/actions)
+[![check-release](https://github.com/jamesotto852/ggdensity/actions/workflows/check-release.yaml/badge.svg)](https://github.com/jamesotto852/ggdensity/actions/workflows/check-release.yaml)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version-ago/ggdensity)](https://cran.r-project.org/package=ggdensity)
 [![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/ggdensity)](https://cran.r-project.org/package=ggdensity)
+[![Test coverage](https://github.com/jamesotto852/ggdensity/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/jamesotto852/ggdensity/actions/workflows/test-coverage.yaml)
 <!-- badges: end -->
 
 **ggdensity** extends [**ggplot2**](https://github.com/tidyverse/ggplot2) providing more interpretable visualizations of density estimates based on highest density regions (HDRs).
@@ -41,24 +42,25 @@ Also included are the functions `geom_hdr_fun()` and `geom_hdr_lines_fun()` for 
 
 ## Installation
 
-**ggdensity** is available on CRAN and can be installed with `install.packages("ggdensity")`.
-You can also install its development version from [GitHub](https://github.com/) with:
+**ggdensity** is available on CRAN and can be installed with:
+
+``` r 
+install.packages("ggdensity")
+```
+
+Alternatively, you can install the latest development version from [GitHub](https://github.com/) with:
 
 ``` r
 if (!requireNamespace("remotes")) install.packages("remotes")
 remotes::install_github("jamesotto852/ggdensity")
 ```
 
-
-
-
-
 ## `geom_density_2d_filled()`{.R} vs. `geom_hdr()`{.R}
 
 The standard way to visualize the joint distribution of two continuous variables in **ggplot2** is to use `ggplot2::geom_density_2d()`{.R} or `geom_density_2d_filled()`{.R}. Here's an example:
 
 ```{r ex0, message=FALSE}
-library("tidyverse"); theme_set(theme_minimal())
+library("ggplot2"); theme_set(theme_minimal())
 theme_update(panel.grid.minor = element_blank())
 library("ggdensity")
 library("patchwork")
@@ -230,7 +232,10 @@ map2(geoms, titles, p_row) |>
 
 ```
 
-
+The `method` argument may be specified either as a character vector (`method = "kde"`) or as a function call (`method = method_kde()`).
+When a function call is used, it may be possible to specify parameters governing the density estimation procedure.
+For example, `method_kde()` accepts parameters `h` and `adjust`, both related to the kernel's bandwidth.
+For details see `?method_kde` or `vignette("method", "ggdensity")`.
 
 
 ## If you know your PDF
@@ -357,6 +362,28 @@ ggplot(cars, aes(speed, dist)) +
 The second `probs` guide is currently a bug. As a work around, you can solve it by adding `guides(alpha = "none")`{.R}. Note also the use of `length = unit(.2, "cm")`, this allows us to make the thickness the same on both axes and reasonable on the plot. (Compare those rug plots to those on the previous graphic.)
 
 
+### Numerical summaries of HDRs
+
+It is possible to access numerical summaries of the estimated densities and HDRs computed by **ggdensity** with `get_hdr()`:
+
+```{r get-hdr}
+df <- data.frame(x = rnorm(1e3), y = rnorm(1e3))
+
+res <- get_hdr(df, method = "kde")
+str(res)
+```
+
+Similarly, there is `get_hdr_1d()` for univariate data:
+
+```{r get-hdr-1d}
+x <- rnorm(1e3)
+
+res <- get_hdr_1d(x, method = "kde")
+str(res)
+```
+
+For details on the objects returned by these functions, see `?get_hdr` and `?get_hdr_1d`.
+
 ## A caveat and recommendation for cropped HDRs
 
 `geom_hdr()`{.R} and related functions were written with the intent of playing nicely with **ggplot2**, so that what the typical **ggplot2** user would expect from the rest of the **ggplot2** ecosystem would work in the same way with **ggdensity**. 
@@ -394,8 +421,6 @@ p3 <- ggplot(cars, aes(speed, dist)) +
 ```
 
 
-
-
 ## Related projects
 
 There are a few other great packages out there you should know about if you're interested in **ggdensity**.  
@@ -421,6 +446,7 @@ den <- with(faithful,
   MASS::kde2d(eruptions, waiting, n = 100, lims = c(0,6,30,105))
 )
 
+if (!requireNamespace("hdrcde")) install.packages("hdrcde")
 library("hdrcde")
 p_den <- ~ with(faithful,
   plot(

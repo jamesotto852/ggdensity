@@ -15,13 +15,10 @@ stat_hdr_rug(
   position = "identity",
   ...,
   method = "kde",
+  method_y = "kde",
   probs = c(0.99, 0.95, 0.8, 0.5),
   xlim = NULL,
   ylim = NULL,
-  h = "nrd0",
-  adjust = 1,
-  kernel = "gaussian",
-  bins = NULL,
   n = 512,
   na.rm = FALSE,
   show.legend = TRUE,
@@ -43,10 +40,10 @@ geom_hdr_rug(
 )
 }
 \arguments{
-\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}} or
-\code{\link[ggplot2:aes_]{aes_()}}. If specified and \code{inherit.aes = TRUE} (the
-default), it is combined with the default mapping at the top level of the
-plot. You must supply \code{mapping} if there is no plot mapping.}
+\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}}. If specified and
+\code{inherit.aes = TRUE} (the default), it is combined with the default mapping
+at the top level of the plot. You must supply \code{mapping} if there is no plot
+mapping.}
 
 \item{data}{The data to be displayed in this layer. There are three
 options:
@@ -63,41 +60,34 @@ the plot data. The return value must be a \code{data.frame}, and
 will be used as the layer data. A \code{function} can be created
 from a \code{formula} (e.g. \code{~ head(.x, 10)}).}
 
-\item{geom}{The geometric object to use display the data}
+\item{geom}{The geometric object to use to display the data, either as a
+\code{ggproto} \code{Geom} subclass or as a string naming the geom stripped of the
+\code{geom_} prefix (e.g. \code{"point"} rather than \code{"geom_point"})}
 
-\item{position}{Position adjustment, either as a string, or the result of
-a call to a position adjustment function.}
+\item{position}{Position adjustment, either as a string naming the adjustment
+(e.g. \code{"jitter"} to use \code{position_jitter}), or the result of a call to a
+position adjustment function. Use the latter if you need to change the
+settings of the adjustment.}
 
 \item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
-\item{method}{Density estimator to use, accepts character vector: \code{"kde"},
-\code{"histogram"}, \code{"freqpoly"}, or \code{"mvnorm"}.}
+\item{method, method_y}{Density estimator(s) to use.
+By default \code{method} is used for both x- and y-axis.
+If specified, \code{method_y} will be used for y-axis.
+Accepts character vector: \code{"kde"},\code{"histogram"}, \code{"freqpoly"}, or \code{"norm"}.
+Alternatively accepts functions  which return closures corresponding to density estimates,
+see \code{?get_hdr_1d} or \code{vignette("method", "ggdensity")}.}
 
 \item{probs}{Probabilities to compute highest density regions for.}
 
 \item{xlim, ylim}{Range to compute and draw regions. If \code{NULL}, defaults to
 range of data.}
 
-\item{h}{The smoothing bandwidth to be used.
-If numeric, the standard deviation of the smoothing kernel.
-If character, a rule to choose the bandwidth, as listed in
-\code{\link[stats:bandwidth]{stats::bw.nrd()}}.}
-
-\item{adjust}{A multiplicate bandwidth adjustment. This makes it possible
-to adjust the bandwidth while still using the a bandwidth estimator.
-For example, \code{adjust = 1/2} means use half of the default bandwidth.}
-
-\item{kernel}{Kernel. See list of available kernels in \code{\link[=density]{density()}}.}
-
-\item{bins}{Number of bins along each axis for histogram and frequency polygon estimators.
-Either a vector of length 2 or a scalar value which is recycled for both dimensions.
-Defaults to normal reference rule (Scott, pg 87).}
-
-\item{n}{Resolution of grid used in discrete approximations for kernel
-density and parametric estimators.}
+\item{n}{Resolution of grid defined by \code{xlim} and \code{ylim}.
+Ignored if \code{method = "histogram"} or \code{method = "freqpoly"}.}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -114,7 +104,9 @@ that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 
 \item{stat}{The statistical transformation to use on the data for this
-layer, as a string.}
+layer, either as a \code{ggproto} \code{Geom} subclass or as a string naming the
+stat stripped of the \code{stat_} prefix (e.g. \code{"count"} rather than
+\code{"stat_count"})}
 
 \item{outside}{logical that controls whether to move the rug tassels outside of the plot area. Default is off (FALSE). You will also need to use \code{coord_cartesian(clip = "off")}. When set to TRUE, also consider changing the sides argument to "tr". See examples.}
 
@@ -126,19 +118,19 @@ bottom, and left.}
 }
 \description{
 Perform 1D density estimation, compute and plot the resulting highest density
-regions in a way similar to \code{\link[ggplot2:geom_rug]{ggplot2::geom_rug()}}. Note, the plotted objects have the probs mapped to the \code{alpha}
-aesthetic by default.
+regions in a way similar to \code{\link[ggplot2:geom_rug]{ggplot2::geom_rug()}}.
+Note, the plotted objects have probabilities mapped to the \code{alpha} aesthetic by default.
 }
 \section{Aesthetics}{
  geom_hdr_rug understands the following aesthetics (required
 aesthetics are in bold):
 \itemize{
+\item x
+\item y
 \item alpha
 \item fill
 \item group
 \item subgroup
-\item x
-\item y
 }
 }
 
@@ -150,7 +142,7 @@ by \code{probs}, corresponding to each point.} }
 }
 
 \examples{
-
+set.seed(1)
 df <- data.frame(x = rnorm(100), y = rnorm(100))
 
 # Plot marginal HDRs for bivariate data
@@ -164,7 +156,7 @@ ggplot(df, aes(x, y)) +
   geom_hdr_rug() +
   coord_fixed()
 
-# Or, plot marginal HDR for univariate data
+# Plot HDR for univariate data
 ggplot(df, aes(x)) +
   geom_density() +
   geom_hdr_rug()
@@ -173,7 +165,7 @@ ggplot(df, aes(y = y)) +
   geom_density() +
   geom_hdr_rug()
 
-# Can specify location of marginal HDRs as in ggplot2::geom_rug(),
+# Specify location of marginal HDRs as in ggplot2::geom_rug()
 ggplot(df, aes(x, y)) +
   geom_hdr() +
   geom_hdr_rug(sides = "tr", outside = TRUE) +
@@ -190,8 +182,5 @@ ggplot(df, aes(x^2, y^2)) +
  geom_hdr_rug(method = "histogram") +
  coord_fixed()
 
-}
-\references{
-Scott, David W. Multivariate Density Estimation (2e), Wiley.
 }
 \keyword{datasets}

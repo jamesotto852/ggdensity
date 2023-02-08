@@ -1,33 +1,20 @@
 #' Highest density regions of a bivariate pdf
 #'
 #' Compute and plot the highest density regions (HDRs) of a bivariate pdf.
-#' `geom_hdr_fun()` draws filled regions, and `geom_hdr_lines_fun()` draws
-#' lines outlining the regions. Note, the plotted objects have the probs mapped
-#' to the `alpha` aesthetic by default.
+#' `geom_hdr_fun()` draws filled regions, and `geom_hdr_lines_fun()` draws lines outlining the regions.
+#' Note, the plotted objects have probabilities mapped to the `alpha` aesthetic by default.
 #'
-#' @section Aesthetics: geom_hdr_fun understands the following aesthetics
-#'   (required aesthetics are in bold):
-#'
-#'   - x
-#'   - y
-#'   - alpha
-#'   - color
-#'   - fill
-#'   - group
-#'   - linetype
-#'   - size
-#'   - subgroup
-#'
-#'   geom_hdr_fun_lines understands the following aesthetics (required
+#' @section Aesthetics: `geom_hdr_fun()` and `geom_hdr_lines_fun()` understand the following aesthetics (required
 #'   aesthetics are in bold):
 #'
 #'   - x
 #'   - y
 #'   - alpha
 #'   - color
+#'   - fill (only `geom_hdr_fun`)
 #'   - group
 #'   - linetype
-#'   - size
+#'   - linewidth
 #'   - subgroup
 #'
 #' @section Computed variables:
@@ -40,27 +27,23 @@
 #' @inheritParams ggplot2::stat_density2d
 #' @param fun A function, the joint probability density function, must be
 #' vectorized in its first two arguments; see examples.
-#' @param args List of additional arguments passed on to the function `fun` as a
-#'   named list.
-#' @param normalized Is the function normalized (a proper PDF)? If no, set to
-#'   `FALSE`.
+#' @param args Named list of additional arguments passed on to `fun`.
 #' @param probs Probabilities to compute highest density regions for.
-#' @param res Resolution of grid `fun` is evaluated on.
-#' @param xlim,ylim Optionally, restrict the support of the pdf (`fun`) to this
-#'   range.
+#' @param n Resolution of grid `fun` is evaluated on.
+#' @param xlim,ylim Range to compute and draw regions. If `NULL`, defaults to
+#'   range of data if present.
 #' @name geom_hdr_fun
 #' @rdname geom_hdr_fun
 #'
 #' @import ggplot2
 #'
 #' @examples
-#'
+#' # HDRs of the bivariate exponential
 #' f <- function(x, y) dexp(x) * dexp(y)
-#' ggplot() +
-#'   geom_hdr_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
+#' ggplot() + geom_hdr_fun(fun = f, xlim = c(0, 10), ylim = c(0, 10))
 #'
 #'
-#' # the hdr of a custom parametric model
+#' # HDRs of a custom parametric model
 #'
 #' # generate example data
 #' n <- 1000
@@ -91,13 +74,13 @@
 #'
 #' ggplot(data, aes(x, y)) +
 #'   geom_hdr_fun(fun = f, args = list(th = th_hat)) +
-#'   geom_point(size = .25, color = "red")
+#'   geom_point(size = .25, color = "red") +
+#'   xlim(0, 30) + ylim(c(0, 30))
 #'
 #' ggplot(data, aes(x, y)) +
-#'   geom_hdr_fun(fun = f, args = list(th = th_hat)) +
+#'   geom_hdr_lines_fun(fun = f, args = list(th = th_hat)) +
 #'   geom_point(size = .25, color = "red") +
-#'   xlim(0, 40) + ylim(c(0, 40))
-#'
+#'   xlim(0, 30) + ylim(c(0, 30))
 #'
 #'
 NULL
@@ -112,9 +95,9 @@ NULL
 stat_hdr_fun <- function(mapping = NULL, data = NULL,
   geom = "hdr_fun", position = "identity",
   ...,
-  fun, args = list(), normalized = TRUE,
+  fun, args = list(),
   probs = c(.99, .95, .8, .5),
-  xlim = NULL, ylim = NULL, res = 100,
+  xlim = NULL, ylim = NULL, n = 100,
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE) {
@@ -132,11 +115,10 @@ stat_hdr_fun <- function(mapping = NULL, data = NULL,
     params = list(
       fun = fun,
       args = args,
-      normalized = normalized,
       probs = probs,
-      res = res,
       xlim = xlim,
       ylim = ylim,
+      n = n,
       na.rm = na.rm,
       ...
     )
@@ -154,22 +136,29 @@ StatHdrFun <- ggproto("StatHdrFun", Stat,
 
   default_aes = aes(order = after_stat(probs), alpha = after_stat(probs)),
 
-  compute_group = function(data, scales, na.rm = FALSE,
-    fun, args = list(), normalized = TRUE, probs = c(.99, .95, .8, .5),
-    res = 100, xlim = NULL, ylim = NULL)  {
+  output = "bands",
 
-    rangex <- if(is.null(scales$x)) xlim %||% c(0, 1) else xlim %||% scales$x$dimension()
-    rangey <- if(is.null(scales$y)) ylim %||% c(0, 1) else ylim %||% scales$y$dimension()
+  # very similar to StatHdr$compute_group(),
+  # only difference are the parameters fun + args (vs. method + parameters)
+  # -- this prevents factoring into one compute_group() method,
+  #    compute_group()'s arguments are different.
+  compute_group = function(self, data, scales, na.rm = FALSE,
+                           fun, args = list(), probs = c(.99, .95, .8, .5),
+                           n = 100, xlim = NULL, ylim = NULL) {
 
-    probs <- sort(probs, decreasing = TRUE)
+    if ((is.null(xlim) & is.null(scales$x)) | (is.null(ylim) & is.null(scales$y))) {
+      stop("If no data is provided to StatHdrFun, xlim and ylim must be specified")
+    }
 
-    isobands <- fun_iso(fun, args, normalized, probs, res, rangex, rangey, scales, type = "bands")
+    rangex <- xlim %||% scales$x$dimension()
+    rangey <- ylim %||% scales$y$dimension()
 
-    names(isobands) <- scales::percent_format(accuracy = 1)(probs)
-    path_df <- iso_to_polygon(isobands, data$group[1])
-    path_df$probs <- ordered(path_df$level, levels = names(isobands))
+    # Only calculate HDR membership if we need to
+    need_membership <- (self$output == "points")
 
-    path_df
+    res <- get_hdr(data, method = "fun", probs, n, rangex, rangey, hdr_membership = need_membership, fun = fun, args = args)
+
+    res_to_df(res, probs, data$group[1], self$output)
 
   }
 )

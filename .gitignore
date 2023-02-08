@@ -4,3 +4,6 @@
 .httr-oauth
 .DS_Store
 docs
+inst/doc
+/doc/
+/Meta/

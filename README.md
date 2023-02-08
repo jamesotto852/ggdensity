@@ -5,9 +5,11 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/jamesotto852/ggdensity/workflows/R-CMD-check/badge.svg)](https://github.com/jamesotto852/ggdensity/actions)
+[![check-release](https://github.com/jamesotto852/ggdensity/actions/workflows/check-release.yaml/badge.svg)](https://github.com/jamesotto852/ggdensity/actions/workflows/check-release.yaml)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version-ago/ggdensity)](https://cran.r-project.org/package=ggdensity)
 [![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/ggdensity)](https://cran.r-project.org/package=ggdensity)
+[![Test
+coverage](https://github.com/jamesotto852/ggdensity/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/jamesotto852/ggdensity/actions/workflows/test-coverage.yaml)
 <!-- badges: end -->
 
 **ggdensity** extends
@@ -27,9 +29,14 @@ probability density functions.
 
 ## Installation
 
-**ggdensity** is available on CRAN and can be installed with
-`install.packages("ggdensity")`. You can also install its development
-version from [GitHub](https://github.com/) with:
+**ggdensity** is available on CRAN and can be installed with:
+
+``` r
+install.packages("ggdensity")
+```
+
+Alternatively, you can install the latest development version from
+[GitHub](https://github.com/) with:
 
 ``` r
 if (!requireNamespace("remotes")) install.packages("remotes")
@@ -43,7 +50,7 @@ variables in **ggplot2** is to use `ggplot2::geom_density_2d()` or
 `geom_density_2d_filled()`. Here’s an example:
 
 ``` r
-library("tidyverse"); theme_set(theme_minimal())
+library("ggplot2"); theme_set(theme_minimal())
 theme_update(panel.grid.minor = element_blank())
 library("ggdensity")
 library("patchwork")
@@ -79,16 +86,11 @@ p + geom_hdr()
 `probs` here tells us the probability bounded by the corresponding
 region, and the regions are computed to be the smallest such regions
 that bound that level of probability; these are called highest density
-regions or HDRs. By default, the plotted regions show the
-![50\\%](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;50%5C%25 "50\%"),
-![80\\%](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;80%5C%25 "80\%"),
-![95\\%](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;95%5C%25 "95\%"),
-and
-![99\\%](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;99%5C%25 "99\%")
-HDRs of the estimated density, but this can be changed with the `probs`
-argument to `geom_hdr()`. Notice that your take-away from the plot made
-with `geom_density_2d_filled()` is subtlely yet significantly different
-than that of the plot made by `geom_hdr()`.
+regions or HDRs. By default, the plotted regions show the $50\%$,
+$80\%$, $95\%$, and $99\%$ HDRs of the estimated density, but this can
+be changed with the `probs` argument to `geom_hdr()`. Notice that your
+take-away from the plot made with `geom_density_2d_filled()` is subtlely
+yet significantly different than that of the plot made by `geom_hdr()`.
 
 ## Visualizing subpopulations and `geom_hdr_lines()`
 
@@ -213,6 +215,14 @@ the distributions are, potentially at the expense of over-simplifying
 and removing important features of how the variables (co-)vary.
 
 <img src="man/figures/README-ex_methods-1.png" width="100%" />
+
+The `method` argument may be specified either as a character vector
+(`method = "kde"`) or as a function call (`method = method_kde()`). When
+a function call is used, it may be possible to specify parameters
+governing the density estimation procedure. For example, `method_kde()`
+accepts parameters `h` and `adjust`, both related to the kernel’s
+bandwidth. For details see `?method_kde` or
+`vignette("method", "ggdensity")`.
 
 ## If you know your PDF
 
@@ -364,6 +374,54 @@ solve it by adding `guides(alpha = "none")`. Note also the use of
 on both axes and reasonable on the plot. (Compare those rug plots to
 those on the previous graphic.)
 
+### Numerical summaries of HDRs
+
+It is possible to access numerical summaries of the estimated densities
+and HDRs computed by **ggdensity** with `get_hdr()`:
+
+``` r
+df <- data.frame(x = rnorm(1e3), y = rnorm(1e3))
+
+res <- get_hdr(df, method = "kde")
+str(res)
+#> List of 3
+#>  $ df_est:'data.frame':  10000 obs. of  5 variables:
+#>   ..$ x               : num [1:10000] -3.05 -2.99 -2.93 -2.86 -2.8 ...
+#>   ..$ y               : num [1:10000] -3.13 -3.13 -3.13 -3.13 -3.13 ...
+#>   ..$ fhat            : num [1:10000] 1.58e-09 4.49e-09 1.30e-08 3.66e-08 9.83e-08 ...
+#>   ..$ fhat_discretized: num [1:10000] 6.43e-12 1.83e-11 5.29e-11 1.49e-10 4.00e-10 ...
+#>   ..$ hdr             : num [1:10000] 1 1 1 1 1 1 1 1 1 1 ...
+#>  $ breaks: Named num [1:5] 0.00257 0.00887 0.02929 0.07574 Inf
+#>   ..- attr(*, "names")= chr [1:5] "99%" "95%" "80%" "50%" ...
+#>  $ data  :'data.frame':  1000 obs. of  3 variables:
+#>   ..$ x             : num [1:1000] -0.817 -2.463 -1.343 0.136 0.883 ...
+#>   ..$ y             : num [1:1000] -0.5277 -1.4411 -1.9568 0.0287 1.5382 ...
+#>   ..$ hdr_membership: num [1:1000] 0.5 0.99 0.95 0.5 0.8 0.99 0.8 0.95 0.5 0.5 ...
+```
+
+Similarly, there is `get_hdr_1d()` for univariate data:
+
+``` r
+x <- rnorm(1e3)
+
+res <- get_hdr_1d(x, method = "kde")
+str(res)
+#> List of 3
+#>  $ df_est:'data.frame':  512 obs. of  4 variables:
+#>   ..$ x               : num [1:512] -2.89 -2.88 -2.86 -2.85 -2.84 ...
+#>   ..$ fhat            : num [1:512] 0.00441 0.0046 0.00479 0.00499 0.0052 ...
+#>   ..$ fhat_discretized: num [1:512] 5.46e-05 5.70e-05 5.94e-05 6.19e-05 6.45e-05 ...
+#>   ..$ hdr             : num [1:512] 1 1 1 1 1 1 1 1 1 1 ...
+#>  $ breaks: Named num [1:5] 0.0141 0.0563 0.1757 0.317 Inf
+#>   ..- attr(*, "names")= chr [1:5] "99%" "95%" "80%" "50%" ...
+#>  $ data  :'data.frame':  1000 obs. of  2 variables:
+#>   ..$ x             : num [1:1000] -0.4301 -1.5792 0.1929 -0.4973 -0.0859 ...
+#>   ..$ hdr_membership: num [1:1000] 0.5 0.95 0.5 0.5 0.5 0.5 0.8 0.5 0.5 0.99 ...
+```
+
+For details on the objects returned by these functions, see `?get_hdr`
+and `?get_hdr_1d`.
+
 ## A caveat and recommendation for cropped HDRs
 
 `geom_hdr()` and related functions were written with the intent of
@@ -459,8 +517,8 @@ den <- with(faithful,
   MASS::kde2d(eruptions, waiting, n = 100, lims = c(0,6,30,105))
 )
 
+if (!requireNamespace("hdrcde")) install.packages("hdrcde")
 library("hdrcde")
-#> This is hdrcde 3.4
 p_den <- ~ with(faithful,
   plot(
     hdr.2d(eruptions, waiting, prob = c(50, 80, 95, 99), den = den),
