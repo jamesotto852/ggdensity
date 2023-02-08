@@ -10,6 +10,12 @@
     <loc>https://jamesotto852.github.io/ggdensity/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://jamesotto852.github.io/ggdensity/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://jamesotto852.github.io/ggdensity/articles/method.html</loc>
+  </url>
+  <url>
     <loc>https://jamesotto852.github.io/ggdensity/authors.html</loc>
   </url>
   <url>
@@ -34,9 +40,42 @@
     <loc>https://jamesotto852.github.io/ggdensity/reference/geom_hdr_rug.html</loc>
   </url>
   <url>
+    <loc>https://jamesotto852.github.io/ggdensity/reference/geom_hdr_rug_fun.html</loc>
+  </url>
+  <url>
+    <loc>https://jamesotto852.github.io/ggdensity/reference/get_hdr.html</loc>
+  </url>
+  <url>
+    <loc>https://jamesotto852.github.io/ggdensity/reference/get_hdr_1d.html</loc>
+  </url>
+  <url>
     <loc>https://jamesotto852.github.io/ggdensity/reference/ggdensity.html</loc>
   </url>
   <url>
     <loc>https://jamesotto852.github.io/ggdensity/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://jamesotto852.github.io/ggdensity/reference/method_freqpoly.html</loc>
+  </url>
+  <url>
+    <loc>https://jamesotto852.github.io/ggdensity/reference/method_freqpoly_1d.html</loc>
+  </url>
+  <url>
+    <loc>https://jamesotto852.github.io/ggdensity/reference/method_histogram.html</loc>
+  </url>
+  <url>
+    <loc>https://jamesotto852.github.io/ggdensity/reference/method_histogram_1d.html</loc>
+  </url>
+  <url>
+    <loc>https://jamesotto852.github.io/ggdensity/reference/method_kde.html</loc>
+  </url>
+  <url>
+    <loc>https://jamesotto852.github.io/ggdensity/reference/method_kde_1d.html</loc>
+  </url>
+  <url>
+    <loc>https://jamesotto852.github.io/ggdensity/reference/method_mvnorm.html</loc>
+  </url>
+  <url>
+    <loc>https://jamesotto852.github.io/ggdensity/reference/method_norm_1d.html</loc>
   </url>
 </urlset>
