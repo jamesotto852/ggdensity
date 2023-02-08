@@ -6,8 +6,8 @@
 #' @seealso
 #'
 #' Useful links:
-#' * \url{https://jamesotto852.github.io/ggdensity}
-#' * \url{https://github.com/jamesotto852/ggdensity}
+#' * \url{https://jamesotto852.github.io/ggdensity/}
+#' * \url{https://github.com/jamesotto852/ggdensity/}
 #'
 #' @import ggplot2
 #' @importFrom MASS bandwidth.nrd kde2d

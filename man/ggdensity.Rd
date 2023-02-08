@@ -12,7 +12,7 @@ estimates with ggplot2.
 \seealso{
 Useful links:
 \itemize{
-\item \url{https://jamesotto852.github.io/ggdensity}
-\item \url{https://github.com/jamesotto852/ggdensity}
+\item \url{https://jamesotto852.github.io/ggdensity/}
+\item \url{https://github.com/jamesotto852/ggdensity/}
 }
 }
