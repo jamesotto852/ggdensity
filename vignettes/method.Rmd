@@ -211,7 +211,7 @@ These are the two ways the `method` argument may be specified.
 The first is necessary for cases in which an explicit definition of the estimated density is not computationally feasible 
 (for example, KDEs).
 The second is an easier option for the cases in which a closed form of the estimated density is available 
-(typically parametric estimators fall into this category).
+(for example, parametric estimators).
 
 Let's look at how we might define our own `method_*()` functions in each case,
 beginning with a simple parametric estimator.
@@ -240,14 +240,14 @@ method_mvnorm_ind <- function() {
 }
 ```
 
-To use our `method_mvnorm_ind()`, we simply supply it to `geom_hdr()`'s `method` argument.
+To use our `method_mvnorm_ind()`, we just need to supply it to `geom_hdr()`'s `method` argument.
 ```{r}
 ggplot(df, aes(x, y)) +
   geom_hdr(method = method_mvnorm_ind())
 ```
 
 If we transform our data to have non-zero covariance
-we still see the major and minor axes of the contours coincide exactly with the plot axes---exactly
+we still see the major and minor axes of the contours coincide with the plot axes---exactly
 what we would expect with this (incorrectly) constrained model.
 
 ```{r}
@@ -278,7 +278,7 @@ method_mvnorm_ind <- function(circular = FALSE) {
     ybar <- mean(data$y)
     
     if (circular) {
-      sx <- sd(c(data$x, data$y))
+      sx <- sd(c(data$x - xbar, data$y - ybar))
       sy <- sx
     } else {
       sx <- sd(data$x)
@@ -291,7 +291,7 @@ method_mvnorm_ind <- function(circular = FALSE) {
 }
 ```
 
-Now, the contours are perfectly circular (almost).
+Now, the contours are perfectly circular.
 
 ```{r}
 ggplot(df_rot, aes(x, y)) +
@@ -326,40 +326,60 @@ It is the `scales` that need adjusting, not anything related to the `method` arg
 
 ### Implementing a method returning an evaluated PDF
 
-To illustrate the other case, in which the object returned by the closure is the estimated density evaluated on a grid, we implement `method_random()`.
-This "estimates" a density on a grid with random numbers from `runif()`
-(this toy "density estimator" is useless; notice the `data` argument is not being used to determine `df_grid$fhat`).
+To illustrate the other case, in which the object returned by the closure is the estimated density evaluated on a grid, we implement `method_mvnorm_ind_grid()`.
+This estimates the same independent normal density as `method_mvnorm_ind()`,
+the only difference is the behavior of the returned closure.
 
 ```{r}
-method_random <- function() {
+method_mvnorm_ind_grid <- function() {
   
   function(data, n, rangex, rangey) {
     
+    # First, we estimate the density -----------------------------
+    
+    xbar <- mean(data$x)
+    ybar <- mean(data$y)
+    
+    sx <- sd(data$x)
+    sy <- sd(data$y)
+    
+    f_est <- function(x, y) dnorm(x, xbar, sx) * dnorm(y, ybar, sy)
+    
+    
+    # Return the density evaluated on a grid ---------------------
+    
+    # df_grid defined by rangex, rangey, and n
     df_grid <- expand.grid(
       x = seq(rangex[1], rangex[2], length.out = n),
       y = seq(rangey[1], rangey[2], length.out = n)
     )
     
-    df_grid$fhat <- runif(n^2)
+    df_grid$fhat <- f_est(df_grid$x, df_grid$y)
     
     df_grid
-    
-  }  
+  }
   
 }
-
 ```
 
-This simple example shows the general structure of `method_*()` functions which deal with gridded density estimates.
-The returned closure has additional arguments `n`, `rangex`, and `rangey` which define the grid;
-and the closure returns the grid as a `data.frame` with columns `x`, `y`, and `fhat`, where `fhat` is the (potentially unnormalized) density estimate.
+See that returned closure has additional arguments `n`, `rangex`, and `rangey` which define the grid.
+Also, the grid is represented  a `data.frame` with columns `x`, `y`, and `fhat`, where `fhat` is the (potentially unnormalized) density estimate.
 
-As expected, the HDRs resulting from this method are just random noise.
+Again, to use our `method_mvnorm_ind_grid()` we provide it to `geom_hdr()`’s method argument.
 
 ```{r}
 ggplot(df, aes(x, y)) +
-  geom_hdr(method = method_random())
+  geom_hdr(method = method_mvnorm_ind_grid())
 ```
+
+Like we saw in the previous example, we could prevent the HDRs from being "cut off" by specifying either the `x/ylim` arguments in `geom_hdr()` or
+by setting a larger range in `scale_x/y_continuous()`.
+
+<!-- While we can represent this simple density estimator as either a function or grid, -->
+<!-- there are many cases where it is not possible to represent estimators as functions in R. -->
+<!-- For example, the previously discussed `method_kde()` demands a grid representation--the -->
+<!-- underlying tool (`MASS::kde2d()`) represents the estimated density as a grid. -->
+
 
 ## The `method_*_1d()` functions
 
