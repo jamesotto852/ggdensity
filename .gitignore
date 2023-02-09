@@ -7,3 +7,10 @@ docs
 inst/doc
 /doc/
 /Meta/
+
+revdep/checks
+revdep/library
+revdep/checks.noindex
+revdep/library.noindex
+revdep/data.sqlite
+revdep/cloud.noindex
