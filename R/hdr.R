@@ -173,6 +173,8 @@ StatHdr <- ggproto("StatHdr", Stat,
 # what `GeomHdr*$draw_group()` methods need
 res_to_df <- function(res, probs, group, output) {
 
+  probs <- fix_probs(probs)
+
   # Need z for xyz_to_isobands/lines()
   res$df_est$z <- res$df_est$fhat
 
