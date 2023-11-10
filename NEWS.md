@@ -1,3 +1,7 @@
+# ggdensity (development version)
+
+* Fixed ordering of probabilities in the plot legend to be independent of order specified in `probs` argument (Reported by @z3tt #32)
+
 # ggdensity 1.0.0
 
 ## Features
