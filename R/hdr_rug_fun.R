@@ -191,7 +191,7 @@ geom_hdr_rug_fun <- function(mapping = NULL, data = NULL,
                          sides = "bl",
                          length = unit(0.03, "npc"),
                          na.rm = FALSE,
-                         show.legend = TRUE,
+                         show.legend = NA,
                          inherit.aes = TRUE) {
 
   if (is.null(data)) data <- ensure_nonempty_data
