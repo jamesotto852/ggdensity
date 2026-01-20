@@ -61,13 +61,13 @@ for <code><a href="get_hdr_1d.html">get_hdr_1d()</a></code> and layer functions 
 <dl><dt id="arg-bw">bw<a class="anchor" aria-label="anchor" href="#arg-bw"></a></dt>
 <dd><p>the smoothing bandwidth to be used.  The kernels are scaled
     such that this is the standard deviation of the smoothing kernel.
-    (Note this differs from the reference books cited below, and from S-PLUS.)</p>
+    (Note this differs from the reference books cited below.)</p>
 <p><code>bw</code> can also be a character string giving a rule to choose the
     bandwidth.  See <code><a href="https://rdrr.io/r/stats/bandwidth.html" class="external-link">bw.nrd</a></code>. <br> The default,
     <code>"nrd0"</code>, has remained the default for historical and
     compatibility reasons, rather than as a general recommendation,
-    where e.g., <code>"SJ"</code> would rather fit, see also Venables and
-    Ripley (2002).</p>
+    where e.g., <code>"SJ"</code> would rather fit, see also
+    Venables and Ripley (2002).</p>
 <p>The specified (or computed) value of <code>bw</code> is multiplied by
     <code>adjust</code>.</p></dd>
 
@@ -98,7 +98,11 @@ for <code><a href="get_hdr_1d.html">get_hdr_1d()</a></code> and layer functions 
     and there are <code>NA</code>'s in <code>x</code>, they <em>and</em> the
     corresponding weights are removed before computations.  In that case,
     when the original weights have summed to one, they are re-scaled to
-    keep doing so.</p></dd>
+    keep doing so.</p>
+<p>Note that weights are <em>not</em> taken into account for automatic
+    bandwidth rules, i.e., when <code>bw</code> is a string.  When the weights
+    are proportional to true counts <code>cn</code>, <code>density(x = rep(x, cn))</code>
+    may be used instead of <code>weights</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

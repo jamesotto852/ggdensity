@@ -23,7 +23,7 @@ method_kde_1d(
 
   the smoothing bandwidth to be used. The kernels are scaled such that
   this is the standard deviation of the smoothing kernel. (Note this
-  differs from the reference books cited below, and from S-PLUS.)
+  differs from the reference books cited below.)
 
   `bw` can also be a character string giving a rule to choose the
   bandwidth. See [`bw.nrd`](https://rdrr.io/r/stats/bandwidth.html).  
@@ -59,6 +59,11 @@ method_kde_1d(
   *and* the corresponding weights are removed before computations. In
   that case, when the original weights have summed to one, they are
   re-scaled to keep doing so.
+
+  Note that weights are *not* taken into account for automatic bandwidth
+  rules, i.e., when `bw` is a string. When the weights are proportional
+  to true counts `cn`, `density(x = rep(x, cn))` may be used instead of
+  `weights`.
 
 ## Details
 
