@@ -1,3 +1,12 @@
+# ggdensity 1.0.1
+
+## Fixes
+
+* Package startup message no longer effects the sessions RNG. (Suggested by @TimTaylor #34)
+
+
+
+
 # ggdensity 1.0.0
 
 ## Features
