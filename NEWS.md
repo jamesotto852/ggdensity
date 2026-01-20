@@ -1,5 +1,8 @@
-# ggdensity (development version)
+# ggdensity 1.0.1
 
+## Fixes
+
+* Package startup message no longer effects the sessions RNG. (Suggested by @TimTaylor #34)
 * Fixed ordering of probabilities in the plot legend to be independent of order specified in `probs` argument (Reported by @z3tt #32)
 
 # ggdensity 1.0.0
