@@ -58,3 +58,20 @@ test_that("Basic 1d HDRs render consistently", {
   vdiffr::expect_doppelganger("stat-hdr-rug-fun-ggplot", stat_hdr_rug_fun_ggplot)
 
 })
+
+test_that("Specified order of probabilities doesn't impact legend ordering", {
+
+  data <- readRDS(test_path("fixtures", "df_norm.rds"))
+
+  geom_hdr_prob_order_ggplot <- ggplot(data, aes(x, y)) +
+    geom_hdr(probs = c(.25, .5, .75, .95))
+
+  geom_hdr_rug_prob_order_ggplot <- ggplot(data, aes(x, y)) +
+    geom_hdr_rug(probs = c(.25, .5, .75, .95))
+
+  vdiffr::expect_doppelganger("geom_hdr_prob_order_ggplot", geom_hdr_prob_order_ggplot)
+  vdiffr::expect_doppelganger("geom_hdr_rug_prob_order_ggplot", geom_hdr_rug_prob_order_ggplot)
+})
+
+
+

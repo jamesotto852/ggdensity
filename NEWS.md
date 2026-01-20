@@ -2,8 +2,9 @@
 
 ## Fixes
 
-* Package startup message no longer effects the sessions RNG. (Suggested by @TimTaylor #34)
+* Package startup message no longer effects the sessions RNG (Reported by @TimTaylor #34)
 
+* Fixed ordering of probabilities in the plot legend to be independent of order specified in `probs` argument (Reported by @z3tt #32)
 
 
 
