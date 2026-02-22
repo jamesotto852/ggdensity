@@ -255,7 +255,7 @@ function (h = NULL, adjust = c(1, 1))
         df
     }
 }
-<bytecode: 0x5591089a40d8>
+<bytecode: 0x560277aefd18>
 <environment: namespace:ggdensity>
 ```
 
@@ -298,7 +298,7 @@ function ()
         }
     }
 }
-<bytecode: 0x55910c1f5c90>
+<bytecode: 0x56027b345080>
 <environment: namespace:ggdensity>
 ```
 
@@ -552,7 +552,7 @@ function (bw = "nrd0", adjust = 1, kernel = "gaussian", weights = NULL,
         data.frame(x = dens$x, fhat = dens$y)
     }
 }
-<bytecode: 0x55910a75bc58>
+<bytecode: 0x560279747ac0>
 <environment: namespace:ggdensity>
 ```
 
@@ -575,7 +575,7 @@ function ()
         function(x) dnorm(x, mu_hat, sigma_hat)
     }
 }
-<bytecode: 0x55910b1afb98>
+<bytecode: 0x560278621cc8>
 <environment: namespace:ggdensity>
 ```
 
