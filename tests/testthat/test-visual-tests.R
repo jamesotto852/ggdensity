@@ -25,8 +25,8 @@ test_that("Basic 2d HDRs render consistently", {
   # geom/stat_hdr_points_fun
   geom_hdr_points_fun_ggplot <- ggplot(data, aes(x, y)) + geom_hdr_points_fun(fun = function(x, y) dnorm(x) * dnorm(y))
   stat_hdr_points_fun_ggplot <- ggplot(data, aes(x, y)) + stat_hdr_points_fun(fun = function(x, y) dnorm(x) * dnorm(y))
-  vdiffr::expect_doppelganger("geom-hdr-points-ggplot", geom_hdr_points_ggplot)
-  vdiffr::expect_doppelganger("stat-hdr-points-ggplot", stat_hdr_points_ggplot)
+  vdiffr::expect_doppelganger("geom-hdr-points-fun-ggplot", geom_hdr_points_fun_ggplot)
+  vdiffr::expect_doppelganger("stat-hdr-points-fun-ggplot", stat_hdr_points_fun_ggplot)
 
   # geom/stat_hdr_fun
   geom_hdr_fun_ggplot <- ggplot() +
