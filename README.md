@@ -5,8 +5,9 @@
 
 <!-- badges: start -->
 
-[![check-release](https://github.com/jamesotto852/ggdensity/actions/workflows/check-release.yaml/badge.svg)](https://github.com/jamesotto852/ggdensity/actions/workflows/check-release.yaml)
-[![test-coverage](https://codecov.io/gh/jamesotto852/ggdensity/branch/main/graph/badge.svg)](https://app.codecov.io/gh/jamesotto852/ggdensity?branch=main)
+[![R-CMD-check](https://github.com/jamesotto852/ggdensity/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jamesotto852/ggdensity/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/jamesotto852/ggdensity/graph/badge.svg)](https://app.codecov.io/gh/jamesotto852/ggdensity)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version-ago/ggdensity)](https://cran.r-project.org/package=ggdensity)
 [![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/ggdensity)](https://cran.r-project.org/package=ggdensity)
 <!-- badges: end -->
@@ -17,10 +18,10 @@ interpretable visualizations of density estimates based on highest
 density regions (HDRs). **ggdensity** offers drop-in replacements for
 [**ggplot2**](https://github.com/tidyverse/ggplot2) functions:
 
--   instead of `ggplot2::geom_density_2d_filled()`, use
-    `ggdensity::geom_hdr()`;
--   instead of `ggplot2::geom_density_2d()`, use
-    `ggdensity::geom_hdr_lines()`.
+- instead of `ggplot2::geom_density_2d_filled()`, use
+  `ggdensity::geom_hdr()`;
+- instead of `ggplot2::geom_density_2d()`, use
+  `ggdensity::geom_hdr_lines()`.
 
 Also included are the functions `geom_hdr_fun()` and
 `geom_hdr_lines_fun()` for plotting HDRs of user-specified bivariate
@@ -185,14 +186,23 @@ ggplot(faithful, aes(eruptions, waiting)) +
 <img src="man/figures/README-ex_after_stat-2.png" width="100%" />
 
 <!-- ```{r} -->
+
 <!-- ggplot(faithful, aes(eruptions, waiting)) + -->
+
 <!--   geom_hdr( -->
+
 <!--     xlim = scales::expand_range(range(faithful$eruptions), mul = .25), -->
+
 <!--     ylim = scales::expand_range(range(faithful$waiting),   mul = .25) -->
+
 <!--   ) + -->
+
 <!--   geom_point(color = "red") + -->
+
 <!--   scale_x_continuous(breaks = 1:6) + -->
+
 <!--   scale_y_continuous(breaks = (4:10)*10) -->
+
 <!-- ``` -->
 
 ## Statistics details
@@ -245,7 +255,9 @@ ggplot() +
 <img src="man/figures/README-ex_hdr_fun_1-1.png" width="100%" />
 
 <!-- Discuss un-normalized densities here with example of posteriors -->
+
 <!-- In the context of a Bayesian analysis, `geom_hdr()` creates plots of highest posterior regions. -->
+
 <!-- All we need to do is give `geom_hdr()` a data frame with draws from a posterior, and  -->
 
 ### Visualizing custom parametric density estimates with `geom_hdr_fun()`
