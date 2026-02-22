@@ -4,6 +4,6 @@
     digit <- substr(time, nchar(time), nchar(time))
     as.integer(digit)
   }
-  if(!interactive() || random_digit != 1L) return()
+  if(!interactive() || random_digit() != 1L) return()
   packageStartupMessage('  Please cite ggdensity! See citation("ggdensity") for details.')
 }
