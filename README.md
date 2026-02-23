@@ -111,6 +111,11 @@ could look at that:
 
 ``` r
 library("palmerpenguins")
+#> 
+#> Attaching package: 'palmerpenguins'
+#> The following objects are masked from 'package:datasets':
+#> 
+#>     penguins, penguins_raw
 
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
   geom_hdr(xlim = c(160, 240), ylim = c(30, 70)) +
@@ -414,10 +419,10 @@ str(res)
 #> List of 3
 #>  $ df_est:'data.frame':  512 obs. of  4 variables:
 #>   ..$ x               : num [1:512] -2.89 -2.88 -2.86 -2.85 -2.84 ...
-#>   ..$ fhat            : num [1:512] 0.00441 0.0046 0.00479 0.00499 0.0052 ...
+#>   ..$ fhat            : num [1:512] 0.0044 0.00459 0.00478 0.00499 0.00519 ...
 #>   ..$ fhat_discretized: num [1:512] 5.46e-05 5.70e-05 5.94e-05 6.19e-05 6.45e-05 ...
 #>   ..$ hdr             : num [1:512] 1 1 1 1 1 1 1 1 1 1 ...
-#>  $ breaks: Named num [1:5] 0.0141 0.0563 0.1757 0.317 Inf
+#>  $ breaks: Named num [1:5] 0.0141 0.0562 0.1756 0.3167 Inf
 #>   ..- attr(*, "names")= chr [1:5] "99%" "95%" "80%" "50%" ...
 #>  $ data  :'data.frame':  1000 obs. of  2 variables:
 #>   ..$ x             : num [1:1000] -0.4301 -1.5792 0.1929 -0.4973 -0.0859 ...
@@ -523,7 +528,9 @@ den <- with(faithful,
 )
 
 if (!requireNamespace("hdrcde")) install.packages("hdrcde")
+#> Loading required namespace: hdrcde
 library("hdrcde")
+#> This is hdrcde 3.5.0
 p_den <- ~ with(faithful,
   plot(
     hdr.2d(eruptions, waiting, prob = c(50, 80, 95, 99), den = den),
