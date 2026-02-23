@@ -646,7 +646,7 @@ Perhaps the most important difference between **ggdensity** and
 
 ### Accessing estimated bivariate densities and regions
 
-All 2d plotting functions use this function to determine HDRs
+All 2D plotting functions use this function to determine HDRs
 
 - [`get_hdr()`](https://jamesotto852.github.io/ggdensity/reference/get_hdr.md)
   : Computing the highest density regions of a 2D density
@@ -675,7 +675,7 @@ All 2d plotting functions use this function to determine HDRs
 
 ### Accessing estimated univariate densities and regions
 
-All 1d plotting functions use this function to determine HDRs
+All 1D plotting functions use this function to determine HDRs
 
 - [`get_hdr_1d()`](https://jamesotto852.github.io/ggdensity/reference/get_hdr_1d.md)
   : Computing the highest density regions of a 1D density
