@@ -115,6 +115,11 @@ could look at that:
 
 ``` r
 library("palmerpenguins")
+#> 
+#> Attaching package: 'palmerpenguins'
+#> The following objects are masked from 'package:datasets':
+#> 
+#>     penguins, penguins_raw
 
 ggplot(penguins, aes(flipper_length_mm, bill_length_mm, fill = species)) +
   geom_hdr(xlim = c(160, 240), ylim = c(30, 70)) +
@@ -412,10 +417,10 @@ str(res)
 #> List of 3
 #>  $ df_est:'data.frame':  512 obs. of  4 variables:
 #>   ..$ x               : num [1:512] -2.89 -2.88 -2.86 -2.85 -2.84 ...
-#>   ..$ fhat            : num [1:512] 0.00441 0.0046 0.00479 0.00499 0.0052 ...
+#>   ..$ fhat            : num [1:512] 0.0044 0.00459 0.00478 0.00499 0.00519 ...
 #>   ..$ fhat_discretized: num [1:512] 5.46e-05 5.70e-05 5.94e-05 6.19e-05 6.45e-05 ...
 #>   ..$ hdr             : num [1:512] 1 1 1 1 1 1 1 1 1 1 ...
-#>  $ breaks: Named num [1:5] 0.0141 0.0563 0.1757 0.317 Inf
+#>  $ breaks: Named num [1:5] 0.0141 0.0562 0.1756 0.3167 Inf
 #>   ..- attr(*, "names")= chr [1:5] "99%" "95%" "80%" "50%" ...
 #>  $ data  :'data.frame':  1000 obs. of  2 variables:
 #>   ..$ x             : num [1:1000] -0.4301 -1.5792 0.1929 -0.4973 -0.0859 ...
@@ -532,7 +537,9 @@ den <- with(faithful,
 )
 
 if (!requireNamespace("hdrcde")) install.packages("hdrcde")
+#> Loading required namespace: hdrcde
 library("hdrcde")
+#> This is hdrcde 3.5.0
 p_den <- ~ with(faithful,
   plot(
     hdr.2d(eruptions, waiting, prob = c(50, 80, 95, 99), den = den),
@@ -608,7 +615,9 @@ Perhaps the most important difference between **ggdensity** and
 
 # Package index
 
-## All functions
+## 2-dimensional highest density regions
+
+### Plotting functions
 
 - [`stat_hdr()`](https://jamesotto852.github.io/ggdensity/reference/geom_hdr.md)
   [`geom_hdr()`](https://jamesotto852.github.io/ggdensity/reference/geom_hdr.md)
@@ -623,35 +632,59 @@ Perhaps the most important difference between **ggdensity** and
 - [`stat_hdr_points_fun()`](https://jamesotto852.github.io/ggdensity/reference/geom_hdr_points_fun.md)
   [`geom_hdr_points_fun()`](https://jamesotto852.github.io/ggdensity/reference/geom_hdr_points_fun.md)
   : Scatterplot colored by highest density regions of a bivariate pdf
+
+### Bivariate density estimation methods
+
+- [`method_freqpoly()`](https://jamesotto852.github.io/ggdensity/reference/method_freqpoly.md)
+  : Bivariate frequency polygon HDR estimator
+- [`method_histogram()`](https://jamesotto852.github.io/ggdensity/reference/method_histogram.md)
+  : Bivariate histogram HDR estimator
+- [`method_kde()`](https://jamesotto852.github.io/ggdensity/reference/method_kde.md)
+  : Bivariate kernel density HDR estimator
+- [`method_mvnorm()`](https://jamesotto852.github.io/ggdensity/reference/method_mvnorm.md)
+  : Bivariate parametric normal HDR estimator
+
+### Accessing estimated bivariate densities and regions
+
+All 2d plotting functions use this function to determine HDRs
+
+- [`get_hdr()`](https://jamesotto852.github.io/ggdensity/reference/get_hdr.md)
+  : Computing the highest density regions of a 2D density
+
+## 1-dimensional highest density regions
+
+### Plotting functions
+
 - [`stat_hdr_rug()`](https://jamesotto852.github.io/ggdensity/reference/geom_hdr_rug.md)
   [`geom_hdr_rug()`](https://jamesotto852.github.io/ggdensity/reference/geom_hdr_rug.md)
   : Rug plots of marginal highest density region estimates
 - [`stat_hdr_rug_fun()`](https://jamesotto852.github.io/ggdensity/reference/geom_hdr_rug_fun.md)
   [`geom_hdr_rug_fun()`](https://jamesotto852.github.io/ggdensity/reference/geom_hdr_rug_fun.md)
   : Rug plots of highest density region estimates of univariate pdfs
-- [`get_hdr()`](https://jamesotto852.github.io/ggdensity/reference/get_hdr.md)
-  : Computing the highest density regions of a 2D density
+
+### Univariate density estimation methods
+
+- [`method_kde_1d()`](https://jamesotto852.github.io/ggdensity/reference/method_kde_1d.md)
+  : Univariate kernel density HDR estimator
+- [`method_norm_1d()`](https://jamesotto852.github.io/ggdensity/reference/method_norm_1d.md)
+  : Univariate parametric normal HDR estimator
+- [`method_freqpoly_1d()`](https://jamesotto852.github.io/ggdensity/reference/method_freqpoly_1d.md)
+  : Univariate frequency polygon HDR estimator
+- [`method_histogram_1d()`](https://jamesotto852.github.io/ggdensity/reference/method_histogram_1d.md)
+  : Univariate histogram HDR estimator
+
+### Accessing estimated univariate densities and regions
+
+All 1d plotting functions use this function to determine HDRs
+
 - [`get_hdr_1d()`](https://jamesotto852.github.io/ggdensity/reference/get_hdr_1d.md)
   : Computing the highest density regions of a 1D density
+
+## Package-level documentation
+
 - [`ggdensity`](https://jamesotto852.github.io/ggdensity/reference/ggdensity.md)
   [`package-ggdensity`](https://jamesotto852.github.io/ggdensity/reference/ggdensity.md)
   : ggdensity: Stats and Geoms for Density Estimation with ggplot2
-- [`method_freqpoly()`](https://jamesotto852.github.io/ggdensity/reference/method_freqpoly.md)
-  : Bivariate frequency polygon HDR estimator
-- [`method_freqpoly_1d()`](https://jamesotto852.github.io/ggdensity/reference/method_freqpoly_1d.md)
-  : Univariate frequency polygon HDR estimator
-- [`method_histogram()`](https://jamesotto852.github.io/ggdensity/reference/method_histogram.md)
-  : Bivariate histogram HDR estimator
-- [`method_histogram_1d()`](https://jamesotto852.github.io/ggdensity/reference/method_histogram_1d.md)
-  : Univariate histogram HDR estimator
-- [`method_kde()`](https://jamesotto852.github.io/ggdensity/reference/method_kde.md)
-  : Bivariate kernel density HDR estimator
-- [`method_kde_1d()`](https://jamesotto852.github.io/ggdensity/reference/method_kde_1d.md)
-  : Univariate kernel density HDR estimator
-- [`method_mvnorm()`](https://jamesotto852.github.io/ggdensity/reference/method_mvnorm.md)
-  : Bivariate parametric normal HDR estimator
-- [`method_norm_1d()`](https://jamesotto852.github.io/ggdensity/reference/method_norm_1d.md)
-  : Univariate parametric normal HDR estimator
 
 # Articles
 
