@@ -22,7 +22,7 @@ stat_hdr_rug(
   ylim = NULL,
   n = 512,
   na.rm = FALSE,
-  show.legend = TRUE,
+  show.legend = NA,
   inherit.aes = TRUE
 )
 
@@ -36,7 +36,7 @@ geom_hdr_rug(
   sides = "bl",
   length = unit(0.03, "npc"),
   na.rm = FALSE,
-  show.legend = TRUE,
+  show.legend = NA,
   inherit.aes = TRUE
 )
 ```

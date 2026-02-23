@@ -36,7 +36,7 @@ geom_hdr_rug_fun(
   sides = "bl",
   length = unit(0.03, "npc"),
   na.rm = FALSE,
-  show.legend = TRUE,
+  show.legend = NA,
   inherit.aes = TRUE
 )
 ```
