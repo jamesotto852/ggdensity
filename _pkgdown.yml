@@ -20,7 +20,7 @@ reference:
   - method_mvnorm
 
 - subtitle: "Accessing estimated bivariate densities and regions"
-  desc: "All 2d plotting functions use this function to determine HDRs"
+  desc: "All 2D plotting functions use this function to determine HDRs"
   contents:
   - get_hdr
 
@@ -39,7 +39,7 @@ reference:
   - method_histogram_1d
 
 - subtitle: "Accessing estimated univariate densities and regions"
-  desc: "All 1d plotting functions use this function to determine HDRs"
+  desc: "All 1D plotting functions use this function to determine HDRs"
   contents:
   - get_hdr_1d
 
