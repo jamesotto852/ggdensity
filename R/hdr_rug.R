@@ -92,7 +92,7 @@ stat_hdr_rug <- function(mapping = NULL, data = NULL,
                          ylim = NULL,
                          n = 512,
                          na.rm = FALSE,
-                         show.legend = TRUE,
+                         show.legend = NA,
                          inherit.aes = TRUE) {
   layer(
     data = data,
@@ -222,7 +222,7 @@ geom_hdr_rug <- function(mapping = NULL, data = NULL,
                          sides = "bl",
                          length = unit(0.03, "npc"),
                          na.rm = FALSE,
-                         show.legend = TRUE,
+                         show.legend = NA,
                          inherit.aes = TRUE) {
   layer(
     data = data,
