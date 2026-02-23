@@ -379,12 +379,6 @@ ggplot(cars, aes(speed, dist)) +
 
 <img src="man/figures/README-ex_geom_hdr_rug_4-1.png" width="100%" />
 
-The second `probs` guide is currently a bug. As a work around, you can
-solve it by adding `guides(alpha = "none")`. Note also the use of
-`length = unit(.2, "cm")`, this allows us to make the thickness the same
-on both axes and reasonable on the plot. (Compare those rug plots to
-those on the previous graphic.)
-
 ### Numerical summaries of HDRs
 
 It is possible to access numerical summaries of the estimated densities

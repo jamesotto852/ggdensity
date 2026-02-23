@@ -359,9 +359,6 @@ ggplot(cars, aes(speed, dist)) +
   scale_fill_viridis_d(option = "magma", begin = .8, end = 0)
 ```
 
-The second `probs` guide is currently a bug. As a work around, you can solve it by adding `guides(alpha = "none")`{.R}. Note also the use of `length = unit(.2, "cm")`, this allows us to make the thickness the same on both axes and reasonable on the plot. (Compare those rug plots to those on the previous graphic.)
-
-
 ### Numerical summaries of HDRs
 
 It is possible to access numerical summaries of the estimated densities and HDRs computed by **ggdensity** with `get_hdr()`:
