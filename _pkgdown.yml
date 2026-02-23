@@ -7,47 +7,41 @@ reference:
 
 - subtitle: "Plotting functions"
   contents:
-  - stat_hdr()
-  - geom_hdr()
-  - stat_hdr_fun()
-  - geom_hdr_fun()
-  - stat_hdr_points()
-  - geom_hdr_points()
-  - stat_hdr_points_fun()
-  - geom_hdr_points_fun()
+  - geom_hdr
+  - geom_hdr_fun
+  - geom_hdr_points
+  - geom_hdr_points_fun
 
 - subtitle: "Bivariate density estimation methods"
   contents:
-  - method_freqpoly()
-  - method_histogram()
-  - method_kde()
-  - method_mvnorm()
+  - method_freqpoly
+  - method_histogram
+  - method_kde
+  - method_mvnorm
 
 - subtitle: "Accessing estimated bivariate densities and regions"
   desc: "All 2d plotting functions use this function to determine HDRs"
   contents:
-  - get_hdr()
+  - get_hdr
 
 - title: "1-dimensional highest density regions"
 
 - subtitle: "Plotting functions"
   contents:
-  - stat_hdr_rug()
-  - geom_hdr_rug()
-  - stat_hdr_rug_fun()
-  - geom_hdr_rug_fun()
+  - geom_hdr_rug
+  - geom_hdr_rug_fun
 
 - subtitle: "Univariate density estimation methods"
   contents:
-  - method_kde_1d()
-  - method_norm_1d()
-  - method_freqpoly_1d()
-  - method_histogram_1d()
+  - method_kde_1d
+  - method_norm_1d
+  - method_freqpoly_1d
+  - method_histogram_1d
 
 - subtitle: "Accessing estimated univariate densities and regions"
   desc: "All 1d plotting functions use this function to determine HDRs"
   contents:
-  - get_hdr_1d()
+  - get_hdr_1d
 
 - title: "Package-level documentation"
   contents:
