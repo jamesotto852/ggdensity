@@ -28,7 +28,7 @@ are now specified with `method_*()` and `method_*_1d()` functions
 
 ## Fixes
 
-* [Added support](https://www.tidyverse.org/blog/2022/08/ggplot2-3-4-0-size-to-linewidth/) for the new `linewidth` aesthetic (Reported by @eliocamp, #23)
+* [Added support](https://tidyverse.org/blog/2022/08/ggplot2-3-4-0-size-to-linewidth/) for the new `linewidth` aesthetic (Reported by @eliocamp, #23)
 
 # ggdensity 0.1.1
 
