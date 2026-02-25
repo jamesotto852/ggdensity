@@ -54,7 +54,7 @@ CRAN release: 2023-02-09
 ### Fixes
 
 - [Added
-  support](https://www.tidyverse.org/blog/2022/08/ggplot2-3-4-0-size-to-linewidth/)
+  support](https://tidyverse.org/blog/2022/08/ggplot2-3-4-0-size-to-linewidth/)
   for the new `linewidth` aesthetic (Reported by
   [@eliocamp](https://github.com/eliocamp),
   [\#23](https://github.com/jamesotto852/ggdensity/issues/23))
